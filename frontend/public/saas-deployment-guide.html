@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ERP Platform — SaaS Deployment & Backup Guide</title>
+<style>
+  :root {
+    --blue:    #2563eb;
+    --blue-lt: #eff6ff;
+    --slate:   #1e293b;
+    --muted:   #64748b;
+    --border:  #e2e8f0;
+    --green:   #16a34a;
+    --amber:   #d97706;
+    --red:     #dc2626;
+    --bg:      #f8fafc;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    font-size: 13.5px; line-height: 1.65;
+    color: var(--slate); background: var(--bg);
+  }
+
+  /* ── Layout ── */
+  .page-wrap { max-width: 900px; margin: 0 auto; padding: 32px 24px 80px; }
+
+  /* ── Cover ── */
+  .cover {
+    background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 60%, #0ea5e9 100%);
+    color: #fff; padding: 56px 48px 44px; border-radius: 14px; margin-bottom: 40px;
+    position: relative; overflow: hidden;
+  }
+  .cover::after {
+    content: ''; position: absolute; right: -60px; top: -60px;
+    width: 260px; height: 260px; border-radius: 50%;
+    background: rgba(255,255,255,0.06);
+  }
+  .cover-badge {
+    display: inline-block; background: rgba(255,255,255,0.18);
+    border: 1px solid rgba(255,255,255,0.3);
+    color: #fff; font-size: 11px; font-weight: 600; letter-spacing: .05em;
+    text-transform: uppercase; padding: 4px 12px; border-radius: 20px; margin-bottom: 20px;
+  }
+  .cover h1 { font-size: 30px; font-weight: 800; line-height: 1.2; margin-bottom: 10px; }
+  .cover p  { font-size: 14px; color: rgba(255,255,255,0.8); max-width: 520px; }
+  .cover-meta { margin-top: 32px; display: flex; gap: 32px; flex-wrap: wrap; }
+  .cover-meta div { font-size: 12px; color: rgba(255,255,255,0.7); }
+  .cover-meta strong { display: block; font-size: 14px; color: #fff; }
+
+  /* ── Print button ── */
+  .print-bar {
+    display: flex; align-items: center; justify-content: space-between;
+    background: #fff; border: 1px solid var(--border); border-radius: 10px;
+    padding: 14px 20px; margin-bottom: 32px;
+  }
+  .print-bar p { font-size: 13px; color: var(--muted); }
+  .btn-print {
+    background: var(--blue); color: #fff; border: none; border-radius: 8px;
+    padding: 9px 20px; font-size: 13px; font-weight: 600; cursor: pointer;
+    transition: background .15s;
+  }
+  .btn-print:hover { background: #1d4ed8; }
+
+  /* ── TOC ── */
+  .toc { background: #fff; border: 1px solid var(--border); border-radius: 10px; padding: 24px 28px; margin-bottom: 36px; }
+  .toc h2 { font-size: 14px; font-weight: 700; color: var(--slate); margin-bottom: 14px; }
+  .toc ol { padding-left: 18px; }
+  .toc li { margin: 5px 0; }
+  .toc a  { color: var(--blue); text-decoration: none; font-size: 13px; }
+  .toc a:hover { text-decoration: underline; }
+  .toc .sub { padding-left: 16px; list-style-type: disc; }
+  .toc .sub li { margin: 3px 0; }
+
+  /* ── Section headings ── */
+  .part {
+    background: linear-gradient(90deg, var(--blue) 0%, #3b82f6 100%);
+    color: #fff; border-radius: 10px; padding: 18px 24px; margin: 40px 0 28px;
+  }
+  .part-num { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; opacity: .7; }
+  .part h2  { font-size: 20px; font-weight: 800; margin-top: 4px; }
+
+  h3 {
+    font-size: 15px; font-weight: 700; color: var(--slate);
+    margin: 28px 0 10px; padding-left: 12px;
+    border-left: 3px solid var(--blue);
+  }
+  h4 { font-size: 13.5px; font-weight: 600; color: var(--slate); margin: 18px 0 6px; }
+
+  p  { margin-bottom: 10px; color: #334155; }
+  ul, ol { padding-left: 20px; margin-bottom: 12px; }
+  li { margin-bottom: 5px; color: #334155; }
+
+  /* ── Cards / Boxes ── */
+  .card {
+    background: #fff; border: 1px solid var(--border);
+    border-radius: 10px; padding: 20px 24px; margin-bottom: 20px;
+  }
+  .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin-bottom: 20px; }
+
+  .info  { background: var(--blue-lt); border: 1px solid #bfdbfe; border-radius: 8px; padding: 14px 18px; margin-bottom: 16px; }
+  .warn  { background: #fffbeb;        border: 1px solid #fcd34d; border-radius: 8px; padding: 14px 18px; margin-bottom: 16px; }
+  .tip   { background: #f0fdf4;        border: 1px solid #86efac; border-radius: 8px; padding: 14px 18px; margin-bottom: 16px; }
+  .danger{ background: #fef2f2;        border: 1px solid #fca5a5; border-radius: 8px; padding: 14px 18px; margin-bottom: 16px; }
+
+  .info strong  { color: #1d4ed8; }
+  .warn strong  { color: #92400e; }
+  .tip strong   { color: #15803d; }
+  .danger strong{ color: #991b1b; }
+
+  /* ── Code blocks ── */
+  pre {
+    background: #0f172a; color: #e2e8f0;
+    border-radius: 8px; padding: 16px 20px;
+    font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+    font-size: 12px; line-height: 1.7; overflow-x: auto;
+    margin-bottom: 16px;
+  }
+  code { font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace; font-size: 12px; }
+  .inline-code {
+    background: #f1f5f9; color: #0f172a; border-radius: 4px;
+    padding: 1px 6px; font-size: 12px;
+  }
+  .comment { color: #64748b; }
+  .cmd { color: #7dd3fc; }
+  .str { color: #86efac; }
+  .kw  { color: #f472b6; }
+
+  /* ── Tables ── */
+  table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 13px; }
+  th {
+    background: #f1f5f9; text-align: left;
+    padding: 10px 14px; font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: .05em; color: var(--muted);
+    border: 1px solid var(--border);
+  }
+  td { padding: 10px 14px; border: 1px solid var(--border); color: #334155; vertical-align: top; }
+  tr:nth-child(even) td { background: #f8fafc; }
+
+  /* ── Badges ── */
+  .badge {
+    display: inline-block; border-radius: 20px; padding: 2px 10px;
+    font-size: 11px; font-weight: 600; white-space: nowrap;
+  }
+  .badge-blue   { background: #dbeafe; color: #1d4ed8; }
+  .badge-green  { background: #dcfce7; color: #15803d; }
+  .badge-amber  { background: #fef3c7; color: #92400e; }
+  .badge-red    { background: #fee2e2; color: #991b1b; }
+  .badge-purple { background: #f3e8ff; color: #7e22ce; }
+
+  /* ── Steps ── */
+  .steps { counter-reset: step; }
+  .step {
+    display: flex; gap: 16px; margin-bottom: 18px;
+    background: #fff; border: 1px solid var(--border);
+    border-radius: 10px; padding: 16px 20px;
+  }
+  .step-num {
+    counter-increment: step;
+    min-width: 32px; height: 32px;
+    background: var(--blue); color: #fff;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700; flex-shrink: 0;
+  }
+  .step-num::before { content: counter(step); }
+  .step-body h4 { margin-top: 4px; }
+
+  /* ── Architecture diagram (ASCII-style) ── */
+  .arch {
+    background: #0f172a; color: #94a3b8;
+    border-radius: 10px; padding: 20px 24px;
+    font-family: monospace; font-size: 12px; line-height: 1.8;
+    margin-bottom: 20px; overflow-x: auto;
+  }
+  .arch .hl { color: #7dd3fc; }
+  .arch .acc{ color: #86efac; }
+
+  /* ── Checklist ── */
+  .checklist { list-style: none; padding: 0; }
+  .checklist li { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 8px; }
+  .checklist li::before {
+    content: '☐'; font-size: 15px; color: var(--blue); flex-shrink: 0; margin-top: 0px;
+  }
+
+  /* ── Footer ── */
+  .doc-footer {
+    margin-top: 60px; border-top: 1px solid var(--border);
+    padding-top: 20px; text-align: center;
+    font-size: 12px; color: var(--muted);
+  }
+
+  /* ── Print ── */
+  @media print {
+    body { background: #fff; font-size: 12px; }
+    .print-bar, .btn-print { display: none !important; }
+    .page-wrap { padding: 0; max-width: 100%; }
+    .cover { border-radius: 0; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+    .part  { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+    .info, .warn, .tip, .danger { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+    pre { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+    h3 { page-break-after: avoid; }
+    .card { page-break-inside: avoid; }
+    .step { page-break-inside: avoid; }
+    table { page-break-inside: avoid; }
+    a { color: inherit; text-decoration: none; }
+  }
+</style>
+</head>
+<body>
+<div class="page-wrap">
+
+  <!-- Cover -->
+  <div class="cover">
+    <div class="cover-badge">Technical Operations Manual</div>
+    <h1>ERP Platform<br>SaaS Deployment &amp; Backup Guide</h1>
+    <p>Complete procedures for onboarding new clients, operating a multi-tenant SaaS business, and recovering from failures with minimal downtime.</p>
+    <div class="cover-meta">
+      <div><strong>Version</strong>1.0 — June 2026</div>
+      <div><strong>Platform</strong>NestJS · Next.js 14 · PostgreSQL · Docker</div>
+      <div><strong>Audience</strong>CTO / DevOps / System Administrator</div>
+    </div>
+  </div>
+
+  <!-- Print bar -->
+  <div class="print-bar">
+    <p>📄 This document is optimised for PDF. Click <strong>Save as PDF</strong> in the print dialog.</p>
+    <button class="btn-print" onclick="window.print()">🖨️ Download PDF</button>
+  </div>
+
+  <!-- Table of Contents -->
+  <div class="toc">
+    <h2>📋 Table of Contents</h2>
+    <ol>
+      <li><a href="#part1">PART 1 — Selling to Multiple Clients (Multi-Tenant SaaS)</a>
+        <ul class="sub">
+          <li><a href="#arch">1.1 Understanding the Current Architecture</a></li>
+          <li><a href="#models">1.2 Deployment Models — Which One to Choose</a></li>
+          <li><a href="#onboarding">1.3 Client Onboarding Procedure</a></li>
+          <li><a href="#customisation">1.4 White-Label Customisation</a></li>
+          <li><a href="#pricing">1.5 Pricing &amp; Licensing Models</a></li>
+          <li><a href="#isolation">1.6 Data Isolation &amp; Security</a></li>
+          <li><a href="#scaling">1.7 Scaling the Infrastructure</a></li>
+          <li><a href="#offboarding">1.8 Client Offboarding</a></li>
+        </ul>
+      </li>
+      <li><a href="#part2">PART 2 — Backup &amp; Disaster Recovery</a>
+        <ul class="sub">
+          <li><a href="#what">2.1 What Needs to Be Backed Up</a></li>
+          <li><a href="#pg-backup">2.2 PostgreSQL Backup Procedures</a></li>
+          <li><a href="#automated">2.3 Automated Backup Script</a></li>
+          <li><a href="#offsite">2.4 Off-Site Storage (S3 / Rclone)</a></li>
+          <li><a href="#restore">2.5 Restore Procedures (Step-by-Step)</a></li>
+          <li><a href="#rpo-rto">2.6 RPO &amp; RTO Targets</a></li>
+          <li><a href="#dr-plan">2.7 Disaster Recovery Plan</a></li>
+          <li><a href="#testing">2.8 Testing Your Backups</a></li>
+          <li><a href="#checklist">2.9 Monthly Operations Checklist</a></li>
+        </ul>
+      </li>
+    </ol>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════════════ -->
+  <div class="part" id="part1">
+    <div class="part-num">Part 1</div>
+    <h2>Selling to Multiple Clients — Multi-Tenant SaaS</h2>
+  </div>
+
+  <!-- 1.1 Architecture -->
+  <h3 id="arch">1.1 Understanding the Current Architecture</h3>
+
+  <p>The ERP is already built as a <strong>multi-tenant application</strong>. Every record in every table carries a <span class="inline-code">tenantId</span> column. One running instance of the app can serve hundreds of companies completely isolated from each other — you do not need to deploy a separate server per client.</p>
+
+  <div class="arch">
+<span class="acc">┌─────────────────────────────────────────────────────┐</span>
+<span class="acc">│            Single Server / VPS / Cloud VM           │</span>
+<span class="acc">└─────────────────────────────────────────────────────┘</span>
+         │
+<span class="hl">┌────────┴────────┐   ┌─────────────┐   ┌──────────┐</span>
+<span class="hl">│  Nginx (80/443) │   │ PostgreSQL  │   │  Redis   │</span>
+<span class="hl">│  Reverse Proxy  │   │  (shared)   │   │ (shared) │</span>
+<span class="hl">└────────┬────────┘   └─────────────┘   └──────────┘</span>
+         │                   │
+<span class="hl">┌────────┴──────────┐        │</span>
+<span class="hl">│  NestJS Backend   │────────┘  Every query is scoped:
+<span class="hl">│  (multi-tenant)   │           WHERE "tenantId" = $1</span>
+<span class="hl">└───────────────────┘</span>
+         │
+<span class="hl">┌────────┴──────────┐</span>
+<span class="hl">│  Next.js Frontend │   ←  Same UI for all clients</span>
+<span class="hl">└───────────────────┘</span>
+
+<span class="comment">Client A (SAFIRA)  →  tenantId = "aaa-111"
+Client B (MONOPRIX) →  tenantId = "bbb-222"
+Client C (PHARMACY) →  tenantId = "ccc-333"
+All share the SAME database, backend, and frontend.</span></div>
+
+  <div class="info">
+    <strong>ℹ️ Key point:</strong> Because every table already has <span class="inline-code">tenantId</span> and the backend guards enforce it on every request, the app is SaaS-ready today. No code changes are required to serve a second client.
+  </div>
+
+  <!-- 1.2 Models -->
+  <h3 id="models">1.2 Deployment Models — Which One to Choose</h3>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Model</th><th>Description</th><th>Best For</th><th>Cost</th><th>Isolation</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Shared SaaS</strong><br><span class="badge badge-green">Recommended</span></td>
+        <td>One server, one database, all clients share infrastructure. Queries scoped by tenantId.</td>
+        <td>SME clients, &lt;500 users total</td>
+        <td>Lowest</td>
+        <td>Logical (row-level)</td>
+      </tr>
+      <tr>
+        <td><strong>Schema-per-tenant</strong></td>
+        <td>One PostgreSQL instance, each client gets their own schema (e.g. <span class="inline-code">safira.sales</span>).</td>
+        <td>Mid-market clients needing stronger DB isolation</td>
+        <td>Medium</td>
+        <td>Schema-level</td>
+      </tr>
+      <tr>
+        <td><strong>DB-per-tenant</strong></td>
+        <td>Each client has a completely separate PostgreSQL database.</td>
+        <td>Enterprise / regulated industries (banking, health)</td>
+        <td>High</td>
+        <td>Full DB</td>
+      </tr>
+      <tr>
+        <td><strong>Instance-per-tenant</strong></td>
+        <td>Full Docker stack per client on a dedicated VM.</td>
+        <td>Very large clients or custom SLAs</td>
+        <td>Very High</td>
+        <td>Complete</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>For starting out, <strong>Shared SaaS</strong> is the right choice. You can migrate high-value clients to their own database later without changing the application code.</p>
+
+  <!-- 1.3 Onboarding -->
+  <h3 id="onboarding">1.3 Client Onboarding Procedure</h3>
+
+  <p>There are two ways to create a new client (tenant):</p>
+
+  <h4>Option A — Self-Registration (recommended for public SaaS)</h4>
+  <p>Clients register themselves at <span class="inline-code">https://yourdomain.com/register</span>. The app creates the tenant automatically.</p>
+  <div class="steps">
+    <div class="step"><div class="step-num"></div><div class="step-body">
+      <h4>Client fills in the registration form</h4>
+      <p>Company name, subdomain slug, admin email, password, currency.</p>
+    </div></div>
+    <div class="step"><div class="step-num"></div><div class="step-body">
+      <h4>Backend creates the tenant record</h4>
+      <p>The <span class="inline-code">POST /api/v1/auth/register</span> endpoint creates the tenant row, seeds default roles (Super Admin, Admin, Caissier, etc.), and returns access tokens.</p>
+    </div></div>
+    <div class="step"><div class="step-num"></div><div class="step-body">
+      <h4>Client lands on the dashboard</h4>
+      <p>They configure their company settings, branches, warehouses, users, and products. The demo seed is NOT applied — they start fresh.</p>
+    </div></div>
+    <div class="step"><div class="step-num"></div><div class="step-body">
+      <h4>Send a welcome email</h4>
+      <p>Add an email notification (via SendGrid / Mailgun) at the point of registration. The backend already has the user's email at this step.</p>
+    </div></div>
+  </div>
+
+  <h4>Option B — Admin Provisioning (for onboarded enterprise clients)</h4>
+  <p>You create the tenant manually from a superadmin CLI or admin panel:</p>
+<pre><span class="comment"># SSH into your server</span>
+<span class="cmd">ssh ubuntu@your-server-ip</span>
+
+<span class="comment"># Run the registration API with curl</span>
+<span class="cmd">curl -X POST https://yourdomain.com/api/v1/auth/register \</span>
+  <span class="str">-H "Content-Type: application/json"</span> \
+  -d <span class="str">'{"companyName":"Client ABC","companySlug":"client-abc",
+      "firstName":"Admin","lastName":"User",
+      "email":"admin@clientabc.cm","password":"Temp@2024!",
+      "currency":"XAF"}'</span></pre>
+
+  <div class="warn">
+    <strong>⚠️ Security:</strong> Always force a password change on first login for provisioned accounts. Add a <span class="inline-code">mustChangePassword</span> flag to the User model and redirect to a change-password page when set.
+  </div>
+
+  <h4>Checklist: Before Handing Over to Client</h4>
+  <ul class="checklist">
+    <li>Tenant record created with correct currency and company name</li>
+    <li>Admin user created — credentials sent securely (not by plain email)</li>
+    <li>Branches and warehouses configured (or guide client to do so)</li>
+    <li>Tax codes set up for client's country</li>
+    <li>Demo data removed (or left if client requested a trial with sample data)</li>
+    <li>Custom logo/branding applied if white-label package sold</li>
+    <li>Subscription/billing record created in your billing system</li>
+    <li>Client added to your monitoring dashboard</li>
+  </ul>
+
+  <!-- 1.4 Customisation -->
+  <h3 id="customisation">1.4 White-Label Customisation</h3>
+  <p>To brand the ERP for each client (their logo, colours, company name in the header):</p>
+
+  <div class="card-grid">
+    <div class="card">
+      <h4>🎨 Logo &amp; Name</h4>
+      <p>Store <span class="inline-code">logoUrl</span> and <span class="inline-code">name</span> in the <span class="inline-code">Tenant</span> table. The frontend fetches these from <span class="inline-code">GET /settings/company</span> and displays them in the sidebar and browser tab title.</p>
+    </div>
+    <div class="card">
+      <h4>🌐 Custom Domain</h4>
+      <p>Point the client's domain (e.g. <span class="inline-code">erp.clientabc.cm</span>) to your server via DNS CNAME. Add that hostname to your Nginx config and issue an SSL certificate with Let's Encrypt.</p>
+    </div>
+    <div class="card">
+      <h4>🎨 Brand Colours</h4>
+      <p>Add a <span class="inline-code">primaryColor</span> field to the Tenant model. Inject it as a CSS variable via a <span class="inline-code">/api/v1/theme.css</span> endpoint loaded by the frontend.</p>
+    </div>
+    <div class="card">
+      <h4>📧 Email From Address</h4>
+      <p>Store SMTP credentials per tenant so invoice emails and notifications come from <span class="inline-code">noreply@clientabc.cm</span> instead of your own domain.</p>
+    </div>
+  </div>
+
+  <h4>Adding a Custom Domain per Client (Nginx)</h4>
+<pre><span class="comment"># /etc/nginx/sites-available/client-abc.conf</span>
+<span class="kw">server</span> {
+    listen 443 ssl;
+    server_name <span class="str">erp.clientabc.cm</span>;
+
+    ssl_certificate     /etc/letsencrypt/live/erp.clientabc.cm/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/erp.clientabc.cm/privkey.pem;
+
+    <span class="kw">location</span> / {
+        proxy_pass http://localhost:3000;  <span class="comment"># Next.js frontend</span>
+        proxy_set_header Host $host;
+    }
+    <span class="kw">location</span> /api/ {
+        proxy_pass http://localhost:4000;  <span class="comment"># NestJS backend</span>
+    }
+}
+
+<span class="comment"># Issue certificate</span>
+<span class="cmd">certbot --nginx -d erp.clientabc.cm</span></pre>
+
+  <!-- 1.5 Pricing -->
+  <h3 id="pricing">1.5 Pricing &amp; Licensing Models</h3>
+
+  <table>
+    <thead><tr><th>Plan</th><th>Modules Included</th><th>Users</th><th>Suggested Price (XAF/month)</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><span class="badge badge-blue">Starter</span></td>
+        <td>POS, Inventory, Sales, Purchases</td>
+        <td>Up to 5</td>
+        <td>25 000 – 50 000 FCFA</td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-green">Business</span></td>
+        <td>All Starter + CRM, Finance, HR</td>
+        <td>Up to 20</td>
+        <td>75 000 – 150 000 FCFA</td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-purple">Enterprise</span></td>
+        <td>All modules + Analytics, Budgeting, Reports</td>
+        <td>Unlimited</td>
+        <td>250 000 – 500 000 FCFA</td>
+      </tr>
+      <tr>
+        <td><span class="badge badge-amber">White Label</span></td>
+        <td>All modules + custom branding + custom domain</td>
+        <td>Unlimited</td>
+        <td>Negotiated</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p><strong>Implementation fees:</strong> Charge a one-time setup fee covering data migration, training, and customisation — typically 1–3× the monthly subscription.</p>
+
+  <p>To enforce plan limits technically, add a <span class="inline-code">plan</span> field to the Tenant model and add middleware that checks the plan before allowing access to premium modules.</p>
+
+  <!-- 1.6 Isolation -->
+  <h3 id="isolation">1.6 Data Isolation &amp; Security</h3>
+
+  <div class="card-grid">
+    <div class="card">
+      <h4>🔒 Row-Level Isolation</h4>
+      <p>Every Prisma query includes <span class="inline-code">{ where: { tenantId } }</span>. The backend middleware injects the tenantId from the JWT — clients can never see another client's data even if they know the ID.</p>
+    </div>
+    <div class="card">
+      <h4>🗝️ JWT Tenant Binding</h4>
+      <p>The JWT payload contains <span class="inline-code">{ sub, tenantId, email, roles }</span>. No query can be executed without a valid token that carries the correct tenantId.</p>
+    </div>
+    <div class="card">
+      <h4>🧱 PostgreSQL Row Security</h4>
+      <p>For extra defence, enable PostgreSQL Row Level Security (RLS) on critical tables so the DB engine itself rejects cross-tenant reads even if application code has a bug.</p>
+    </div>
+    <div class="card">
+      <h4>📊 Audit Trail</h4>
+      <p>The <span class="inline-code">AuditInterceptor</span> logs every mutating request (POST/PATCH/DELETE) with the userId and tenantId. This provides a complete record per client.</p>
+    </div>
+  </div>
+
+  <!-- 1.7 Scaling -->
+  <h3 id="scaling">1.7 Scaling the Infrastructure</h3>
+
+  <table>
+    <thead><tr><th>Client Count</th><th>Recommended Setup</th><th>Estimated VPS Spec</th></tr></thead>
+    <tbody>
+      <tr><td>1 – 10 clients</td><td>Single VPS, Docker Compose</td><td>4 vCPU, 8 GB RAM, 100 GB SSD</td></tr>
+      <tr><td>10 – 50 clients</td><td>Single server + managed PostgreSQL (Supabase / RDS)</td><td>8 vCPU, 16 GB RAM, 500 GB SSD</td></tr>
+      <tr><td>50 – 200 clients</td><td>Load-balanced backend (2–4 nodes) + managed DB + CDN for frontend</td><td>2× 8 vCPU nodes + RDS db.m5.large</td></tr>
+      <tr><td>200+ clients</td><td>Kubernetes (EKS / GKE) + read replicas + Redis cluster</td><td>Auto-scaling groups</td></tr>
+    </tbody>
+  </table>
+
+  <!-- 1.8 Offboarding -->
+  <h3 id="offboarding">1.8 Client Offboarding</h3>
+  <div class="steps">
+    <div class="step"><div class="step-num"></div><div class="step-body">
+      <h4>Export all client data</h4>
+      <p>Run <span class="inline-code">pg_dump</span> with a <span class="inline-code">WHERE tenantId = 'xxx'</span> filter (using <span class="inline-code">COPY TO</span> per table or a custom export script) and deliver it to the client as CSV/Excel.</p>
+    </div></div>
+    <div class="step"><div class="step-num"></div><div class="step-body">
+      <h4>Disable the tenant account</h4>
+      <p>Set <span class="inline-code">tenant.isActive = false</span> in the database. The login endpoint should check this flag and return a clear message.</p>
+    </div></div>
+    <div class="step"><div class="step-num"></div><div class="step-body">
+      <h4>Delete data after retention period</h4>
+      <p>After 90 days (per your contract), hard-delete the tenant row — cascading foreign keys will remove all associated data. Document this policy in your service agreement.</p>
+    </div></div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════════════ -->
+  <div class="part" id="part2">
+    <div class="part-num">Part 2</div>
+    <h2>Backup &amp; Disaster Recovery</h2>
+  </div>
+
+  <!-- 2.1 What to back up -->
+  <h3 id="what">2.1 What Needs to Be Backed Up</h3>
+
+  <table>
+    <thead><tr><th>Component</th><th>Data at Risk</th><th>Priority</th><th>Method</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>PostgreSQL DB</strong></td>
+        <td>All business data — sales, inventory, users, financials</td>
+        <td><span class="badge badge-red">Critical</span></td>
+        <td>pg_dump + WAL archiving</td>
+      </tr>
+      <tr>
+        <td><strong>Uploaded files</strong></td>
+        <td>Product images, attachments, PDF invoices</td>
+        <td><span class="badge badge-amber">High</span></td>
+        <td>rsync / S3 sync</td>
+      </tr>
+      <tr>
+        <td><strong>.env file</strong></td>
+        <td>All secrets — JWT keys, DB credentials, API keys</td>
+        <td><span class="badge badge-red">Critical</span></td>
+        <td>Encrypted offline storage</td>
+      </tr>
+      <tr>
+        <td><strong>Docker Compose + config</strong></td>
+        <td>Infrastructure definition (already in Git)</td>
+        <td><span class="badge badge-blue">Medium</span></td>
+        <td>Git repository (GitHub)</td>
+      </tr>
+      <tr>
+        <td><strong>Redis</strong></td>
+        <td>Sessions, job queues (transient — reconstructed on restart)</td>
+        <td><span class="badge badge-blue">Low</span></td>
+        <td>Not required — Redis is ephemeral cache</td>
+      </tr>
+      <tr>
+        <td><strong>Nginx config</strong></td>
+        <td>SSL certificates, virtual hosts</td>
+        <td><span class="badge badge-amber">High</span></td>
+        <td>rsync + certbot renewal</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="danger">
+    <strong>🚨 Never skip:</strong> If the PostgreSQL database is lost without a backup, ALL client business data is gone permanently. Set up automated backups before going live with any paying client.
+  </div>
+
+  <!-- 2.2 PostgreSQL Backup -->
+  <h3 id="pg-backup">2.2 PostgreSQL Backup Procedures</h3>
+
+  <h4>Method 1 — pg_dump (Full logical backup, simplest)</h4>
+  <p>Creates a SQL file that can restore the entire database on any PostgreSQL instance.</p>
+<pre><span class="comment"># Run from the server (not inside the container)</span>
+<span class="cmd">docker exec erp_postgres pg_dump \
+  -U erp \
+  -d erp \
+  --format=custom \          </span><span class="comment"># compressed binary format (faster restore)</span>
+<span class="cmd">  --no-owner \
+  --no-acl \
+  > /backups/erp_$(date +%Y%m%d_%H%M%S).dump</span>
+
+<span class="comment"># Verify the backup file was created</span>
+<span class="cmd">ls -lh /backups/erp_*.dump</span></pre>
+
+  <h4>Method 2 — pg_basebackup (Full physical backup, for PITR)</h4>
+  <p>Captures a binary snapshot of the entire PostgreSQL cluster. Combine with WAL archiving for Point-In-Time Recovery (restore to any second in time).</p>
+<pre><span class="cmd">docker exec erp_postgres pg_basebackup \
+  -U erp \
+  -D /backups/basebackup_$(date +%Y%m%d) \
+  --format=tar \
+  --gzip \
+  --checkpoint=fast \
+  --progress</span></pre>
+
+  <h4>Backup Retention Policy</h4>
+  <table>
+    <thead><tr><th>Frequency</th><th>Retention</th><th>Storage</th></tr></thead>
+    <tbody>
+      <tr><td>Hourly incremental (WAL)</td><td>48 hours</td><td>Local + S3</td></tr>
+      <tr><td>Daily full (pg_dump)</td><td>30 days</td><td>Local + S3</td></tr>
+      <tr><td>Weekly full</td><td>3 months</td><td>S3 / Glacier</td></tr>
+      <tr><td>Monthly full</td><td>1 year</td><td>S3 Glacier (cold)</td></tr>
+    </tbody>
+  </table>
+
+  <!-- 2.3 Automated Script -->
+  <h3 id="automated">2.3 Automated Backup Script</h3>
+  <p>Save this as <span class="inline-code">/opt/erp-backup/backup.sh</span> on your server:</p>
+<pre><span class="kw">#!/bin/bash</span>
+<span class="comment"># ── ERP Automated Backup Script ────────────────────────────────────────────
+# Runs daily via cron. Dumps PostgreSQL, compresses, uploads to S3/offsite.
+# ───────────────────────────────────────────────────────────────────────────</span>
+
+<span class="cmd">set -euo pipefail</span>
+
+<span class="comment"># ── Config ──────────────────────────────────────────────────────────────────</span>
+BACKUP_DIR=<span class="str">"/opt/erp-backup/dumps"</span>
+DB_CONTAINER=<span class="str">"erp_postgres"</span>
+DB_NAME=<span class="str">"erp"</span>
+DB_USER=<span class="str">"erp"</span>
+RETAIN_DAYS=30
+S3_BUCKET=<span class="str">"s3://your-bucket/erp-backups"</span>   <span class="comment"># change this</span>
+TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+FILENAME=<span class="str">"erp_${TIMESTAMP}.dump"</span>
+LOG_FILE=<span class="str">"/opt/erp-backup/backup.log"</span>
+
+<span class="comment"># ── Helpers ──────────────────────────────────────────────────────────────────</span>
+log() { echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" | tee -a "$LOG_FILE"; }
+
+log <span class="str">"Starting backup: $FILENAME"</span>
+
+<span class="comment"># ── 1. Create dump directory ─────────────────────────────────────────────────</span>
+mkdir -p <span class="str">"$BACKUP_DIR"</span>
+
+<span class="comment"># ── 2. Dump PostgreSQL ──────────────────────────────────────────────────────</span>
+docker exec <span class="str">"$DB_CONTAINER"</span> pg_dump \
+    -U <span class="str">"$DB_USER"</span> -d <span class="str">"$DB_NAME"</span> \
+    --format=custom --no-owner --no-acl \
+  > <span class="str">"${BACKUP_DIR}/${FILENAME}"</span>
+log <span class="str">"DB dump complete: $(du -sh ${BACKUP_DIR}/${FILENAME} | cut -f1)"</span>
+
+<span class="comment"># ── 3. Compress ──────────────────────────────────────────────────────────────</span>
+gzip <span class="str">"${BACKUP_DIR}/${FILENAME}"</span>
+COMPRESSED=<span class="str">"${BACKUP_DIR}/${FILENAME}.gz"</span>
+log <span class="str">"Compressed: $(du -sh $COMPRESSED | cut -f1)"</span>
+
+<span class="comment"># ── 4. Back up .env file (encrypted) ─────────────────────────────────────────</span>
+<span class="comment"># Replace YOUR_GPG_KEY with your GPG key fingerprint</span>
+gpg --recipient YOUR_GPG_KEY --encrypt \
+    /home/george-awamba/projects/ERP-PROJECT/.env \
+    --output <span class="str">"${BACKUP_DIR}/env_${TIMESTAMP}.env.gpg"</span>
+
+<span class="comment"># ── 5. Upload to S3 (requires aws-cli) ───────────────────────────────────────</span>
+<span class="kw">if</span> command -v aws &amp;&gt;/dev/null; <span class="kw">then</span>
+    aws s3 cp <span class="str">"$COMPRESSED"</span> <span class="str">"${S3_BUCKET}/${FILENAME}.gz"</span>
+    aws s3 cp <span class="str">"${BACKUP_DIR}/env_${TIMESTAMP}.env.gpg"</span> <span class="str">"${S3_BUCKET}/env_${TIMESTAMP}.env.gpg"</span>
+    log <span class="str">"Uploaded to S3"</span>
+<span class="kw">else</span>
+    log <span class="str">"WARNING: aws-cli not found — skipping S3 upload"</span>
+<span class="kw">fi</span>
+
+<span class="comment"># ── 6. Purge old local backups ───────────────────────────────────────────────</span>
+find <span class="str">"$BACKUP_DIR"</span> -name <span class="str">"erp_*.dump.gz"</span> -mtime +<span class="str">"$RETAIN_DAYS"</span> -delete
+log <span class="str">"Purged dumps older than $RETAIN_DAYS days"</span>
+
+log <span class="str">"✅ Backup complete: $FILENAME.gz"</span></pre>
+
+  <h4>Schedule with Cron</h4>
+<pre><span class="comment"># Edit crontab</span>
+<span class="cmd">crontab -e</span>
+
+<span class="comment"># Add these lines:</span>
+<span class="str"># Daily at 02:00 AM
+0 2 * * *  /opt/erp-backup/backup.sh >> /opt/erp-backup/backup.log 2>&1
+
+# Hourly WAL archiving (if using pg_basebackup)
+0 * * * *  /opt/erp-backup/wal-archive.sh >> /opt/erp-backup/wal.log 2>&1</span>
+
+<span class="comment"># Make script executable</span>
+<span class="cmd">chmod +x /opt/erp-backup/backup.sh</span>
+<span class="cmd">chmod 600 /opt/erp-backup/  </span><span class="comment"># protect backup directory</span></pre>
+
+  <!-- 2.4 Off-Site -->
+  <h3 id="offsite">2.4 Off-Site Storage</h3>
+  <p>The 3-2-1 rule: <strong>3</strong> copies, on <strong>2</strong> different media, with <strong>1</strong> off-site. Options:</p>
+
+  <div class="card-grid">
+    <div class="card">
+      <h4>☁️ AWS S3</h4>
+      <p>Industry standard. Use S3 Glacier for monthly archives (very cheap long-term storage). Enable versioning and MFA-delete on the bucket.</p>
+      <pre style="font-size:11px">aws s3 cp backup.dump.gz \
+  s3://your-bucket/backups/</pre>
+    </div>
+    <div class="card">
+      <h4>🔧 Rclone (any cloud)</h4>
+      <p>Open-source tool that syncs to 40+ cloud providers including Google Drive, Backblaze B2 (cheapest), OneDrive, Dropbox.</p>
+      <pre style="font-size:11px">rclone copy /opt/erp-backup/dumps \
+  backblaze:erp-backups/</pre>
+    </div>
+    <div class="card">
+      <h4>🏠 Second VPS</h4>
+      <p>Rsync backups to a cheap VPS in a different data centre. Simple and fully under your control.</p>
+      <pre style="font-size:11px">rsync -avz /opt/erp-backup/ \
+  backup-user@vps2:/backups/erp/</pre>
+    </div>
+  </div>
+
+  <!-- 2.5 Restore -->
+  <h3 id="restore">2.5 Restore Procedures — Step-by-Step</h3>
+
+  <div class="danger">
+    <strong>🚨 Before restoring:</strong> A restore overwrites all current data. Take a fresh backup of the current state first unless you're recovering a fully lost server.
+  </div>
+
+  <h4>Scenario A — Restore to the SAME server (accidental data deletion)</h4>
+  <div class="steps">
+    <div class="step"><div class="step-num"></div><div class="step-body">
+      <h4>Stop the backend (to prevent writes during restore)</h4>
+      <pre>docker stop erp_backend</pre>
+    </div></div>
+    <div class="step"><div class="step-num"></div><div class="step-body">
+      <h4>Drop and recreate the database</h4>
+      <pre>docker exec erp_postgres psql -U erp -c "DROP DATABASE erp;"
+docker exec erp_postgres psql -U erp -c "CREATE DATABASE erp;"</pre>
+    </div></div>
+    <div class="step"><div class="step-num"></div><div class="step-body">
+      <h4>Restore from the backup file</h4>
+      <pre><span class="comment"># Copy the backup file into the container</span>
+docker cp /opt/erp-backup/dumps/erp_20260611_020000.dump.gz erp_postgres:/tmp/
+
+<span class="comment"># Decompress</span>
+docker exec erp_postgres gunzip /tmp/erp_20260611_020000.dump.gz
+
+<span class="comment"># Restore</span>
+docker exec erp_postgres pg_restore \
+  -U erp -d erp --clean --if-exists \
+  /tmp/erp_20260611_020000.dump</pre>
+    </div></div>
+    <div class="step"><div class="step-num"></div><div class="step-body">
+      <h4>Restart the backend</h4>
+      <pre>docker start erp_backend
+docker logs erp_backend --tail 20</pre>
+    </div></div>
+    <div class="step"><div class="step-num"></div><div class="step-body">
+      <h4>Verify</h4>
+      <p>Log into the app and confirm data is restored. Check the most recent sale and inventory movement dates match expectations.</p>
+    </div></div>
+  </div>
+
+  <h4>Scenario B — Restore to a FRESH server (server destroyed)</h4>
+  <div class="steps">
+    <div class="step"><div class="step-num"></div><div class="step-body">
+      <h4>Provision a new VPS</h4>
+      <p>Create a new Ubuntu 22.04 VPS with the same specs. Install Docker and Docker Compose:</p>
+      <pre>curl -fsSL https://get.docker.com | sh
+sudo apt-get install -y docker-compose-plugin</pre>
+    </div></div>
+    <div class="step"><div class="step-num"></div><div class="step-body">
+      <h4>Clone the repository</h4>
+      <pre>git clone https://github.com/georgesbenz/ERP-PROJECT.git
+cd ERP-PROJECT</pre>
+    </div></div>
+    <div class="step"><div class="step-num"></div><div class="step-body">
+      <h4>Restore the .env file</h4>
+      <pre><span class="comment"># Download and decrypt the .env backup</span>
+gpg --decrypt env_20260611.env.gpg > .env</pre>
+    </div></div>
+    <div class="step"><div class="step-num"></div><div class="step-body">
+      <h4>Start the infrastructure (DB only first)</h4>
+      <pre>docker compose up -d postgres redis
+<span class="comment"># Wait 15 seconds for Postgres to initialise</span>
+sleep 15</pre>
+    </div></div>
+    <div class="step"><div class="step-num"></div><div class="step-body">
+      <h4>Download backup from S3 and restore</h4>
+      <pre>aws s3 cp s3://your-bucket/backups/erp_20260611_020000.dump.gz ./
+gunzip erp_20260611_020000.dump.gz
+docker cp erp_20260611_020000.dump erp_postgres:/tmp/
+docker exec erp_postgres pg_restore \
+  -U erp -d erp --clean --if-exists \
+  /tmp/erp_20260611_020000.dump</pre>
+    </div></div>
+    <div class="step"><div class="step-num"></div><div class="step-body">
+      <h4>Start all remaining services</h4>
+      <pre>docker compose up -d
+<span class="comment"># Monitor startup</span>
+docker compose logs -f --tail 30</pre>
+    </div></div>
+    <div class="step"><div class="step-num"></div><div class="step-body">
+      <h4>Update DNS</h4>
+      <p>Point your domain's A record to the new server IP. SSL certificate may need re-issuing (<span class="inline-code">certbot --nginx -d yourdomain.com</span>). Propagation takes 5–30 minutes.</p>
+    </div></div>
+  </div>
+
+  <!-- 2.6 RPO / RTO -->
+  <h3 id="rpo-rto">2.6 RPO &amp; RTO Targets</h3>
+
+  <table>
+    <thead><tr><th>Term</th><th>Definition</th><th>Target (daily backups)</th><th>Target (hourly WAL)</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>RPO</strong><br><em>Recovery Point Objective</em></td>
+        <td>Maximum acceptable data loss. How old can the restored data be?</td>
+        <td>Up to 24 hours of data loss</td>
+        <td>&lt; 1 hour of data loss</td>
+      </tr>
+      <tr>
+        <td><strong>RTO</strong><br><em>Recovery Time Objective</em></td>
+        <td>Maximum acceptable downtime. How quickly must you be back online?</td>
+        <td>2 – 4 hours (manual restore)</td>
+        <td>30 – 60 min (scripted restore)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="tip">
+    <strong>💡 Recommendation:</strong> For a SaaS product with paying clients, target RPO ≤ 1 hour and RTO ≤ 1 hour. This requires hourly WAL archiving and a pre-configured standby server or an automated restore script that runs with a single command.
+  </div>
+
+  <!-- 2.7 DR Plan -->
+  <h3 id="dr-plan">2.7 Disaster Recovery Plan</h3>
+  <p>Document this and keep it somewhere other than the server being recovered (e.g. printed copy, Google Doc, USB drive).</p>
+
+  <table>
+    <thead><tr><th>Incident Type</th><th>Detection</th><th>First Response</th><th>Recovery Steps</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>Single record deleted by user</td>
+        <td>User reports missing data</td>
+        <td>Check audit log first (AuditInterceptor)</td>
+        <td>Restore from last backup to a temp DB, extract the record, reinsert</td>
+      </tr>
+      <tr>
+        <td>Table truncated accidentally</td>
+        <td>Immediate user reports</td>
+        <td>Stop backend immediately</td>
+        <td>Restore DB from same-day backup (Scenario A)</td>
+      </tr>
+      <tr>
+        <td>Server hardware failure</td>
+        <td>Monitoring alert / users can't connect</td>
+        <td>Check VPS provider dashboard</td>
+        <td>Restore to new VPS (Scenario B), ~2 hrs</td>
+      </tr>
+      <tr>
+        <td>Database corruption</td>
+        <td>NestJS errors, pg logs show corruption</td>
+        <td>Stop all writes, take pg_dump of what's readable</td>
+        <td>Restore from latest clean backup</td>
+      </tr>
+      <tr>
+        <td>Ransomware / hack</td>
+        <td>Files encrypted or data exfiltrated</td>
+        <td>Shut down server immediately, notify clients</td>
+        <td>Provision fresh server from scratch, restore from off-site backup</td>
+      </tr>
+      <tr>
+        <td>Accidental <span class="inline-code">docker compose down -v</span></td>
+        <td>Immediate — data volumes deleted</td>
+        <td>Do NOT restart Postgres yet</td>
+        <td>Restore from last backup (Scenario A or B)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- 2.8 Testing -->
+  <h3 id="testing">2.8 Testing Your Backups</h3>
+  <p>A backup you have never tested is not a backup — it is hope. Run this procedure <strong>monthly</strong>:</p>
+
+  <div class="steps">
+    <div class="step"><div class="step-num"></div><div class="step-body">
+      <h4>Spin up a test environment</h4>
+      <pre><span class="comment"># On your laptop or a separate VPS</span>
+docker run -d --name pg-test \
+  -e POSTGRES_USER=erp -e POSTGRES_PASSWORD=erp -e POSTGRES_DB=erp \
+  -p 5433:5432 postgres:16</pre>
+    </div></div>
+    <div class="step"><div class="step-num"></div><div class="step-body">
+      <h4>Restore the latest backup</h4>
+      <pre>docker cp erp_latest.dump pg-test:/tmp/
+docker exec pg-test pg_restore -U erp -d erp /tmp/erp_latest.dump</pre>
+    </div></div>
+    <div class="step"><div class="step-num"></div><div class="step-body">
+      <h4>Verify row counts match production</h4>
+      <pre>docker exec pg-test psql -U erp -d erp -c \
+  "SELECT 'sales' AS t, COUNT(*) FROM sales
+   UNION ALL SELECT 'inventory', COUNT(*) FROM inventory
+   UNION ALL SELECT 'users', COUNT(*) FROM users;"</pre>
+      <p>Compare the numbers against the production counts.</p>
+    </div></div>
+    <div class="step"><div class="step-num"></div><div class="step-body">
+      <h4>Log the test result</h4>
+      <p>Record date, backup file used, row counts verified, and who performed the test. Keep this log off the production server.</p>
+    </div></div>
+    <div class="step"><div class="step-num"></div><div class="step-body">
+      <h4>Clean up</h4>
+      <pre>docker stop pg-test && docker rm pg-test</pre>
+    </div></div>
+  </div>
+
+  <!-- 2.9 Monthly Checklist -->
+  <h3 id="checklist">2.9 Monthly Operations Checklist</h3>
+  <ul class="checklist">
+    <li>Verify last 7 daily backups exist in both local and off-site storage</li>
+    <li>Test-restore the most recent backup to a temporary database</li>
+    <li>Confirm row counts in test DB match production</li>
+    <li>Check disk usage on production server (alert if &gt;75%)</li>
+    <li>Review Docker logs for errors: <span class="inline-code">docker compose logs --since 7d | grep ERROR</span></li>
+    <li>Check SSL certificate expiry: <span class="inline-code">certbot certificates</span></li>
+    <li>Rotate JWT secrets if any suspicious activity was detected</li>
+    <li>Review audit logs for unusual activity patterns</li>
+    <li>Update Docker images: <span class="inline-code">docker compose pull && docker compose up -d</span></li>
+    <li>Review active client list — disable accounts for non-paying clients</li>
+    <li>Archive monthly backup to cold storage (S3 Glacier)</li>
+    <li>Review and update this checklist if procedures have changed</li>
+  </ul>
+
+  <div class="tip">
+    <strong>💡 Quick restore command (save this somewhere safe):</strong><br>
+    If you ever need to restore in an emergency, this single command restores the latest backup on a running server:
+    <pre style="margin-top:10px">LATEST=$(ls -t /opt/erp-backup/dumps/erp_*.dump.gz | head -1) && \
+docker stop erp_backend && \
+gunzip -k "$LATEST" && \
+DUMP="${LATEST%.gz}" && \
+docker cp "$DUMP" erp_postgres:/tmp/restore.dump && \
+docker exec erp_postgres pg_restore -U erp -d erp --clean --if-exists /tmp/restore.dump && \
+docker start erp_backend && \
+echo "✅ Restore complete from $LATEST"</pre>
+  </div>
+
+  <!-- Footer -->
+  <div class="doc-footer">
+    <p><strong>ERP Platform — SaaS Deployment &amp; Backup Guide v1.0</strong></p>
+    <p>Generated June 2026 · Groupe SAFIRA Distribution S.A. · Confidential — Internal Use Only</p>
+    <p style="margin-top:8px">For technical questions contact your system administrator or open an issue at github.com/georgesbenz/ERP-PROJECT</p>
+  </div>
+
+</div>
+<script>
+  // Close print dialog automatically if user saves as PDF
+  window.addEventListener('afterprint', () => {});
+</script>
+</body>
+</html>
