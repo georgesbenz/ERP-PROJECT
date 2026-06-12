@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Guide de démarrage — SAFIRA ERP</title>
+  <style>
+    /* ── Reset & base ──────────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 15px; }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: #f0f4ff;
+      color: #1e293b;
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+
+    /* ── Print button ──────────────────────────────────────────────────────── */
+    .print-bar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      background: #312e81;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 24px;
+      box-shadow: 0 2px 12px rgba(0,0,0,.35);
+    }
+    .print-bar span { color: #c7d2fe; font-size: .85rem; }
+    .print-bar button {
+      background: #6366f1; color: #fff; border: none; border-radius: 8px;
+      padding: 9px 22px; font-size: .9rem; font-weight: 600; cursor: pointer;
+      display: flex; align-items: center; gap: 8px;
+      transition: background .2s;
+    }
+    .print-bar button:hover { background: #4f46e5; }
+
+    /* ── Page wrapper ──────────────────────────────────────────────────────── */
+    .page {
+      max-width: 860px; margin: 60px auto 0;
+      background: #fff; border-radius: 16px;
+      box-shadow: 0 8px 40px rgba(99,102,241,.12);
+      overflow: hidden;
+    }
+
+    /* ── Header ────────────────────────────────────────────────────────────── */
+    .hdr {
+      background: linear-gradient(135deg, #1e1b4b 0%, #312e81 60%, #4338ca 100%);
+      padding: 48px 48px 36px;
+      position: relative; overflow: hidden;
+    }
+    .hdr::after {
+      content:''; position:absolute; right:-60px; top:-60px;
+      width:280px; height:280px; border-radius:50%;
+      background: rgba(255,255,255,.05);
+    }
+    .hdr-logo {
+      display:flex; align-items:center; gap:14px; margin-bottom:28px;
+    }
+    .logo-icon {
+      width:52px; height:52px; border-radius:12px;
+      background: linear-gradient(135deg,#6366f1,#8b5cf6);
+      display:flex; align-items:center; justify-content:center;
+      font-size:22px; font-weight:800; color:#fff;
+      box-shadow: 0 4px 16px rgba(99,102,241,.5);
+    }
+    .logo-text { color:#fff; }
+    .logo-text strong { display:block; font-size:1.3rem; letter-spacing:.5px; }
+    .logo-text span   { font-size:.8rem; color:#a5b4fc; }
+    .hdr h1 { color:#fff; font-size:1.9rem; font-weight:700; line-height:1.2; }
+    .hdr p  { color:#c7d2fe; margin-top:8px; font-size:.95rem; }
+    .hdr-badges {
+      display:flex; flex-wrap:wrap; gap:8px; margin-top:20px;
+    }
+    .badge {
+      background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.2);
+      color:#e0e7ff; border-radius:20px; padding:4px 14px; font-size:.78rem;
+    }
+
+    /* ── Body padding ──────────────────────────────────────────────────────── */
+    .body { padding: 40px 48px 48px; }
+
+    /* ── Section title ─────────────────────────────────────────────────────── */
+    .section-title {
+      display:flex; align-items:center; gap:10px;
+      font-size:1.05rem; font-weight:700; color:#312e81;
+      margin: 32px 0 14px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #e0e7ff;
+    }
+    .section-title .ico {
+      width:28px; height:28px; border-radius:8px;
+      background: linear-gradient(135deg,#6366f1,#8b5cf6);
+      display:flex; align-items:center; justify-content:center;
+      color:#fff; font-size:.85rem;
+    }
+
+    /* ── Info card ─────────────────────────────────────────────────────────── */
+    .info-card {
+      background:#f5f3ff; border:1px solid #ddd6fe;
+      border-radius:10px; padding:16px 20px;
+      margin-bottom:20px;
+      display:flex; align-items:flex-start; gap:14px;
+    }
+    .info-card .ic-icon { font-size:1.5rem; flex-shrink:0; margin-top:2px; }
+    .info-card p  { font-size:.88rem; color:#4c1d95; line-height:1.6; }
+    .info-card strong { display:block; color:#312e81; margin-bottom:4px; font-size:.95rem; }
+
+    /* ── Credentials table ─────────────────────────────────────────────────── */
+    .cred-table { width:100%; border-collapse:collapse; font-size:.85rem; }
+    .cred-table thead tr { background:#312e81; }
+    .cred-table thead th {
+      color:#e0e7ff; font-weight:600; text-align:left;
+      padding:11px 14px; font-size:.8rem; letter-spacing:.4px; text-transform:uppercase;
+    }
+    .cred-table thead th:first-child { border-radius:8px 0 0 0; }
+    .cred-table thead th:last-child  { border-radius:0 8px 0 0; }
+    .cred-table tbody tr { border-bottom:1px solid #e0e7ff; }
+    .cred-table tbody tr:nth-child(even) { background:#f5f3ff; }
+    .cred-table tbody tr:hover { background:#ede9fe; }
+    .cred-table td { padding:10px 14px; vertical-align:middle; }
+    .cred-table td:first-child { font-weight:600; color:#1e1b4b; }
+
+    .role-badge {
+      display:inline-block; border-radius:20px; padding:3px 10px;
+      font-size:.75rem; font-weight:600; white-space:nowrap;
+    }
+    .role-admin   { background:#ede9fe; color:#5b21b6; }
+    .role-finance { background:#fef3c7; color:#92400e; }
+    .role-sales   { background:#d1fae5; color:#065f46; }
+    .role-ops     { background:#dbeafe; color:#1e40af; }
+    .role-readonly{ background:#fee2e2; color:#991b1b; }
+    .role-pos     { background:#fce7f3; color:#9d174d; }
+
+    code {
+      background:#f1f5f9; border:1px solid #cbd5e1;
+      border-radius:5px; padding:2px 7px;
+      font-family:'Cascadia Code','Fira Code',monospace; font-size:.82rem; color:#3730a3;
+    }
+    .pwd-box {
+      background:#1e1b4b; color:#a5b4fc;
+      border-radius:8px; padding:12px 18px;
+      font-family:'Cascadia Code','Fira Code',monospace;
+      font-size:1rem; letter-spacing:1px;
+      display:flex; align-items:center; justify-content:space-between;
+      margin-bottom:20px;
+    }
+    .pwd-box span { color:#e0e7ff; font-size:.8rem; }
+
+    /* ── Workflow cards ────────────────────────────────────────────────────── */
+    .wf-grid {
+      display:grid; grid-template-columns:1fr 1fr; gap:14px;
+    }
+    .wf-card {
+      border:1px solid #e0e7ff; border-radius:10px; padding:16px;
+      background:#fafafa;
+    }
+    .wf-card h4 {
+      font-size:.88rem; font-weight:700; color:#1e1b4b;
+      display:flex; align-items:center; gap:8px; margin-bottom:8px;
+    }
+    .wf-card .wf-num {
+      width:22px; height:22px; border-radius:50%;
+      background:#6366f1; color:#fff; font-size:.7rem; font-weight:700;
+      display:flex; align-items:center; justify-content:center; flex-shrink:0;
+    }
+    .wf-card p  { font-size:.8rem; color:#475569; line-height:1.6; }
+    .wf-card .step {
+      margin-top:6px; font-size:.78rem; color:#6366f1;
+      display:flex; align-items:center; gap:4px;
+    }
+    .wf-card .step::before { content:'→'; font-weight:700; }
+
+    /* ── Data summary pills ────────────────────────────────────────────────── */
+    .pill-row {
+      display:flex; flex-wrap:wrap; gap:10px; margin:14px 0;
+    }
+    .pill {
+      background:#f5f3ff; border:1px solid #c4b5fd;
+      border-radius:20px; padding:6px 16px;
+      font-size:.82rem; color:#4c1d95; font-weight:600;
+      display:flex; align-items:center; gap:6px;
+    }
+    .pill .num { color:#312e81; font-size:1rem; }
+
+    /* ── Year timeline ─────────────────────────────────────────────────────── */
+    .timeline {
+      position:relative; margin:16px 0;
+      padding-left:24px;
+    }
+    .timeline::before {
+      content:''; position:absolute; left:7px; top:0; bottom:0;
+      width:2px; background:#c4b5fd;
+    }
+    .tl-item {
+      position:relative; margin-bottom:10px;
+      display:flex; align-items:flex-start; gap:12px;
+    }
+    .tl-dot {
+      position:absolute; left:-20px; top:4px;
+      width:12px; height:12px; border-radius:50%;
+      background:#6366f1; border:2px solid #fff;
+      box-shadow:0 0 0 2px #6366f1;
+      flex-shrink:0;
+    }
+    .tl-item p   { font-size:.82rem; color:#334155; line-height:1.5; }
+    .tl-item strong { color:#1e1b4b; }
+
+    /* ── Footer ────────────────────────────────────────────────────────────── */
+    .footer {
+      background:#f8fafc; border-top:1px solid #e2e8f0;
+      padding:20px 48px; text-align:center;
+      font-size:.78rem; color:#94a3b8;
+    }
+    .footer strong { color:#6366f1; }
+
+    /* ── Print styles ──────────────────────────────────────────────────────── */
+    @media print {
+      body { background:#fff; padding:0; font-size:11pt; }
+      .print-bar { display:none !important; }
+      .page {
+        max-width:100%; margin:0; border-radius:0;
+        box-shadow:none;
+      }
+      .hdr { -webkit-print-color-adjust:exact; print-color-adjust:exact; padding:32px 36px 24px; }
+      .body { padding:24px 36px 32px; }
+      .wf-grid { grid-template-columns:1fr 1fr; }
+      .section-title { margin-top:20px; }
+      .cred-table thead tr { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+      .cred-table tbody tr:nth-child(even) { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+      .logo-icon, .wf-num, .ico { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+      .role-badge, .pill, .pwd-box, .info-card { -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+      @page { margin:12mm 10mm; size:A4; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Print bar (hidden on print) -->
+<div class="print-bar">
+  <span>📄 Guide de démarrage — SAFIRA ERP</span>
+  <button onclick="window.print()">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+    Télécharger PDF
+  </button>
+</div>
+
+<div class="page">
+
+  <!-- Header -->
+  <div class="hdr">
+    <div class="hdr-logo">
+      <div class="logo-icon">S</div>
+      <div class="logo-text">
+        <strong>SAFIRA ERP</strong>
+        <span>Groupe SAFIRA Distribution S.A.</span>
+      </div>
+    </div>
+    <h1>Guide de démarrage &amp; Comptes d'accès</h1>
+    <p>Douala, Cameroun &nbsp;·&nbsp; Fondée 2015 &nbsp;·&nbsp; Données de démonstration 2015–2024</p>
+    <div class="hdr-badges">
+      <span class="badge">🏢 3 succursales</span>
+      <span class="badge">👥 16 utilisateurs</span>
+      <span class="badge">📦 50 produits</span>
+      <span class="badge">🤝 50 fournisseurs</span>
+      <span class="badge">👤 60 clients</span>
+      <span class="badge">📊 10 ans de données</span>
+    </div>
+  </div>
+
+  <div class="body">
+
+    <!-- Password notice -->
+    <div class="section-title">
+      <div class="ico">🔑</div>
+      Mot de passe unique (tous les comptes)
+    </div>
+    <div class="pwd-box">
+      <code style="background:transparent;border:none;color:#a5b4fc;font-size:1.1rem;letter-spacing:2px;">Safira@2024!</code>
+      <span>Changer après la première connexion</span>
+    </div>
+
+    <!-- Credentials -->
+    <div class="section-title">
+      <div class="ico">👤</div>
+      Comptes utilisateurs &amp; rôles
+    </div>
+
+    <table class="cred-table">
+      <thead>
+        <tr>
+          <th>Nom</th>
+          <th>Email de connexion</th>
+          <th>Rôle</th>
+          <th>Accès principaux</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Jean-Baptiste MBARGA</td>
+          <td><code>admin@safira.cm</code></td>
+          <td><span class="role-badge role-admin">Super Admin</span></td>
+          <td>Accès total — tous les modules</td>
+        </tr>
+        <tr>
+          <td>Alphonse ESSOMBA</td>
+          <td><code>dg@safira.cm</code></td>
+          <td><span class="role-badge role-admin">Directeur Général</span></td>
+          <td>Accès total — direction</td>
+        </tr>
+        <tr>
+          <td>Marie-Claire FOUDA</td>
+          <td><code>finance@safira.cm</code></td>
+          <td><span class="role-badge role-finance">Finance Manager</span></td>
+          <td>Finance, budgets, analytics, approbations</td>
+        </tr>
+        <tr>
+          <td>Emmanuel TCHINDA</td>
+          <td><code>commercial@safira.cm</code></td>
+          <td><span class="role-badge role-sales">Resp. Commercial</span></td>
+          <td>Ventes, CRM, POS, clients, rapports</td>
+        </tr>
+        <tr>
+          <td>Bertrand NGUELE</td>
+          <td><code>achats@safira.cm</code></td>
+          <td><span class="role-badge role-ops">Resp. Achats</span></td>
+          <td>Achats, fournisseurs, réceptions</td>
+        </tr>
+        <tr>
+          <td>Solange EKWALLA</td>
+          <td><code>stock@safira.cm</code></td>
+          <td><span class="role-badge role-ops">Resp. Stock</span></td>
+          <td>Inventaire, mouvements, entrepôts</td>
+        </tr>
+        <tr>
+          <td>Christelle BIYA</td>
+          <td><code>rh@safira.cm</code></td>
+          <td><span class="role-badge role-ops">RH Manager</span></td>
+          <td>Utilisateurs, paramètres</td>
+        </tr>
+        <tr>
+          <td>Patrick NKOLO</td>
+          <td><code>chef.comm@safira.cm</code></td>
+          <td><span class="role-badge role-finance">Chef de Département</span></td>
+          <td>Budgets, rapports, équipes</td>
+        </tr>
+        <tr>
+          <td>Aurore KAMGA</td>
+          <td><code>aurore.kamga@safira.cm</code></td>
+          <td><span class="role-badge role-sales">Commercial</span></td>
+          <td>Ventes, CRM, POS (création)</td>
+        </tr>
+        <tr>
+          <td>Fabrice ONDOA</td>
+          <td><code>fabrice.ondoa@safira.cm</code></td>
+          <td><span class="role-badge role-sales">Commercial</span></td>
+          <td>Ventes, CRM, POS (création)</td>
+        </tr>
+        <tr>
+          <td>Nadège ATANGANA</td>
+          <td><code>caisse@safira.cm</code></td>
+          <td><span class="role-badge role-pos">Caissier</span></td>
+          <td>POS / Caisse uniquement</td>
+        </tr>
+        <tr>
+          <td>Hervé MINKO</td>
+          <td><code>comptable@safira.cm</code></td>
+          <td><span class="role-badge role-finance">Comptable</span></td>
+          <td>Finance, journaux, rapports</td>
+        </tr>
+        <tr>
+          <td>Rosalie MEDOU</td>
+          <td><code>acheteur@safira.cm</code></td>
+          <td><span class="role-badge role-ops">Acheteur</span></td>
+          <td>Bons de commande, réceptions</td>
+        </tr>
+        <tr>
+          <td>Paul ONDO</td>
+          <td><code>auditeur@safira.cm</code></td>
+          <td><span class="role-badge role-readonly">Auditeur</span></td>
+          <td>Lecture seule — tous les modules</td>
+        </tr>
+        <tr>
+          <td>Boris ESSOME</td>
+          <td><code>magasin@safira.cm</code></td>
+          <td><span class="role-badge role-ops">Magasinier</span></td>
+          <td>Inventaire (lecture + saisie)</td>
+        </tr>
+        <tr>
+          <td>Carine NKOA</td>
+          <td><code>carine.nkoa@safira.cm</code></td>
+          <td><span class="role-badge role-sales">Commercial</span></td>
+          <td>Ventes, CRM, POS (création)</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Data summary -->
+    <div class="section-title">
+      <div class="ico">📊</div>
+      Données de démonstration
+    </div>
+
+    <div class="pill-row">
+      <div class="pill"><span class="num">50</span> fournisseurs</div>
+      <div class="pill"><span class="num">60</span> clients</div>
+      <div class="pill"><span class="num">50</span> produits</div>
+      <div class="pill"><span class="num">5</span> catégories</div>
+      <div class="pill"><span class="num">~1 000</span> ventes</div>
+      <div class="pill"><span class="num">~480</span> achats</div>
+      <div class="pill"><span class="num">3</span> entrepôts</div>
+      <div class="pill"><span class="num">3</span> succursales</div>
+      <div class="pill"><span class="num">120</span> mois d'analytics</div>
+      <div class="pill"><span class="num">12</span> opportunités CRM</div>
+      <div class="pill"><span class="num">4</span> budgets annuels</div>
+      <div class="pill"><span class="num">10</span> KPIs suivis</div>
+    </div>
+
+    <div class="info-card">
+      <div class="ic-icon">📈</div>
+      <div>
+        <strong>Historique 10 ans (2015–2024) — croissance réaliste</strong>
+        <p>2015 : démarrage (~65M XAF) · 2019 : pic pré-COVID (~265M) · 2020 : repli (~195M) · 2024 : maturité (~488M XAF). Les données reflètent une saisonnalité Q4 forte et un impact COVID en 2020.</p>
+      </div>
+    </div>
+
+    <!-- Timeline -->
+    <div class="section-title">
+      <div class="ico">📅</div>
+      Évolution de l'entreprise
+    </div>
+    <div class="timeline">
+      <div class="tl-item"><div class="tl-dot"></div><p><strong>2015</strong> — Création de SAFIRA. Premiers fournisseurs (Samsung, LG, HP). CA : ~65M XAF.</p></div>
+      <div class="tl-item"><div class="tl-dot"></div><p><strong>2016–2017</strong> — Expansion produits électroménager. Ouverture dépôt Bonaberi. CA : ~150M XAF.</p></div>
+      <div class="tl-item"><div class="tl-dot"></div><p><strong>2018–2019</strong> — Contrats cadre grands comptes (MTN, Total, Orange). Pic CA : 265M XAF.</p></div>
+      <div class="tl-item"><div class="tl-dot"></div><p><strong>2020</strong> — Impact COVID-19 : repli des ventes à ~195M XAF. Adaptation canal digital.</p></div>
+      <div class="tl-item"><div class="tl-dot"></div><p><strong>2021–2022</strong> — Forte reprise. Ouverture bureau de Yaoundé. Partenariats ONG et ministères.</p></div>
+      <div class="tl-item"><div class="tl-dot"></div><p><strong>2023–2024</strong> — Consolidation. 60 clients actifs. CA 2024 : ~488M XAF. Objectif 2025 : 600M XAF.</p></div>
+    </div>
+
+    <!-- Workflows -->
+    <div class="section-title">
+      <div class="ico">⚙️</div>
+      Workflows à tester par module
+    </div>
+
+    <div class="wf-grid">
+      <div class="wf-card">
+        <h4><div class="wf-num">1</div>POS / Caisse</h4>
+        <p>Simuler une transaction point de vente avec saisie quantité manuelle.</p>
+        <p class="step">Login : <code>caisse@safira.cm</code></p>
+        <p class="step">Cliquer sur un produit → popup quantité</p>
+        <p class="step">Encaisser → choisir mode paiement</p>
+      </div>
+      <div class="wf-card">
+        <h4><div class="wf-num">2</div>Ventes</h4>
+        <p>Créer une vente, générer une facture, enregistrer un paiement.</p>
+        <p class="step">Login : <code>commercial@safira.cm</code></p>
+        <p class="step">Nouvelle vente → client → produits → valider</p>
+        <p class="step">Consulter 10 ans d'historique &amp; courbes</p>
+      </div>
+      <div class="wf-card">
+        <h4><div class="wf-num">3</div>Achats</h4>
+        <p>Passer un bon de commande, réceptionner, déclencher le paiement fournisseur.</p>
+        <p class="step">Login : <code>achats@safira.cm</code></p>
+        <p class="step">50 fournisseurs disponibles</p>
+        <p class="step">Workflow approbation pour commandes &gt;2M XAF</p>
+      </div>
+      <div class="wf-card">
+        <h4><div class="wf-num">4</div>Inventaire</h4>
+        <p>Consulter les niveaux de stock, mouvements, alertes rupture.</p>
+        <p class="step">Login : <code>stock@safira.cm</code></p>
+        <p class="step">Mouvements IN/OUT liés aux achats &amp; ventes</p>
+        <p class="step">3 entrepôts : Akwa, Bonaberi, Yaoundé</p>
+      </div>
+      <div class="wf-card">
+        <h4><div class="wf-num">5</div>CRM</h4>
+        <p>Gérer les leads, opportunités, pipeline de vente, campagnes.</p>
+        <p class="step">Login : <code>commercial@safira.cm</code></p>
+        <p class="step">Pipeline 7 étapes · 12 opportunités actives</p>
+        <p class="step">4 campagnes email/SMS complètes</p>
+      </div>
+      <div class="wf-card">
+        <h4><div class="wf-num">6</div>Finance &amp; Budgets</h4>
+        <p>Consulter le plan comptable, les journaux, les budgets annuels.</p>
+        <p class="step">Login : <code>finance@safira.cm</code></p>
+        <p class="step">Budgets 2022–2025 avec allocations mensuelles</p>
+        <p class="step">120 mois de snapshots financiers</p>
+      </div>
+      <div class="wf-card">
+        <h4><div class="wf-num">7</div>Export Excel</h4>
+        <p>Générer des classeurs Excel multi-feuilles avec graphiques.</p>
+        <p class="step">Menu : Rapports</p>
+        <p class="step">Export Inventaire / Ventes / Achats / ERP complet</p>
+        <p class="step">Graphiques bar, line, donut intégrés</p>
+      </div>
+      <div class="wf-card">
+        <h4><div class="wf-num">8</div>Auditeur (lecture seule)</h4>
+        <p>Vérifier que les restrictions de rôle fonctionnent correctement.</p>
+        <p class="step">Login : <code>auditeur@safira.cm</code></p>
+        <p class="step">Tous les menus visibles en lecture</p>
+        <p class="step">Boutons Créer / Modifier / Supprimer masqués</p>
+      </div>
+    </div>
+
+    <!-- Access URL -->
+    <div class="section-title">
+      <div class="ico">🌐</div>
+      URLs d'accès
+    </div>
+    <div class="info-card">
+      <div class="ic-icon">🔗</div>
+      <div>
+        <strong>Application ERP (interface principale)</strong>
+        <p>Via Nginx (reverse proxy) : <code>http://localhost:8080</code><br/>
+        Accès direct frontend : <code>http://localhost:3000</code><br/>
+        API NestJS (Swagger docs) : <code>http://localhost:4000/api/docs</code><br/>
+        Redis Commander : <code>http://localhost:8081</code></p>
+      </div>
+    </div>
+
+    <div class="info-card">
+      <div class="ic-icon">🐳</div>
+      <div>
+        <strong>Démarrage sur une nouvelle machine (Docker uniquement requis)</strong>
+        <p><code>docker compose up --build</code> — première fois (build + migrations + seed)<br/>
+        <code>docker compose up</code> — démarrages suivants (rapide)<br/>
+        Les migrations et le seed s'exécutent automatiquement au démarrage.</p>
+      </div>
+    </div>
+
+  </div><!-- /body -->
+
+  <div class="footer">
+    Généré pour <strong>Groupe SAFIRA Distribution S.A.</strong> &nbsp;·&nbsp;
+    SAFIRA ERP — Plateforme de gestion d'entreprise &nbsp;·&nbsp;
+    Douala, Cameroun &nbsp;·&nbsp; 2025
+  </div>
+</div>
+
+<script>
+  // Auto-trigger browser print dialog if ?print=1 in URL
+  if (new URLSearchParams(window.location.search).get('print') === '1') {
+    window.addEventListener('load', () => setTimeout(() => window.print(), 500));
+  }
+</script>
+</body>
+</html>

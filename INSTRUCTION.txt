@@ -1,0 +1,499 @@
+
+
+Tu es un architecte logiciel senior spécialisé en :
+- ERP d’entreprise
+- CRM
+- systèmes financiers
+- architecture SaaS
+- DevOps
+- architecture cloud
+- bases de données
+- analytique métier
+- systèmes temps réel
+- applications fullstack d’entreprise
+- Utilisable sur le telephone adroid et IOS via web
+- Utilisable en 2 langues english et francais
+
+Je possède actuellement une application ERP/POS de gestion commerciale développée uniquement en frontend avec :
+- HTML
+- CSS
+- JavaScript
+- localStorage
+
+L’application actuelle contient déjà plusieurs modules :
+- Tableau de bord
+- POS / Caisse
+- Ventes
+- Achats
+- Stock / Inventaire
+- Clients
+- Fournisseurs
+- Taxes
+- Méthodes de paiement
+- Journaux comptables
+- Paramètres société
+- Gestion des rôles et permissions
+- Configuration des documents
+
+L’application actuelle est seulement un prototype utilisant localStorage.
+
+Je veux transformer ce prototype en une PLATEFORME MÉTIER FULLSTACK D’ENTREPRISE COMPLÈTE.
+
+La plateforme finale devra combiner :
+- ERP
+- CRM
+- Budgétisation
+- Comptabilité
+- Analytique
+- Prévisions
+- Tableaux de bord temps réel
+- Intelligence métier
+
+Je veux que tu guides et génères TOUT étape par étape avec un niveau de détail extrêmement élevé.
+
+====================================================
+OBJECTIFS GLOBAUX
+====================================================
+
+Je veux que le système final devienne :
+
+1. Une architecture ERP modulaire
+2. Une application fullstack
+3. Multi-utilisateurs
+4. Basée sur une base de données
+5. Pilotée par API
+6. Basée sur les rôles et permissions
+7. Sécurisée
+8. Scalable
+9. Déployable en production
+10. Compatible cloud
+11. Multi-entreprises
+12. Prête pour le SaaS
+13. Facile à maintenir
+14. Facile à faire évoluer avec de futurs modules
+15. Un système CRM complet
+16. Un système de budgétisation temps réel
+17. Un moteur de prévisions
+18. Un système d’analytique métier
+19. Des tableaux de bord temps réel
+20. Un système de planification financière
+21. Un suivi du cycle de vie client
+22. Des prévisions de revenus
+23. Des prévisions de dépenses
+24. Un suivi des KPI
+25. Une intelligence stratégique métier
+26. Une architecture prête pour l’IA
+27. Une architecture orientée événements
+28. Des notifications temps réel
+29. Une automatisation des workflows
+30. Un système avancé de reporting
+
+====================================================
+STACK TECHNOLOGIQUE CIBLE
+====================================================
+
+Frontend :
+- React
+- Next.js
+- TypeScript
+- TailwindCSS
+- Zustand ou Redux Toolkit
+- React Query / TanStack Query
+- Socket.io Client
+
+Backend :
+- Node.js
+- NestJS
+- TypeScript
+- Socket.io
+- BullMQ
+- Redis
+
+Base de données :
+- PostgreSQL
+
+ORM :
+- Prisma ORM
+
+Authentification :
+- JWT Authentication
+- Refresh Tokens
+- RBAC (Role Based Access Control)
+
+Infrastructure :
+- Docker
+- Docker Compose
+- Nginx
+
+Cloud :
+- AWS
+
+DevOps :
+- GitHub Actions
+- Pipelines CI/CD
+
+Monitoring :
+- Prometheus
+- Grafana
+- Winston
+- Sentry
+
+====================================================
+RÈGLES TRÈS IMPORTANTES
+====================================================
+
+1. Ne jamais sauter d’étapes.
+2. Expliquer chaque décision d’architecture.
+3. Expliquer chaque structure de dossier.
+4. Expliquer le rôle de chaque fichier.
+5. Expliquer comment chaque module communique.
+6. Expliquer les relations entre les bases de données.
+7. Expliquer comment la scalabilité est assurée.
+8. Expliquer comment la modularité est maintenue.
+9. Expliquer comment ajouter de futurs modules.
+10. Expliquer visuellement l’architecture de déploiement.
+11. Expliquer les bonnes pratiques entreprise.
+12. Expliquer les bonnes pratiques de sécurité.
+13. Générer du code prêt pour la production.
+14. Utiliser des patterns d’architecture scalables.
+15. Utiliser des principes de clean code.
+16. Utiliser des conventions de nommage professionnelles.
+17. Expliquer comment éviter la dette technique.
+18. Expliquer les stratégies de migration.
+19. Expliquer les stratégies de sauvegarde.
+20. Expliquer les stratégies de monitoring.
+21. Expliquer l’architecture orientée événements.
+22. Expliquer l’architecture des workflows d’entreprise.
+23. Expliquer les décisions d’architecture financière.
+24. Expliquer les décisions d’architecture CRM.
+25. Expliquer les décisions d’architecture budgétaire.
+26. Expliquer les décisions d’architecture multi-tenant.
+27. Expliquer les décisions d’architecture analytique.
+28. Expliquer les systèmes temps réel.
+29. Expliquer comment les ERP évoluent dans le temps.
+30. Expliquer les bonnes pratiques SaaS d’entreprise.
+
+====================================================
+PHASE 1 — ARCHITECTURE DU SYSTÈME
+====================================================
+
+D’abord :
+- Analyser mon prototype actuel
+- Identifier tous les modules
+- Identifier toutes les entités
+- Identifier toutes les relations
+- Identifier tous les workflows
+- Identifier toutes les dépendances
+
+Ensuite :
+- Concevoir l’architecture complète d’entreprise
+- Expliquer :
+  - l’architecture frontend
+  - l’architecture backend
+  - l’architecture base de données
+  - l’architecture API
+  - l’architecture d’authentification
+  - l’architecture des permissions
+  - l’architecture de déploiement
+  - l’architecture DevOps
+  - l’architecture orientée événements
+  - l’architecture analytique
+  - l’architecture budgétaire
+  - l’architecture CRM
+
+Générer :
+- diagrammes d’architecture
+- diagrammes des relations modules
+- diagrammes des flux API
+- diagrammes des relations base de données
+- diagrammes du cycle de vie des requêtes
+- diagrammes des événements
+- diagrammes de déploiement
+- diagrammes de communication temps réel
+
+====================================================
+PHASE 2 — INITIALISATION DU PROJET
+====================================================
+
+Me guider étape par étape pour créer :
+
+1. Le projet frontend
+2. Le projet backend
+3. La base de données
+4. L’environnement Docker
+5. Le dépôt Git
+6. La configuration des environnements
+7. Les pipelines CI/CD
+
+Générer :
+- commandes
+- instructions terminal
+- étapes d’installation
+- fichiers de configuration
+- variables d’environnement
+
+Expliquer :
+- le rôle de chaque dépendance
+- pourquoi elle est nécessaire
+- les alternatives professionnelles
+
+====================================================
+PHASE 3 — CONCEPTION DE LA BASE DE DONNÉES
+====================================================
+
+Concevoir une architecture PostgreSQL complète pour :
+- ERP
+- CRM
+- budgétisation
+- analytique
+
+Générer :
+- schémas normalisés
+- relations
+- clés étrangères
+- contraintes
+- index
+- migrations
+- systèmes d’audit
+- structures analytiques
+
+La plateforme doit supporter :
+
+1. Utilisateurs
+2. Rôles
+3. Permissions
+4. Sociétés
+5. Succursales
+6. Produits
+7. Catégories
+8. Fournisseurs
+9. Clients
+10. Inventaire
+11. Entrepôts
+12. Ventes
+13. Lignes de ventes
+14. Achats
+15. Lignes d’achats
+16. Factures
+17. Paiements
+18. Taxes
+19. Journaux
+20. Transactions
+21. Logs d’audit
+22. Notifications
+23. Logs d’activités
+24. Paramètres
+25. Multi-tenant
+26. Leads
+27. Opportunités
+28. Pipelines commerciaux
+29. Activités CRM
+30. Réunions
+31. Appels
+32. Tâches
+33. Notes
+34. Campagnes
+35. Plans budgétaires
+36. Catégories budgétaires
+37. Allocations budgétaires
+38. Approbations budgétaires
+39. Révisions budgétaires
+40. Prévisions
+41. Centres de coûts
+42. Départements
+43. Suivi KPI
+44. Analytique financière
+45. Analytique des revenus
+46. Analytique des dépenses
+47. Prévisions de trésorerie
+48. Suivi des objectifs
+49. Workflows d’approbation
+50. Logs événements temps réel
+
+Expliquer :
+- pourquoi chaque table existe
+- pourquoi chaque relation existe
+- comment la scalabilité est assurée
+- comment ajouter de futurs modules
+
+Générer :
+- schémas Prisma
+- scripts SQL
+- diagrammes ERD
+
+====================================================
+PHASE 4 — DÉVELOPPEMENT BACKEND
+====================================================
+
+Construire le backend avec NestJS.
+
+Créer :
+- architecture modulaire
+- services
+- contrôleurs
+- repositories
+- DTOs
+- guards
+- interceptors
+- middleware
+- validation
+- logs
+- gestion des exceptions
+
+Générer :
+- structure des dossiers
+- structure des modules
+- architecture de services scalable
+
+Implémenter :
+- JWT authentication
+- refresh tokens
+- RBAC
+- système de permissions
+- audit logging
+- versioning API
+- rate limiting
+- cache
+- upload fichiers
+- opérations transactionnelles
+
+Créer les services suivants :
+
+1. Service Auth
+2. Service Utilisateurs
+3. Service CRM
+4. Service Inventaire
+5. Service Ventes
+6. Service Achats
+7. Service Comptabilité
+8. Service Budgétisation
+9. Service Analytique
+10. Service Reporting
+11. Service Notifications
+12. Service Workflows
+13. Service Événements
+14. Service Dashboard
+
+Expliquer :
+- les bonnes pratiques backend entreprise
+- les patterns de scalabilité
+- les principes clean architecture
+- les concepts domain-driven design
+
+====================================================
+PHASE 5 — DÉVELOPPEMENT FRONTEND
+====================================================
+
+Transformer mon frontend en application professionnelle React/Next.js.
+
+Générer :
+- architecture composants
+- layouts
+- système UI réutilisable
+- système dashboard
+- gestion d’état
+- couche API
+- hooks
+- services
+- protection routes
+- flux authentification
+
+Utiliser :
+- TailwindCSS
+- TypeScript
+- responsive design
+- composants réutilisables
+- structure scalable
+
+Expliquer :
+- décisions architecture frontend
+- stratégies gestion état
+- communication composants
+- organisation modulaire frontend
+
+====================================================
+PHASE 6 — DÉVELOPPEMENT MODULES ERP
+====================================================
+
+Développer chaque module indépendamment tout en gardant la modularité.
+
+Modules :
+1. Authentification
+2. Dashboard
+3. POS/Caisse
+4. Inventaire
+5. Ventes
+6. Achats
+7. Clients
+8. Fournisseurs
+9. Comptabilité
+10. Reporting
+11. Notifications
+12. Gestion utilisateurs
+13. Paramètres
+14. Multi-entreprises
+15. Multi-succursales
+
+Pour chaque module :
+- expliquer la logique métier
+- expliquer les workflows
+- expliquer les APIs
+- expliquer les relations base de données
+- expliquer l’intégration frontend
+- expliquer la scalabilité
+- expliquer la sécurité
+- expliquer l’extensibilité future
+
+====================================================
+PHASE 6B — CRM & BUDGÉTISATION TEMPS RÉEL
+====================================================
+
+Concevoir et implémenter un système CRM et budgétaire complet intégré profondément dans l’ERP.
+
+Les systèmes CRM et budgétaires doivent fonctionner en TEMPS RÉEL et s’intégrer avec :
+- ventes
+- inventaire
+- comptabilité
+- achats
+- reporting
+- prévisions
+- dashboards
+
+[Continue toutes les sections CRM, Budgeting, Analytics, Security, DevOps, Scalability, Monitoring et Future Evolution exactement dans le même niveau de détail et la même structure.]
+
+====================================================
+FORMAT DE SORTIE
+====================================================
+
+Pour chaque phase :
+1. Expliquer les concepts d’abord
+2. Générer ensuite l’architecture
+3. Générer ensuite la structure des dossiers
+4. Générer ensuite les commandes
+5. Générer ensuite le code
+6. Expliquer ensuite le déploiement
+7. Expliquer ensuite la scalabilité
+8. Expliquer ensuite les bonnes pratiques entreprise
+
+Je veux :
+- des explications TRÈS détaillées
+- une architecture niveau entreprise
+- une implémentation prête production
+- une planification scalable
+- une architecture modulaire
+- un code maintenable
+- un design future-proof
+
+NE PAS SAUTER LES DÉTAILS.
+
+Toujours penser comme :
+- un architecte ERP senior
+- un architecte SaaS
+- un ingénieur DevOps
+- un architecte cloud
+- un architecte CRM
+- un architecte systèmes financiers
+- un ingénieur analytique
+- un ingénieur logiciel entreprise
+
+Générer tout étape par étape du niveau débutant jusqu’au déploiement entreprise prêt production.

@@ -1,0 +1,43 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Build outputs
+dist/
+build/
+.next/
+out/
+
+# Environment (never commit real secrets)
+.env
+.env.local
+.env.*.local
+*/.env
+!.env.example
+!**/.env.example
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Prisma
+prisma/*.db
+
+# Testing / coverage
+coverage/
+.nyc_output/
+
+# OS / editors
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# TypeScript build cache
+*.tsbuildinfo
+
+# Docker volumes (local)
+.docker-data/

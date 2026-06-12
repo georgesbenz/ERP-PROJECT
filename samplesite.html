@@ -1,0 +1,1145 @@
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0f1117;--bg2:#181c27;--bg3:#1e2333;--bg4:#252b3d;
+  --accent:#f5c542;--green:#3dd68c;--red:#f5534f;--blue:#5b8df6;--purple:#a78bfa;--orange:#f59342;
+  --text:#eef0f7;--text2:#9aa3bd;--text3:#5a6282;
+  --border:#2a3050;--radius:12px;
+}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;font-size:14px}
+
+.sidebar{width:230px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;height:100vh;z-index:10;overflow-y:auto}
+.logo{padding:20px 18px 14px;border-bottom:1px solid var(--border)}
+.logo-name{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;color:var(--accent)}
+.logo-sub{font-size:10px;color:var(--text3);margin-top:2px}
+nav{padding:8px 0;flex:1}
+.nav-section{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.8px;padding:10px 16px 4px;margin-top:4px;display:flex;align-items:center;gap:6px}
+.nav-item{display:flex;align-items:center;gap:9px;padding:9px 16px;cursor:pointer;color:var(--text2);transition:.15s;font-size:12px;font-weight:500;border-left:2px solid transparent;user-select:none}
+.nav-item:hover{color:var(--text);background:var(--bg3)}
+.nav-item.active{color:var(--accent);border-left-color:var(--accent);background:rgba(245,197,66,.07)}
+.nav-item.sub{padding-left:36px;font-size:12px;color:var(--text3)}
+.nav-item.sub:hover{color:var(--text2)}
+.nav-item.sub.active{color:var(--accent);border-left-color:var(--accent)}
+.nav-icon{width:16px;height:16px;flex-shrink:0}
+.nav-arrow{margin-left:auto;transition:transform .2s;font-size:10px;color:var(--text3)}
+.nav-parent.open .nav-arrow{transform:rotate(90deg)}
+.nav-sub-group{overflow:hidden;max-height:0;transition:max-height .25s ease}
+.nav-sub-group.open{max-height:400px}
+
+.main{margin-left:230px;flex:1;padding:24px 28px;min-height:100vh;background:var(--bg)}
+.page{display:none}.page.active{display:block}
+h1{font-family:'Syne',sans-serif;font-size:21px;font-weight:700;margin-bottom:3px}
+.subtitle{color:var(--text2);font-size:13px;margin-bottom:22px}
+
+.stats-grid{display:grid;gap:14px;margin-bottom:22px}
+.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:18px;position:relative;overflow:hidden}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.stat-card.yellow::before{background:var(--accent)}.stat-card.green::before{background:var(--green)}.stat-card.blue::before{background:var(--blue)}.stat-card.red::before{background:var(--red)}.stat-card.purple::before{background:var(--purple)}.stat-card.orange::before{background:var(--orange)}
+.stat-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.stat-value{font-family:'Syne',sans-serif;font-size:22px;font-weight:700;margin-bottom:3px}
+.stat-sub{font-size:11px;color:var(--text2)}
+
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:18px}
+.card-header{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.card-title{font-family:'Syne',sans-serif;font-weight:600;font-size:13px}
+table{width:100%;border-collapse:collapse}
+th{padding:9px 14px;text-align:left;font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border)}
+td{padding:10px 14px;border-bottom:1px solid var(--border);font-size:12px;color:var(--text)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(255,255,255,.02)}
+
+.btn{display:inline-flex;align-items:center;gap:5px;padding:8px 14px;border-radius:8px;border:none;cursor:pointer;font-size:12px;font-weight:500;font-family:'DM Sans',sans-serif;transition:.15s}
+.btn-primary{background:var(--accent);color:#000}.btn-primary:hover{background:#ffd24f}
+.btn-sm{padding:5px 10px;font-size:11px}
+.btn-ghost{background:var(--bg4);color:var(--text2);border:1px solid var(--border)}.btn-ghost:hover{color:var(--text)}
+.btn-danger{background:rgba(245,83,79,.15);color:var(--red);border:1px solid rgba(245,83,79,.3)}
+.btn-purple{background:rgba(167,139,250,.15);color:var(--purple);border:1px solid rgba(167,139,250,.3)}
+.btn-blue{background:rgba(91,141,246,.15);color:var(--blue);border:1px solid rgba(91,141,246,.3)}
+
+.badge{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:500}
+.badge-green{background:rgba(61,214,140,.15);color:var(--green)}.badge-red{background:rgba(245,83,79,.15);color:var(--red)}.badge-yellow{background:rgba(245,197,66,.15);color:var(--accent)}.badge-blue{background:rgba(91,141,246,.15);color:var(--blue)}.badge-purple{background:rgba(167,139,250,.15);color:var(--purple)}.badge-orange{background:rgba(245,147,66,.15);color:var(--orange)}
+
+.form-grid{display:grid;gap:12px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.field label{display:block;font-size:11px;color:var(--text2);margin-bottom:5px;font-weight:500}
+.field input,.field select,.field textarea{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:8px 11px;color:var(--text);font-size:12px;font-family:'DM Sans',sans-serif;outline:none;transition:.15s}
+.field input:focus,.field select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(245,197,66,.1)}
+.field select option{background:var(--bg3)}
+.field textarea{resize:vertical;min-height:60px}
+.field .hint{font-size:10px;color:var(--text3);margin-top:4px}
+
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:100;display:none;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:24px;width:520px;max-width:95vw;max-height:90vh;overflow-y:auto}
+.modal h2{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;margin-bottom:18px}
+.modal-footer{display:flex;gap:8px;justify-content:flex-end;margin-top:18px;padding-top:14px;border-top:1px solid var(--border)}
+
+.param-hero{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:20px;display:flex;align-items:center;gap:20px}
+.param-icon{width:56px;height:56px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0}
+.param-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px}
+.param-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:18px;cursor:pointer;transition:.15s;display:flex;align-items:center;gap:14px}
+.param-card:hover{border-color:var(--accent);background:rgba(245,197,66,.04)}
+.param-card .pc-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.param-card .pc-title{font-size:13px;font-weight:600;margin-bottom:2px}
+.param-card .pc-sub{font-size:11px;color:var(--text3)}
+
+.liaison-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.liaison-item{background:var(--bg3);border-radius:8px;padding:12px 14px;border-left:3px solid var(--accent);font-size:12px}
+.liaison-item .li-title{font-weight:600;margin-bottom:3px}
+.liaison-item .li-desc{color:var(--text2);font-size:11px}
+
+.toggle-switch{position:relative;display:inline-block;width:38px;height:20px}
+.toggle-switch input{opacity:0;width:0;height:0}
+.toggle-slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background:var(--bg4);border-radius:20px;transition:.3s;border:1px solid var(--border)}
+.toggle-slider:before{content:'';position:absolute;height:14px;width:14px;left:2px;bottom:2px;background:var(--text3);border-radius:50%;transition:.3s}
+input:checked+.toggle-slider{background:rgba(61,214,140,.2);border-color:var(--green)}
+input:checked+.toggle-slider:before{transform:translateX(18px);background:var(--green)}
+
+.empty-state{text-align:center;padding:40px;color:var(--text3)}
+.empty-state p{margin-top:6px;font-size:12px}
+.chart-bars{display:flex;align-items:flex-end;gap:7px;height:110px}
+.bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px}
+.bar{border-radius:4px 4px 0 0;min-height:4px;transition:.4s;width:100%}
+.bar-label{font-size:9px;color:var(--text3)}
+.bar-val{font-size:9px;color:var(--text2);font-weight:500}
+.stock-row-low td{color:var(--red)}
+.prod-thumb{width:32px;height:32px;border-radius:6px;object-fit:cover;border:1px solid var(--border);background:var(--bg4);flex-shrink:0}
+.prod-no-img{width:32px;height:32px;border-radius:6px;background:var(--bg4);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;color:var(--text3)}
+.fournisseur-avatar{width:30px;height:30px;border-radius:7px;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;background:rgba(167,139,250,.15);color:var(--purple);flex-shrink:0}
+.photo-zone{border:2px dashed var(--border);border-radius:10px;padding:16px;text-align:center;cursor:pointer;transition:.2s;background:var(--bg3);position:relative;min-height:100px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px}
+.photo-zone:hover{border-color:var(--accent)}
+.photo-zone.has-photo{border-style:solid;border-color:var(--accent);padding:6px}
+.photo-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.photo-preview{width:100%;max-height:120px;object-fit:contain;border-radius:5px;display:none}
+.photo-zone.has-photo .photo-preview{display:block}
+.photo-zone.has-photo .photo-placeholder{display:none}
+.photo-remove{position:absolute;top:5px;right:5px;background:rgba(245,83,79,.8);border:none;border-radius:50%;width:20px;height:20px;cursor:pointer;font-size:11px;color:#fff;display:none;align-items:center;justify-content:center;z-index:2}
+.photo-zone.has-photo .photo-remove{display:flex}
+.caisse-grid{display:grid;grid-template-columns:1fr 340px;gap:18px}
+.product-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.product-btn{background:var(--bg3);border:1px solid var(--border);border-radius:9px;padding:0;cursor:pointer;text-align:center;transition:.15s;color:var(--text);overflow:hidden;display:flex;flex-direction:column}
+.product-btn:hover{border-color:var(--accent)}
+.product-btn .p-img-wrap{width:100%;height:66px;overflow:hidden;background:var(--bg4);flex-shrink:0}
+.product-btn .p-img-wrap img{width:100%;height:100%;object-fit:cover}
+.product-btn .p-img-wrap .p-no-img{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:22px;color:var(--text3)}
+.product-btn .p-body{padding:8px}
+.product-btn .pname{font-size:11px;font-weight:600;margin-bottom:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.product-btn .pprice{font-size:11px;color:var(--accent);font-weight:600}
+.product-btn .pstock{font-size:10px;color:var(--text3);margin-top:1px}
+.receipt{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
+.receipt-items{min-height:140px;margin:10px 0}
+.receipt-item{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);font-size:12px}
+.receipt-total{font-family:'Syne',sans-serif;font-size:18px;color:var(--accent);text-align:right;padding-top:10px}
+.ri-del{background:none;border:none;color:var(--text3);cursor:pointer;font-size:14px;padding:2px 5px}.ri-del:hover{color:var(--red)}
+</style>
+
+<div class="sidebar">
+  <div class="logo">
+    <div class="logo-name">CommerceApp</div>
+    <div class="logo-sub">Gestion commerciale</div>
+  </div>
+  <nav>
+    <div class="nav-section">Général</div>
+    <div class="nav-item active" onclick="goTo('dashboard',this)" id="nav-dashboard">
+      <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      Tableau de bord
+    </div>
+    <div class="nav-item" onclick="goTo('caisse',this)">
+      <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-4 0v2M12 12v4M10 14h4"/></svg>
+      Caisse
+    </div>
+    <div class="nav-section">Commercial</div>
+    <div class="nav-item" onclick="goTo('ventes',this)">
+      <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg>
+      Ventes
+    </div>
+    <div class="nav-item" onclick="goTo('clients',this)">
+      <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+      Clients
+    </div>
+    <div class="nav-section">Approvisionnement</div>
+    <div class="nav-item" onclick="goTo('fournisseurs',this)">
+      <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+      Fournisseurs
+    </div>
+    <div class="nav-item" onclick="goTo('achats',this)">
+      <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/></svg>
+      Achats
+    </div>
+    <div class="nav-section">Inventaire</div>
+    <div class="nav-item" onclick="goTo('stocks',this)">
+      <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="2" y="3" width="6" height="6" rx="1"/><rect x="9" y="3" width="6" height="6" rx="1"/><rect x="16" y="3" width="6" height="6" rx="1"/><rect x="2" y="12" width="6" height="6" rx="1"/><rect x="9" y="12" width="6" height="6" rx="1"/><rect x="16" y="12" width="6" height="6" rx="1"/></svg>
+      Stocks
+    </div>
+    <div class="nav-section" style="color:var(--orange)">
+      <svg style="width:12px;height:12px" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M4.93 4.93l1.41 1.41M12 2v2M12 20v2M2 12h2M20 12h2M17.66 17.66l-1.41-1.41M6.34 17.66l1.41-1.41"/></svg>
+      Paramétrage
+    </div>
+    <div class="nav-parent" id="nav-param-parent" onclick="toggleParam(this)">
+      <div class="nav-item" style="padding-right:10px;color:var(--orange)">
+        <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M4.93 4.93l1.41 1.41M12 2v2M12 20v2M2 12h2M20 12h2M17.66 17.66l-1.41-1.41M6.34 17.66l1.41-1.41"/></svg>
+        Configuration
+        <span class="nav-arrow">▶</span>
+      </div>
+    </div>
+    <div class="nav-sub-group" id="sub-param">
+      <div class="nav-item sub" onclick="goToParam('societes',this)">🏢 Sociétés</div>
+      <div class="nav-item sub" onclick="goToParam('utilisateurs',this)">👤 Utilisateurs &amp; Droits</div>
+      <div class="nav-item sub" onclick="goToParam('devises',this)">💱 Devise</div>
+      <div class="nav-item sub" onclick="goToParam('taxes',this)">🧾 Taxes (TVA)</div>
+      <div class="nav-item sub" onclick="goToParam('paiements',this)">💳 Modes de paiement</div>
+      <div class="nav-item sub" onclick="goToParam('journaux',this)">📒 Journaux comptables</div>
+      <div class="nav-item sub" onclick="goToParam('documents',this)">📄 Configuration documents</div>
+    </div>
+  </nav>
+</div>
+
+<div class="main">
+
+<!-- DASHBOARD -->
+<div class="page active" id="page-dashboard">
+  <h1>Tableau de bord</h1>
+  <div class="subtitle" id="dash-date"></div>
+  <div class="stats-grid" style="grid-template-columns:repeat(5,1fr)">
+    <div class="stat-card yellow"><div class="stat-label">Ventes du jour</div><div class="stat-value" id="stat-ventes">0 FCFA</div><div class="stat-sub" id="stat-ventes-nb">0 transaction(s)</div></div>
+    <div class="stat-card green"><div class="stat-label">Produits en stock</div><div class="stat-value" id="stat-stock">0</div><div class="stat-sub" id="stat-stock-low">0 en alerte</div></div>
+    <div class="stat-card blue"><div class="stat-label">Clients</div><div class="stat-value" id="stat-clients">0</div><div class="stat-sub">enregistrés</div></div>
+    <div class="stat-card purple"><div class="stat-label">Fournisseurs</div><div class="stat-value" id="stat-fournisseurs">0</div><div class="stat-sub">partenaires</div></div>
+    <div class="stat-card red"><div class="stat-label">Achats du mois</div><div class="stat-value" id="stat-achats">0 FCFA</div><div class="stat-sub">total commandes</div></div>
+  </div>
+  <div id="dash-alerts" style="margin-bottom:18px"></div>
+  <div class="card">
+    <div class="card-header"><span class="card-title">Ventes — 7 derniers jours</span></div>
+    <div style="padding:18px"><div class="chart-bars" id="chart-bars"></div></div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px">
+    <div class="card"><div class="card-header"><span class="card-title">Dernières ventes</span></div>
+      <table><thead><tr><th>Date</th><th>Client</th><th>Montant</th><th>Statut</th></tr></thead><tbody id="dash-ventes"></tbody></table>
+    </div>
+    <div class="card"><div class="card-header"><span class="card-title">Top fournisseurs</span></div>
+      <table><thead><tr><th>Fournisseur</th><th>Cdes</th><th>Total</th></tr></thead><tbody id="dash-fournisseurs"></tbody></table>
+    </div>
+  </div>
+</div>
+
+<!-- CAISSE -->
+<div class="page" id="page-caisse">
+  <h1>Caisse enregistreuse</h1><div class="subtitle">Enregistrement rapide des ventes</div>
+  <div class="caisse-grid">
+    <div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <span style="font-size:12px;color:var(--text2);font-weight:500">PRODUITS</span>
+        <input type="text" id="caisse-search" placeholder="Rechercher…" style="background:var(--bg2);border:1px solid var(--border);border-radius:7px;padding:6px 10px;color:var(--text);font-size:12px;font-family:'DM Sans',sans-serif;outline:none;width:160px" oninput="filterCaisse()">
+      </div>
+      <div class="product-grid" id="caisse-products"></div>
+    </div>
+    <div class="receipt">
+      <div class="card-title" style="font-size:13px">Reçu en cours</div>
+      <div class="receipt-items" id="receipt-items"><div class="empty-state" style="padding:24px 0;font-size:12px">Ajouter des produits</div></div>
+      <div style="border-top:2px solid var(--border);padding-top:10px">
+        <div style="display:flex;justify-content:space-between;align-items:center"><span style="color:var(--text2);font-size:12px">TOTAL</span><div class="receipt-total" id="receipt-total">0 FCFA</div></div>
+        <div class="field" style="margin-top:10px"><label>Client</label><select id="caisse-client"><option value="">— Anonyme —</option></select></div>
+        <div class="field" style="margin-top:8px"><label>Mode de paiement</label><select id="caisse-paiement"></select></div>
+        <div class="field" style="margin-top:8px"><label>Taxe applicable</label><select id="caisse-taxe"><option value="0">Sans taxe</option></select></div>
+        <div style="background:var(--bg3);border-radius:8px;padding:10px;margin-top:8px;font-size:12px;display:flex;justify-content:space-between">
+          <span style="color:var(--text2)">Total TTC</span><span id="receipt-ttc" style="color:var(--accent);font-weight:600">0 FCFA</span>
+        </div>
+        <button class="btn btn-primary" style="width:100%;margin-top:10px;justify-content:center" onclick="validerVente()">✓ Valider la vente</button>
+        <button class="btn btn-ghost" style="width:100%;margin-top:6px;justify-content:center" onclick="viderRecu()">Vider le reçu</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- VENTES -->
+<div class="page" id="page-ventes">
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:22px">
+    <div><h1>Ventes</h1><div class="subtitle">Historique de toutes les ventes</div></div>
+    <button class="btn btn-primary" onclick="openModal('modal-vente')">+ Nouvelle vente</button>
+  </div>
+  <div class="card">
+    <table><thead><tr><th>N°</th><th>Date</th><th>Client</th><th>Articles</th><th>Taxe</th><th>Paiement</th><th>Montant TTC</th><th>Statut</th></tr></thead>
+    <tbody id="ventes-table"></tbody></table>
+  </div>
+</div>
+
+<!-- STOCKS -->
+<div class="page" id="page-stocks">
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:22px">
+    <div><h1>Stocks</h1><div class="subtitle">Gestion des produits et inventaire</div></div>
+    <button class="btn btn-primary" onclick="openModal('modal-produit')">+ Nouveau produit</button>
+  </div>
+  <div class="card">
+    <table><thead><tr><th style="width:36px"></th><th>Produit / Code</th><th>Catégorie</th><th>Prix HT</th><th>TVA</th><th>Prix TTC</th><th>Quantité</th><th>État</th><th>Actions</th></tr></thead>
+    <tbody id="stocks-table"></tbody></table>
+  </div>
+</div>
+
+<!-- CLIENTS -->
+<div class="page" id="page-clients">
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:22px">
+    <div><h1>Clients</h1><div class="subtitle">Carnet d'adresses clients</div></div>
+    <button class="btn btn-primary" onclick="openModal('modal-client')">+ Nouveau client</button>
+  </div>
+  <div class="card">
+    <table><thead><tr><th>Nom</th><th>Téléphone</th><th>Email</th><th>Ville</th><th>Total achats</th><th>Action</th></tr></thead>
+    <tbody id="clients-table"></tbody></table>
+  </div>
+</div>
+
+<!-- FOURNISSEURS -->
+<div class="page" id="page-fournisseurs">
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:22px">
+    <div><h1>Fournisseurs</h1><div class="subtitle">Gestion de vos partenaires</div></div>
+    <button class="btn btn-primary" onclick="openModal('modal-fournisseur')">+ Nouveau fournisseur</button>
+  </div>
+  <div class="stats-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:18px">
+    <div class="stat-card purple"><div class="stat-label">Total</div><div class="stat-value" id="f-stat-total">0</div><div class="stat-sub">fournisseurs</div></div>
+    <div class="stat-card yellow"><div class="stat-label">Commandes</div><div class="stat-value" id="f-stat-commandes">0</div><div class="stat-sub">achats liés</div></div>
+    <div class="stat-card red"><div class="stat-label">Montant total</div><div class="stat-value" id="f-stat-montant">0 FCFA</div><div class="stat-sub">tous achats</div></div>
+  </div>
+  <div class="card">
+    <div class="card-header"><span class="card-title">Liste des fournisseurs</span>
+      <input type="text" id="f-search" placeholder="Rechercher…" style="background:var(--bg3);border:1px solid var(--border);border-radius:7px;padding:6px 10px;color:var(--text);font-size:12px;font-family:'DM Sans',sans-serif;outline:none;width:180px" oninput="renderFournisseurs()">
+    </div>
+    <table><thead><tr><th>Fournisseur</th><th>Contact</th><th>Téléphone</th><th>Ville</th><th>Commandes</th><th>Total</th><th>Statut</th><th>Action</th></tr></thead>
+    <tbody id="fournisseurs-table"></tbody></table>
+  </div>
+</div>
+
+<!-- ACHATS -->
+<div class="page" id="page-achats">
+  <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:22px">
+    <div><h1>Achats</h1><div class="subtitle">Commandes fournisseurs</div></div>
+    <button class="btn btn-primary" onclick="openModal('modal-achat')">+ Nouvel achat</button>
+  </div>
+  <div class="card">
+    <table><thead><tr><th>Date</th><th>Fournisseur</th><th>Produit</th><th>Qté</th><th>Montant</th><th>Paiement</th><th>Journal</th><th>Statut</th></tr></thead>
+    <tbody id="achats-table"></tbody></table>
+  </div>
+</div>
+
+<!-- ============ PARAMÉTRAGE ============ -->
+<div class="page" id="page-parametrage">
+  <h1>Paramétrage</h1>
+  <div class="subtitle">Configuration générale de CommerceApp</div>
+  <div class="param-cards">
+    <div class="param-card" onclick="goToParam('societes',null)"><div class="param-card .pc-icon" style="width:40px;height:40px;border-radius:10px;background:rgba(91,141,246,.15);color:var(--blue);display:flex;align-items:center;justify-content:center;font-size:20px">🏢</div><div><div class="pc-title">Sociétés</div><div class="pc-sub">Infos entreprise</div></div></div>
+    <div class="param-card" onclick="goToParam('utilisateurs',null)"><div style="width:40px;height:40px;border-radius:10px;background:rgba(167,139,250,.15);color:var(--purple);display:flex;align-items:center;justify-content:center;font-size:20px">👤</div><div><div class="pc-title">Utilisateurs &amp; Droits</div><div class="pc-sub">Accès et rôles</div></div></div>
+    <div class="param-card" onclick="goToParam('devises',null)"><div style="width:40px;height:40px;border-radius:10px;background:rgba(61,214,140,.15);color:var(--green);display:flex;align-items:center;justify-content:center;font-size:20px">💱</div><div><div class="pc-title">Devise</div><div class="pc-sub">Monnaies et taux</div></div></div>
+    <div class="param-card" onclick="goToParam('taxes',null)"><div style="width:40px;height:40px;border-radius:10px;background:rgba(245,197,66,.15);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:20px">🧾</div><div><div class="pc-title">Taxes (TVA)</div><div class="pc-sub">Taux et groupes</div></div></div>
+    <div class="param-card" onclick="goToParam('paiements',null)"><div style="width:40px;height:40px;border-radius:10px;background:rgba(245,83,79,.15);color:var(--red);display:flex;align-items:center;justify-content:center;font-size:20px">💳</div><div><div class="pc-title">Modes de paiement</div><div class="pc-sub">Espèces, mobile…</div></div></div>
+    <div class="param-card" onclick="goToParam('journaux',null)"><div style="width:40px;height:40px;border-radius:10px;background:rgba(245,147,66,.15);color:var(--orange);display:flex;align-items:center;justify-content:center;font-size:20px">📒</div><div><div class="pc-title">Journaux comptables</div><div class="pc-sub">Ventes, achats…</div></div></div>
+    <div class="param-card" onclick="goToParam('documents',null)"><div style="width:40px;height:40px;border-radius:10px;background:rgba(91,141,246,.12);color:var(--blue);display:flex;align-items:center;justify-content:center;font-size:20px">📄</div><div><div class="pc-title">Config. documents</div><div class="pc-sub">Factures, devis…</div></div></div>
+  </div>
+  <div class="card">
+    <div class="card-header"><span class="card-title">Liaisons avec les modules</span></div>
+    <div style="padding:16px"><div class="liaison-grid">
+      <div class="liaison-item"><div class="li-title">Taxes → Ventes &amp; Caisse</div><div class="li-desc">La TVA s'applique automatiquement au prix de vente selon le taux configuré</div></div>
+      <div class="liaison-item"><div class="li-title">Modes de paiement → Ventes &amp; Achats</div><div class="li-desc">Les modes disponibles apparaissent dans les formulaires de vente et d'achat</div></div>
+      <div class="liaison-item"><div class="li-title">Journaux → Ventes &amp; Achats</div><div class="li-desc">Chaque transaction est affectée à un journal comptable pour le suivi</div></div>
+      <div class="liaison-item"><div class="li-title">Devise → Tous les modules</div><div class="li-desc">La devise principale s'affiche sur tous les montants de l'application</div></div>
+      <div class="liaison-item"><div class="li-title">Sociétés → Documents</div><div class="li-desc">Le logo et les infos société apparaissent sur les factures générées</div></div>
+      <div class="liaison-item"><div class="li-title">Utilisateurs → Tous les modules</div><div class="li-desc">Les droits d'accès contrôlent la visibilité des menus par profil</div></div>
+    </div></div>
+  </div>
+</div>
+
+<!-- SOCIETES -->
+<div class="page" id="page-societes">
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+    <button class="btn btn-ghost btn-sm" onclick="goToParam('parametrage',null)" style="padding:5px 8px">← Retour</button>
+    <h1 style="margin:0">Sociétés</h1>
+  </div>
+  <div class="subtitle">Informations de votre entreprise</div>
+  <div class="card">
+    <div class="card-header"><span class="card-title">Société principale</span><button class="btn btn-primary btn-sm" onclick="openModal('modal-societe')">+ Modifier</button></div>
+    <div style="padding:16px" id="societe-display">
+      <div class="empty-state"><p>Aucune société configurée.<br>Cliquez sur "+ Modifier" pour commencer.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- UTILISATEURS -->
+<div class="page" id="page-utilisateurs">
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+    <button class="btn btn-ghost btn-sm" onclick="goToParam('parametrage',null)" style="padding:5px 8px">← Retour</button>
+    <h1 style="margin:0">Utilisateurs &amp; Droits</h1>
+  </div>
+  <div class="subtitle">Gestion des accès et des rôles</div>
+  <div class="card">
+    <div class="card-header"><span class="card-title">Utilisateurs</span><button class="btn btn-primary btn-sm" onclick="openModal('modal-user')">+ Ajouter</button></div>
+    <table><thead><tr><th>Nom</th><th>Email</th><th>Rôle</th><th>Accès modules</th><th>Statut</th><th>Action</th></tr></thead>
+    <tbody id="users-table"></tbody></table>
+  </div>
+</div>
+
+<!-- DEVISES -->
+<div class="page" id="page-devises">
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+    <button class="btn btn-ghost btn-sm" onclick="goToParam('parametrage',null)" style="padding:5px 8px">← Retour</button>
+    <h1 style="margin:0">Devises</h1>
+  </div>
+  <div class="subtitle">Monnaies utilisées dans l'application</div>
+  <div class="card">
+    <div class="card-header"><span class="card-title">Devises configurées</span><button class="btn btn-primary btn-sm" onclick="openModal('modal-devise')">+ Ajouter</button></div>
+    <table><thead><tr><th>Devise</th><th>Code</th><th>Symbole</th><th>Taux / FCFA</th><th>Principale</th><th>Action</th></tr></thead>
+    <tbody id="devises-table"></tbody></table>
+  </div>
+</div>
+
+<!-- TAXES -->
+<div class="page" id="page-taxes">
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+    <button class="btn btn-ghost btn-sm" onclick="goToParam('parametrage',null)" style="padding:5px 8px">← Retour</button>
+    <h1 style="margin:0">Taxes (TVA)</h1>
+  </div>
+  <div class="subtitle">Taux de taxe appliqués aux ventes — liés aux modules Ventes, Caisse et Stocks</div>
+  <div style="background:rgba(245,197,66,.08);border:1px solid rgba(245,197,66,.2);border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:12px;color:var(--text2)">
+    ⚡ Les taxes configurées ici apparaissent automatiquement dans la <strong style="color:var(--accent)">Caisse</strong>, les <strong style="color:var(--accent)">Ventes</strong> et le formulaire <strong style="color:var(--accent)">Stocks</strong>.
+  </div>
+  <div class="card">
+    <div class="card-header"><span class="card-title">Taux de TVA</span><button class="btn btn-primary btn-sm" onclick="openModal('modal-taxe')">+ Ajouter</button></div>
+    <table><thead><tr><th>Nom</th><th>Taux (%)</th><th>Type</th><th>Appliqué dans</th><th>Actif</th><th>Action</th></tr></thead>
+    <tbody id="taxes-table"></tbody></table>
+  </div>
+</div>
+
+<!-- PAIEMENTS -->
+<div class="page" id="page-paiements">
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+    <button class="btn btn-ghost btn-sm" onclick="goToParam('parametrage',null)" style="padding:5px 8px">← Retour</button>
+    <h1 style="margin:0">Modes de paiement</h1>
+  </div>
+  <div class="subtitle">Moyens de règlement — liés aux modules Ventes et Achats</div>
+  <div style="background:rgba(91,141,246,.08);border:1px solid rgba(91,141,246,.2);border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:12px;color:var(--text2)">
+    ⚡ Les modes actifs apparaissent automatiquement dans les formulaires <strong style="color:var(--blue)">Ventes</strong>, <strong style="color:var(--blue)">Achats</strong> et à la <strong style="color:var(--blue)">Caisse</strong>.
+  </div>
+  <div class="card">
+    <div class="card-header"><span class="card-title">Modes de paiement</span><button class="btn btn-primary btn-sm" onclick="openModal('modal-paiement')">+ Ajouter</button></div>
+    <table><thead><tr><th>Mode</th><th>Code</th><th>Description</th><th>Actif</th><th>Action</th></tr></thead>
+    <tbody id="paiements-table"></tbody></table>
+  </div>
+</div>
+
+<!-- JOURNAUX -->
+<div class="page" id="page-journaux">
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+    <button class="btn btn-ghost btn-sm" onclick="goToParam('parametrage',null)" style="padding:5px 8px">← Retour</button>
+    <h1 style="margin:0">Journaux comptables</h1>
+  </div>
+  <div class="subtitle">Journaux pour l'enregistrement des écritures — liés aux Ventes et Achats</div>
+  <div style="background:rgba(245,147,66,.08);border:1px solid rgba(245,147,66,.2);border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:12px;color:var(--text2)">
+    ⚡ Chaque <strong style="color:var(--orange)">Vente</strong> et <strong style="color:var(--orange)">Achat</strong> enregistré est affecté au journal comptable correspondant.
+  </div>
+  <div class="card">
+    <div class="card-header"><span class="card-title">Journaux</span><button class="btn btn-primary btn-sm" onclick="openModal('modal-journal')">+ Ajouter</button></div>
+    <table><thead><tr><th>Nom</th><th>Code</th><th>Type</th><th>Devise</th><th>Actif</th><th>Action</th></tr></thead>
+    <tbody id="journaux-table"></tbody></table>
+  </div>
+</div>
+
+<!-- DOCUMENTS -->
+<div class="page" id="page-documents">
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+    <button class="btn btn-ghost btn-sm" onclick="goToParam('parametrage',null)" style="padding:5px 8px">← Retour</button>
+    <h1 style="margin:0">Configuration documents</h1>
+  </div>
+  <div class="subtitle">Personnalisation des factures, devis et bons de livraison</div>
+  <div class="card">
+    <div class="card-header"><span class="card-title">Paramètres factures</span><button class="btn btn-primary btn-sm" onclick="openModal('modal-doc')">Modifier</button></div>
+    <div style="padding:16px" id="doc-display">
+      <div class="empty-state"><p>Configuration non définie.<br>Cliquez sur "Modifier" pour personnaliser vos documents.</p></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header"><span class="card-title">Aperçu facture</span></div>
+    <div style="padding:16px" id="doc-preview">
+      <div style="border:1px dashed var(--border);border-radius:8px;padding:20px;font-size:12px;color:var(--text3);text-align:center">L'aperçu apparaîtra après configuration</div>
+    </div>
+  </div>
+</div>
+
+</div><!-- end .main -->
+
+<!-- =================== MODALS =================== -->
+
+<!-- PRODUIT -->
+<div class="modal-overlay" id="modal-produit"><div class="modal">
+  <h2>Nouveau produit</h2>
+  <div class="form-grid">
+    <div class="form-row" style="align-items:start">
+      <div class="field">
+        <label>Photo du produit</label>
+        <div class="photo-zone" id="photo-zone" onclick="triggerPhoto()">
+          <input type="file" id="p-photo-input" accept="image/*" onchange="handlePhoto(event)">
+          <button type="button" class="photo-remove" id="photo-remove-btn" onclick="removePhoto(event)">✕</button>
+          <img id="photo-preview" class="photo-preview" alt="">
+          <div class="photo-placeholder"><div style="font-size:26px;color:var(--text3)">📷</div><div style="font-size:11px;color:var(--text3)">Cliquer pour ajouter</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="field"><label>Code produit / SKU</label><input id="p-code" placeholder="ex: BOIS-CC33-001" style="font-family:monospace"><div class="hint">Vide = génération automatique</div></div>
+        <div class="field" style="margin-top:10px"><label>Catégorie</label><input id="p-cat" placeholder="ex: Boissons"></div>
+      </div>
+    </div>
+    <div class="field"><label>Nom du produit *</label><input id="p-nom" placeholder="ex: Coca-Cola 33cl"></div>
+    <div class="form-row">
+      <div class="field"><label>Prix de vente HT (FCFA) *</label><input id="p-prix" type="number" placeholder="0"></div>
+      <div class="field"><label>Taxe applicable</label><select id="p-taxe"><option value="0">Sans taxe</option></select></div>
+    </div>
+    <div class="form-row">
+      <div class="field"><label>Prix d'achat (FCFA)</label><input id="p-achat" type="number" placeholder="0"></div>
+      <div class="field"><label>Prix TTC (calculé)</label><input id="p-ttc" type="text" placeholder="—" readonly style="color:var(--accent);background:var(--bg4)"></div>
+    </div>
+    <div class="form-row">
+      <div class="field"><label>Quantité en stock *</label><input id="p-qty" type="number" placeholder="0"></div>
+      <div class="field"><label>Seuil d'alerte</label><input id="p-seuil" type="number" placeholder="5"></div>
+    </div>
+  </div>
+  <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('modal-produit')">Annuler</button><button class="btn btn-primary" onclick="saveProduit()">Enregistrer</button></div>
+</div></div>
+
+<!-- VENTE -->
+<div class="modal-overlay" id="modal-vente"><div class="modal">
+  <h2>Nouvelle vente</h2>
+  <div class="form-grid">
+    <div class="form-row"><div class="field"><label>Client</label><select id="v-client"><option value="">Anonyme</option></select></div><div class="field"><label>Date</label><input id="v-date" type="date"></div></div>
+    <div class="form-row"><div class="field"><label>Produit</label><select id="v-produit"></select></div><div class="field"><label>Quantité</label><input id="v-qty" type="number" placeholder="1" min="1"></div></div>
+    <div class="form-row"><div class="field"><label>Mode de paiement</label><select id="v-paiement"></select></div><div class="field"><label>Journal comptable</label><select id="v-journal"></select></div></div>
+    <div class="form-row"><div class="field"><label>Taxe</label><select id="v-taxe"><option value="0">Sans taxe</option></select></div><div class="field"><label>Montant HT (FCFA)</label><input id="v-montant" type="number" placeholder="0"></div></div>
+    <div class="field"><label>Statut</label><select id="v-statut"><option>Payée</option><option>En attente</option></select></div>
+  </div>
+  <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('modal-vente')">Annuler</button><button class="btn btn-primary" onclick="saveVente()">Enregistrer</button></div>
+</div></div>
+
+<!-- CLIENT -->
+<div class="modal-overlay" id="modal-client"><div class="modal">
+  <h2>Nouveau client</h2>
+  <div class="form-grid">
+    <div class="form-row"><div class="field"><label>Nom complet *</label><input id="c-nom" placeholder="ex: Jean Dupont"></div><div class="field"><label>Téléphone</label><input id="c-tel" placeholder="699000000"></div></div>
+    <div class="form-row"><div class="field"><label>Email</label><input id="c-email" placeholder="jean@mail.com"></div><div class="field"><label>Ville</label><input id="c-ville" placeholder="Douala"></div></div>
+  </div>
+  <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('modal-client')">Annuler</button><button class="btn btn-primary" onclick="saveClient()">Enregistrer</button></div>
+</div></div>
+
+<!-- FOURNISSEUR -->
+<div class="modal-overlay" id="modal-fournisseur"><div class="modal">
+  <h2>Nouveau fournisseur</h2>
+  <div class="form-grid">
+    <div class="form-row"><div class="field"><label>Entreprise *</label><input id="f-nom" placeholder="ex: Castel Cameroun"></div><div class="field"><label>Contact</label><input id="f-contact" placeholder="M. Mbarga"></div></div>
+    <div class="form-row"><div class="field"><label>Téléphone *</label><input id="f-tel" placeholder="699 00 00 00"></div><div class="field"><label>Email</label><input id="f-email" placeholder="contact@four.com"></div></div>
+    <div class="form-row"><div class="field"><label>Ville</label><input id="f-ville" placeholder="Douala"></div><div class="field"><label>Catégorie</label><input id="f-categorie" placeholder="Boissons"></div></div>
+    <div class="form-row"><div class="field"><label>Délai livraison (j)</label><input id="f-delai" type="number" placeholder="3"></div><div class="field"><label>Statut</label><select id="f-statut"><option>Actif</option><option>Inactif</option><option>En attente</option></select></div></div>
+    <div class="field"><label>Notes</label><textarea id="f-notes" placeholder="Conditions, délais…"></textarea></div>
+  </div>
+  <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('modal-fournisseur')">Annuler</button><button class="btn btn-primary" onclick="saveFournisseur()">Enregistrer</button></div>
+</div></div>
+
+<!-- ACHAT -->
+<div class="modal-overlay" id="modal-achat"><div class="modal">
+  <h2>Nouvel achat fournisseur</h2>
+  <div class="form-grid">
+    <div class="form-row"><div class="field"><label>Fournisseur *</label><select id="a-fournisseur"></select></div><div class="field"><label>Date</label><input id="a-date" type="date"></div></div>
+    <div class="form-row"><div class="field"><label>Produit</label><select id="a-produit"></select></div><div class="field"><label>Quantité reçue</label><input id="a-qty" type="number" placeholder="0"></div></div>
+    <div class="form-row"><div class="field"><label>Montant (FCFA)</label><input id="a-montant" type="number" placeholder="0"></div><div class="field"><label>Mode de paiement</label><select id="a-paiement"></select></div></div>
+    <div class="form-row"><div class="field"><label>Journal comptable</label><select id="a-journal"></select></div><div class="field"><label>Statut</label><select id="a-statut"><option>Livré</option><option>En attente</option></select></div></div>
+  </div>
+  <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('modal-achat')">Annuler</button><button class="btn btn-primary" onclick="saveAchat()">Enregistrer</button></div>
+</div></div>
+
+<!-- SOCIETE -->
+<div class="modal-overlay" id="modal-societe"><div class="modal">
+  <h2>Informations société</h2>
+  <div class="form-grid">
+    <div class="form-row"><div class="field"><label>Nom de la société *</label><input id="s-nom" placeholder="Ex: Ma Boutique Sarl"></div><div class="field"><label>Forme juridique</label><select id="s-forme"><option>SARL</option><option>SA</option><option>Entreprise individuelle</option><option>GIC</option><option>Autre</option></select></div></div>
+    <div class="form-row"><div class="field"><label>Numéro contribuable</label><input id="s-contrib" placeholder="Ex: M012345678901A"></div><div class="field"><label>RCCM</label><input id="s-rccm" placeholder="Ex: RC/DLA/2020/B/1234"></div></div>
+    <div class="form-row"><div class="field"><label>Téléphone</label><input id="s-tel" placeholder="699 00 00 00"></div><div class="field"><label>Email</label><input id="s-email" placeholder="contact@masociete.cm"></div></div>
+    <div class="form-row"><div class="field"><label>Ville</label><input id="s-ville" placeholder="Douala"></div><div class="field"><label>Devise principale</label><select id="s-devise"><option>FCFA</option></select></div></div>
+    <div class="field"><label>Adresse complète</label><textarea id="s-adresse" placeholder="BP 1234, Akwa, Douala, Cameroun"></textarea></div>
+    <div class="field"><label>Slogan / Description</label><input id="s-slogan" placeholder="Votre partenaire au quotidien"></div>
+  </div>
+  <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('modal-societe')">Annuler</button><button class="btn btn-primary" onclick="saveSociete()">Enregistrer</button></div>
+</div></div>
+
+<!-- USER -->
+<div class="modal-overlay" id="modal-user"><div class="modal">
+  <h2>Nouvel utilisateur</h2>
+  <div class="form-grid">
+    <div class="form-row"><div class="field"><label>Nom complet *</label><input id="u-nom" placeholder="Marie Nguema"></div><div class="field"><label>Email *</label><input id="u-email" placeholder="marie@boutique.cm"></div></div>
+    <div class="form-row"><div class="field"><label>Mot de passe</label><input id="u-pwd" type="password" placeholder="••••••••"></div><div class="field"><label>Rôle</label><select id="u-role"><option>Administrateur</option><option>Gérant</option><option>Caissier</option><option>Vendeur</option><option>Comptable</option></select></div></div>
+    <div class="field"><label>Modules accessibles</label>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:6px" id="u-modules-check">
+        <label style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer"><input type="checkbox" value="dashboard" checked> Tableau de bord</label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer"><input type="checkbox" value="caisse" checked> Caisse</label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer"><input type="checkbox" value="ventes" checked> Ventes</label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer"><input type="checkbox" value="stocks" checked> Stocks</label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer"><input type="checkbox" value="clients" checked> Clients</label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer"><input type="checkbox" value="fournisseurs"> Fournisseurs</label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer"><input type="checkbox" value="achats"> Achats</label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:12px;cursor:pointer"><input type="checkbox" value="parametrage"> Paramétrage</label>
+      </div>
+    </div>
+    <div class="field"><label>Statut</label><select id="u-statut"><option>Actif</option><option>Inactif</option></select></div>
+  </div>
+  <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('modal-user')">Annuler</button><button class="btn btn-primary" onclick="saveUser()">Enregistrer</button></div>
+</div></div>
+
+<!-- DEVISE -->
+<div class="modal-overlay" id="modal-devise"><div class="modal">
+  <h2>Nouvelle devise</h2>
+  <div class="form-grid">
+    <div class="form-row"><div class="field"><label>Nom *</label><input id="d-nom" placeholder="Franc CFA"></div><div class="field"><label>Code ISO *</label><input id="d-code" placeholder="XAF" style="font-family:monospace;text-transform:uppercase"></div></div>
+    <div class="form-row"><div class="field"><label>Symbole *</label><input id="d-symbole" placeholder="FCFA"></div><div class="field"><label>Taux par rapport à 1 FCFA</label><input id="d-taux" type="number" placeholder="1.00" step="0.0001"></div></div>
+    <div class="field" style="display:flex;align-items:center;justify-content:space-between"><label>Devise principale</label><label class="toggle-switch"><input type="checkbox" id="d-principale"><span class="toggle-slider"></span></label></div>
+  </div>
+  <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('modal-devise')">Annuler</button><button class="btn btn-primary" onclick="saveDevise()">Enregistrer</button></div>
+</div></div>
+
+<!-- TAXE -->
+<div class="modal-overlay" id="modal-taxe"><div class="modal">
+  <h2>Nouveau taux de taxe</h2>
+  <div style="background:rgba(245,197,66,.08);border:1px solid rgba(245,197,66,.2);border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:12px;color:var(--text2)">
+    Ce taux sera disponible dans les modules <strong style="color:var(--accent)">Ventes</strong>, <strong style="color:var(--accent)">Caisse</strong> et <strong style="color:var(--accent)">Stocks</strong>.
+  </div>
+  <div class="form-grid">
+    <div class="form-row"><div class="field"><label>Nom *</label><input id="t-nom" placeholder="TVA 19,25%"></div><div class="field"><label>Taux (%) *</label><input id="t-taux" type="number" placeholder="19.25" step="0.01"></div></div>
+    <div class="form-row"><div class="field"><label>Type</label><select id="t-type"><option>Ventes</option><option>Achats</option><option>Les deux</option></select></div><div class="field" style="display:flex;align-items:flex-end;padding-bottom:2px"><label class="toggle-switch"><input type="checkbox" id="t-actif" checked><span class="toggle-slider"></span></label><span style="margin-left:10px;font-size:12px;color:var(--text2)">Actif</span></div></div>
+  </div>
+  <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('modal-taxe')">Annuler</button><button class="btn btn-primary" onclick="saveTaxe()">Enregistrer</button></div>
+</div></div>
+
+<!-- PAIEMENT -->
+<div class="modal-overlay" id="modal-paiement"><div class="modal">
+  <h2>Nouveau mode de paiement</h2>
+  <div style="background:rgba(91,141,246,.08);border:1px solid rgba(91,141,246,.2);border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:12px;color:var(--text2)">
+    Ce mode apparaîtra dans les formulaires <strong style="color:var(--blue)">Ventes</strong>, <strong style="color:var(--blue)">Achats</strong> et à la <strong style="color:var(--blue)">Caisse</strong>.
+  </div>
+  <div class="form-grid">
+    <div class="form-row"><div class="field"><label>Nom *</label><input id="pay-nom" placeholder="ex: Orange Money"></div><div class="field"><label>Code *</label><input id="pay-code" placeholder="ex: OM" style="font-family:monospace;text-transform:uppercase"></div></div>
+    <div class="form-row"><div class="field"><label>Description</label><input id="pay-desc" placeholder="Mobile Money Orange"></div><div class="field" style="display:flex;align-items:flex-end;padding-bottom:2px"><label class="toggle-switch"><input type="checkbox" id="pay-actif" checked><span class="toggle-slider"></span></label><span style="margin-left:10px;font-size:12px;color:var(--text2)">Actif</span></div></div>
+  </div>
+  <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('modal-paiement')">Annuler</button><button class="btn btn-primary" onclick="savePaiement()">Enregistrer</button></div>
+</div></div>
+
+<!-- JOURNAL -->
+<div class="modal-overlay" id="modal-journal"><div class="modal">
+  <h2>Nouveau journal comptable</h2>
+  <div style="background:rgba(245,147,66,.08);border:1px solid rgba(245,147,66,.2);border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:12px;color:var(--text2)">
+    Ce journal sera disponible dans les modules <strong style="color:var(--orange)">Ventes</strong> et <strong style="color:var(--orange)">Achats</strong>.
+  </div>
+  <div class="form-grid">
+    <div class="form-row"><div class="field"><label>Nom *</label><input id="j-nom" placeholder="ex: Journal des ventes"></div><div class="field"><label>Code *</label><input id="j-code" placeholder="ex: JV" style="font-family:monospace;text-transform:uppercase"></div></div>
+    <div class="form-row"><div class="field"><label>Type</label><select id="j-type"><option>Ventes</option><option>Achats</option><option>Trésorerie</option><option>Banque</option><option>OD</option></select></div><div class="field"><label>Devise</label><select id="j-devise"><option>FCFA</option></select></div></div>
+    <div class="field" style="display:flex;align-items:center;justify-content:space-between"><label>Actif</label><label class="toggle-switch"><input type="checkbox" id="j-actif" checked><span class="toggle-slider"></span></label></div>
+  </div>
+  <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('modal-journal')">Annuler</button><button class="btn btn-primary" onclick="saveJournal()">Enregistrer</button></div>
+</div></div>
+
+<!-- DOCUMENT CONFIG -->
+<div class="modal-overlay" id="modal-doc"><div class="modal">
+  <h2>Configuration documents</h2>
+  <div class="form-grid">
+    <div class="form-row"><div class="field"><label>Préfixe facture</label><input id="doc-prefix" placeholder="FAC-" style="font-family:monospace"></div><div class="field"><label>Numéro de départ</label><input id="doc-start" type="number" placeholder="001"></div></div>
+    <div class="form-row"><div class="field"><label>Titre document</label><input id="doc-title" placeholder="FACTURE"></div><div class="field"><label>Pied de page</label><input id="doc-footer" placeholder="Merci pour votre confiance"></div></div>
+    <div class="form-row"><div class="field"><label>Conditions de paiement</label><input id="doc-cond" placeholder="Paiement à 30 jours"></div><div class="field"><label>Afficher logo société</label><label class="toggle-switch" style="margin-top:28px"><input type="checkbox" id="doc-logo" checked><span class="toggle-slider"></span></label></div></div>
+    <div class="field"><label>Mentions légales</label><textarea id="doc-mentions" placeholder="SARL au capital de…"></textarea></div>
+  </div>
+  <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('modal-doc')">Annuler</button><button class="btn btn-primary" onclick="saveDocConfig()">Enregistrer</button></div>
+</div></div>
+
+<script>
+let data={
+  produits:JSON.parse(localStorage.getItem('ca_produits')||'[]'),
+  clients:JSON.parse(localStorage.getItem('ca_clients')||'[]'),
+  ventes:JSON.parse(localStorage.getItem('ca_ventes')||'[]'),
+  achats:JSON.parse(localStorage.getItem('ca_achats')||'[]'),
+  fournisseurs:JSON.parse(localStorage.getItem('ca_fournisseurs')||'[]'),
+  taxes:JSON.parse(localStorage.getItem('ca_taxes')||'[]'),
+  paiements:JSON.parse(localStorage.getItem('ca_paiements')||'[]'),
+  journaux:JSON.parse(localStorage.getItem('ca_journaux')||'[]'),
+  devises:JSON.parse(localStorage.getItem('ca_devises')||'[]'),
+  users:JSON.parse(localStorage.getItem('ca_users')||'[]'),
+  societe:JSON.parse(localStorage.getItem('ca_societe')||'null'),
+  docConfig:JSON.parse(localStorage.getItem('ca_docConfig')||'null'),
+};
+let receipt=[];
+let currentPhotoData=null;
+
+function save(key){localStorage.setItem('ca_'+key,JSON.stringify(data[key]))}
+function fmt(n){
+  const sym=data.devises.find(d=>d.principale)?data.devises.find(d=>d.principale).symbole:'FCFA';
+  return Number(n).toLocaleString('fr-FR')+' '+sym;
+}
+function today(){return new Date().toISOString().split('T')[0]}
+function initials(nom){return nom.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2)}
+function genCode(cat,nom){
+  const c=(cat||'PROD').toUpperCase().replace(/[^A-Z]/g,'').slice(0,3).padEnd(3,'X');
+  const n=(nom||'').toUpperCase().replace(/[^A-Z0-9]/g,'').slice(0,4).padEnd(4,'X');
+  return c+'-'+n+'-'+Math.floor(Math.random()*900+100);
+}
+function calcTTC(ht,taxeId){
+  const t=data.taxes.find(x=>x.id==taxeId);
+  const taux=t?t.taux:0;
+  return Math.round(ht*(1+taux/100));
+}
+
+function goTo(page,el){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+page).classList.add('active');
+  if(el){el.classList.add('active');}
+  render(page);
+}
+function goToParam(page,el){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  const target=document.getElementById('page-'+page);
+  if(target)target.classList.add('active');
+  if(el)el.classList.add('active');
+  const sg=document.getElementById('sub-param');
+  sg.classList.add('open');
+  document.getElementById('nav-param-parent').classList.add('open');
+  render(page);
+}
+function toggleParam(parent){
+  parent.classList.toggle('open');
+  document.getElementById('sub-param').classList.toggle('open');
+}
+
+function openModal(id){
+  document.getElementById(id).classList.add('open');
+  if(id==='modal-produit'){resetPhotoZone();fillTaxeSelect('p-taxe');calcProductTTC();}
+  if(id==='modal-vente'){fillSelects();document.getElementById('v-date').value=today();}
+  if(id==='modal-achat'){fillSelects();document.getElementById('a-date').value=today();}
+  if(id==='modal-societe'){loadSocieteForm();}
+  if(id==='modal-doc'){loadDocForm();}
+  if(id==='modal-journal'){fillDevisesSelect('j-devise');}
+}
+function closeModal(id){document.getElementById(id).classList.remove('open')}
+document.querySelectorAll('.modal-overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open')}));
+
+function fillTaxeSelect(selId){
+  const s=document.getElementById(selId);if(!s)return;
+  const cur=s.value;
+  s.innerHTML='<option value="0">Sans taxe</option>';
+  data.taxes.filter(t=>t.actif).forEach(t=>s.innerHTML+=`<option value="${t.id}">${t.nom} (${t.taux}%)</option>`);
+  s.value=cur;
+}
+function fillPaiementSelect(selId){
+  const s=document.getElementById(selId);if(!s)return;
+  s.innerHTML='<option value="">— Choisir —</option>';
+  data.paiements.filter(p=>p.actif).forEach(p=>s.innerHTML+=`<option value="${p.id}">${p.nom}</option>`);
+}
+function fillJournalSelect(selId,type){
+  const s=document.getElementById(selId);if(!s)return;
+  s.innerHTML='<option value="">— Choisir —</option>';
+  data.journaux.filter(j=>j.actif&&(!type||j.type===type||j.type==='Les deux')).forEach(j=>s.innerHTML+=`<option value="${j.id}">${j.nom} (${j.code})</option>`);
+}
+function fillDevisesSelect(selId){
+  const s=document.getElementById(selId);if(!s)return;
+  s.innerHTML='';
+  if(data.devises.length===0)s.innerHTML='<option>FCFA</option>';
+  else data.devises.forEach(d=>s.innerHTML+=`<option value="${d.id}">${d.nom} (${d.symbole})</option>`);
+}
+function fillSelects(){
+  ['v-client','caisse-client'].forEach(id=>{
+    const s=document.getElementById(id);if(!s)return;
+    s.innerHTML='<option value="">— Anonyme —</option>';
+    data.clients.forEach(c=>s.innerHTML+=`<option value="${c.id}">${c.nom}</option>`);
+  });
+  ['v-produit','a-produit'].forEach(id=>{
+    const s=document.getElementById(id);if(!s)return;
+    s.innerHTML='<option value="">-- Choisir --</option>';
+    data.produits.forEach(p=>s.innerHTML+=`<option value="${p.id}">${p.nom}${p.code?' ['+p.code+']':''}</option>`);
+  });
+  const af=document.getElementById('a-fournisseur');
+  if(af){af.innerHTML='<option value="">-- Choisir --</option>';data.fournisseurs.forEach(f=>af.innerHTML+=`<option value="${f.id}">${f.nom}</option>`);}
+  fillTaxeSelect('v-taxe');fillTaxeSelect('caisse-taxe');
+  fillPaiementSelect('v-paiement');fillPaiementSelect('a-paiement');fillPaiementSelect('caisse-paiement');
+  fillJournalSelect('v-journal','Ventes');fillJournalSelect('a-journal','Achats');
+}
+function calcProductTTC(){
+  const ht=parseFloat(document.getElementById('p-prix').value)||0;
+  const taxeId=document.getElementById('p-taxe').value;
+  document.getElementById('p-ttc').value=ht>0?fmt(calcTTC(ht,taxeId)):'—';
+}
+document.addEventListener('input',e=>{
+  if(e.target.id==='p-prix'||e.target.id==='p-taxe')calcProductTTC();
+});
+
+function triggerPhoto(){const z=document.getElementById('photo-zone');if(!z.classList.contains('has-photo'))document.getElementById('p-photo-input').click();}
+function handlePhoto(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{currentPhotoData=ev.target.result;document.getElementById('photo-preview').src=currentPhotoData;document.getElementById('photo-zone').classList.add('has-photo');};r.readAsDataURL(f);}
+function removePhoto(e){e.stopPropagation();currentPhotoData=null;document.getElementById('photo-preview').src='';document.getElementById('p-photo-input').value='';document.getElementById('photo-zone').classList.remove('has-photo');}
+function resetPhotoZone(){currentPhotoData=null;const pv=document.getElementById('photo-preview');if(pv)pv.src='';const pi=document.getElementById('p-photo-input');if(pi)pi.value='';const pz=document.getElementById('photo-zone');if(pz)pz.classList.remove('has-photo');}
+
+function saveProduit(){
+  const nom=document.getElementById('p-nom').value.trim();
+  const prix=parseFloat(document.getElementById('p-prix').value)||0;
+  const qty=parseInt(document.getElementById('p-qty').value)||0;
+  if(!nom||!prix){alert('Nom et prix obligatoires');return}
+  const cat=document.getElementById('p-cat').value||'Général';
+  let code=document.getElementById('p-code').value.trim();
+  if(!code)code=genCode(cat,nom);
+  const taxeId=document.getElementById('p-taxe').value;
+  data.produits.push({id:Date.now(),nom,cat,code,photo:currentPhotoData||null,prix,achat:parseFloat(document.getElementById('p-achat').value)||0,taxeId,qty,seuil:parseInt(document.getElementById('p-seuil').value)||5});
+  save('produits');closeModal('modal-produit');
+  ['p-nom','p-cat','p-code','p-prix','p-achat','p-qty','p-seuil'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('p-ttc').value='—';resetPhotoZone();
+  render('stocks');renderDash();
+}
+function deleteProduit(id){if(!confirm('Supprimer ?'))return;data.produits=data.produits.filter(p=>p.id!==id);save('produits');render('stocks');renderDash();}
+
+function saveClient(){
+  const nom=document.getElementById('c-nom').value.trim();
+  if(!nom){alert('Nom obligatoire');return}
+  data.clients.push({id:Date.now(),nom,tel:document.getElementById('c-tel').value,email:document.getElementById('c-email').value,ville:document.getElementById('c-ville').value});
+  save('clients');closeModal('modal-client');
+  ['c-nom','c-tel','c-email','c-ville'].forEach(id=>document.getElementById(id).value='');
+  render('clients');fillSelects();renderDash();
+}
+function deleteClient(id){if(!confirm('Supprimer ?'))return;data.clients=data.clients.filter(c=>c.id!==id);save('clients');render('clients');renderDash();}
+
+function saveFournisseur(){
+  const nom=document.getElementById('f-nom').value.trim();
+  const tel=document.getElementById('f-tel').value.trim();
+  if(!nom||!tel){alert('Nom et téléphone obligatoires');return}
+  data.fournisseurs.push({id:Date.now(),nom,contact:document.getElementById('f-contact').value,tel,email:document.getElementById('f-email').value,ville:document.getElementById('f-ville').value,categorie:document.getElementById('f-categorie').value,delai:parseInt(document.getElementById('f-delai').value)||0,statut:document.getElementById('f-statut').value,notes:document.getElementById('f-notes').value});
+  save('fournisseurs');closeModal('modal-fournisseur');
+  ['f-nom','f-contact','f-tel','f-email','f-ville','f-categorie','f-delai','f-notes'].forEach(id=>document.getElementById(id).value='');
+  render('fournisseurs');fillSelects();renderDash();
+}
+function deleteFournisseur(id){if(!confirm('Supprimer ?'))return;data.fournisseurs=data.fournisseurs.filter(f=>f.id!==id);save('fournisseurs');render('fournisseurs');renderDash();}
+
+function saveVente(fromCaisse=false,caisseData=null){
+  if(fromCaisse){data.ventes.push(caisseData);}
+  else{
+    const montant=parseFloat(document.getElementById('v-montant').value)||0;
+    if(!montant){alert('Montant obligatoire');return}
+    const prodId=parseInt(document.getElementById('v-produit').value);
+    const qty=parseInt(document.getElementById('v-qty').value)||1;
+    const prod=data.produits.find(p=>p.id===prodId);
+    if(prod){prod.qty=Math.max(0,prod.qty-qty);save('produits')}
+    const clientId=parseInt(document.getElementById('v-client').value);
+    const client=data.clients.find(c=>c.id===clientId);
+    const taxeId=document.getElementById('v-taxe').value;
+    const paiementId=document.getElementById('v-paiement').value;
+    const journalId=document.getElementById('v-journal').value;
+    const paiement=data.paiements.find(p=>p.id==paiementId);
+    const journal=data.journaux.find(j=>j.id==journalId);
+    const ttc=calcTTC(montant,taxeId);
+    data.ventes.push({id:Date.now(),date:document.getElementById('v-date').value||today(),client:client?client.nom:'Anonyme',montant,ttc,taxeId,paiement:paiement?paiement.nom:'—',journal:journal?journal.code:'—',articles:prod?`${qty}x ${prod.nom}`:'—',statut:document.getElementById('v-statut').value});
+    closeModal('modal-vente');
+  }
+  save('ventes');render('ventes');renderDash();
+}
+
+function saveAchat(){
+  const fId=parseInt(document.getElementById('a-fournisseur').value);
+  const montant=parseFloat(document.getElementById('a-montant').value)||0;
+  if(!montant){alert('Montant obligatoire');return}
+  const fournisseur=data.fournisseurs.find(f=>f.id===fId);
+  const prodId=parseInt(document.getElementById('a-produit').value);
+  const qty=parseInt(document.getElementById('a-qty').value)||0;
+  const prod=data.produits.find(p=>p.id===prodId);
+  if(prod&&qty){prod.qty+=qty;save('produits')}
+  const paiementId=document.getElementById('a-paiement').value;
+  const journalId=document.getElementById('a-journal').value;
+  const paiement=data.paiements.find(p=>p.id==paiementId);
+  const journal=data.journaux.find(j=>j.id==journalId);
+  data.achats.push({id:Date.now(),date:document.getElementById('a-date').value||today(),fournisseurId:fId,fournisseur:fournisseur?fournisseur.nom:'—',produit:prod?prod.nom:'—',qty,montant,paiement:paiement?paiement.nom:'—',journal:journal?journal.code:'—',statut:document.getElementById('a-statut').value});
+  save('achats');closeModal('modal-achat');render('achats');renderDash();
+}
+
+function filterCaisse(){renderCaisse(document.getElementById('caisse-search').value.toLowerCase())}
+function updateCaisseTotal(){
+  const total=receipt.reduce((s,r)=>s+r.qty*r.prix,0);
+  const taxeId=document.getElementById('caisse-taxe').value;
+  const ttc=calcTTC(total,taxeId);
+  document.getElementById('receipt-total').textContent=fmt(total)+' HT';
+  document.getElementById('receipt-ttc').textContent=fmt(ttc);
+}
+function renderCaisse(filter=''){
+  const c=document.getElementById('caisse-products');
+  const prods=data.produits.filter(p=>!filter||p.nom.toLowerCase().includes(filter)||(p.code||'').toLowerCase().includes(filter));
+  if(!prods.length){c.innerHTML='<div class="empty-state"><p>Aucun produit.</p></div>';return}
+  c.innerHTML=prods.map(p=>`<button class="product-btn" onclick="addToReceipt(${p.id})"><div class="p-img-wrap">${p.photo?`<img src="${p.photo}" alt="${p.nom}">`:`<div class="p-no-img">📦</div>`}</div><div class="p-body"><div class="pname">${p.nom}</div><div class="pprice">${fmt(p.prix)}</div><div class="pstock">Stock: ${p.qty}</div></div></button>`).join('');
+}
+function addToReceipt(id){
+  const prod=data.produits.find(p=>p.id===id);
+  if(!prod||prod.qty<=0){alert('Stock insuffisant');return}
+  const ex=receipt.find(r=>r.id===id);
+  if(ex)ex.qty++;else receipt.push({id,nom:prod.nom,prix:prod.prix,qty:1});
+  renderReceipt();
+}
+function removeFromReceipt(id){receipt=receipt.filter(r=>r.id!==id);renderReceipt();}
+function renderReceipt(){
+  const el=document.getElementById('receipt-items');
+  if(!receipt.length){el.innerHTML='<div class="empty-state" style="padding:24px 0;font-size:12px">Ajouter des produits</div>';document.getElementById('receipt-total').textContent='0 FCFA';document.getElementById('receipt-ttc').textContent='0 FCFA';return}
+  el.innerHTML=receipt.map(r=>`<div class="receipt-item"><span>${r.qty}× ${r.nom}</span><div style="display:flex;align-items:center;gap:8px"><span style="color:var(--accent);font-size:12px">${fmt(r.qty*r.prix)}</span><button class="ri-del" onclick="removeFromReceipt(${r.id})">×</button></div></div>`).join('');
+  updateCaisseTotal();
+}
+document.addEventListener('change',e=>{if(e.target.id==='caisse-taxe')updateCaisseTotal();});
+function viderRecu(){receipt=[];renderReceipt();}
+function validerVente(){
+  if(!receipt.length){alert('Reçu vide');return}
+  const total=receipt.reduce((s,r)=>s+r.qty*r.prix,0);
+  const taxeId=document.getElementById('caisse-taxe').value;
+  const ttc=calcTTC(total,taxeId);
+  const clientId=parseInt(document.getElementById('caisse-client').value);
+  const client=data.clients.find(c=>c.id===clientId);
+  const paiementId=document.getElementById('caisse-paiement').value;
+  const paiement=data.paiements.find(p=>p.id==paiementId);
+  const articles=receipt.map(r=>`${r.qty}x ${r.nom}`).join(', ');
+  receipt.forEach(r=>{const p=data.produits.find(x=>x.id===r.id);if(p)p.qty=Math.max(0,p.qty-r.qty)});
+  save('produits');
+  saveVente(true,{id:Date.now(),date:today(),client:client?client.nom:'Anonyme',montant:total,ttc,taxeId,paiement:paiement?paiement.nom:'Espèces',journal:'JV',articles,statut:'Payée'});
+  viderRecu();renderCaisse();
+  alert('Vente enregistrée ! Total TTC : '+fmt(ttc));
+}
+
+function saveSociete(){
+  data.societe={nom:document.getElementById('s-nom').value.trim(),forme:document.getElementById('s-forme').value,contrib:document.getElementById('s-contrib').value,rccm:document.getElementById('s-rccm').value,tel:document.getElementById('s-tel').value,email:document.getElementById('s-email').value,ville:document.getElementById('s-ville').value,adresse:document.getElementById('s-adresse').value,slogan:document.getElementById('s-slogan').value,devise:document.getElementById('s-devise').value};
+  save('societe');closeModal('modal-societe');render('societes');
+}
+function loadSocieteForm(){
+  const s=data.societe;if(!s)return;
+  ['nom','forme','contrib','rccm','tel','email','ville','adresse','slogan'].forEach(k=>{const el=document.getElementById('s-'+k);if(el&&s[k])el.value=s[k];});
+  fillDevisesSelect('s-devise');
+}
+
+function saveUser(){
+  const nom=document.getElementById('u-nom').value.trim();
+  const email=document.getElementById('u-email').value.trim();
+  if(!nom||!email){alert('Nom et email obligatoires');return}
+  const modules=Array.from(document.querySelectorAll('#u-modules-check input:checked')).map(c=>c.value);
+  data.users.push({id:Date.now(),nom,email,role:document.getElementById('u-role').value,modules,statut:document.getElementById('u-statut').value});
+  save('users');closeModal('modal-user');
+  ['u-nom','u-email','u-pwd'].forEach(id=>document.getElementById(id).value='');
+  render('utilisateurs');
+}
+function deleteUser(id){if(!confirm('Supprimer ?'))return;data.users=data.users.filter(u=>u.id!==id);save('users');render('utilisateurs');}
+
+function saveDevise(){
+  const nom=document.getElementById('d-nom').value.trim();
+  const code=document.getElementById('d-code').value.trim().toUpperCase();
+  const symbole=document.getElementById('d-symbole').value.trim();
+  if(!nom||!code||!symbole){alert('Tous les champs sont obligatoires');return}
+  const principale=document.getElementById('d-principale').checked;
+  if(principale)data.devises.forEach(d=>d.principale=false);
+  data.devises.push({id:Date.now(),nom,code,symbole,taux:parseFloat(document.getElementById('d-taux').value)||1,principale});
+  save('devises');closeModal('modal-devise');
+  ['d-nom','d-code','d-symbole','d-taux'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('d-principale').checked=false;
+  render('devises');
+}
+function deleteDevise(id){if(!confirm('Supprimer ?'))return;data.devises=data.devises.filter(d=>d.id!==id);save('devises');render('devises');}
+
+function saveTaxe(){
+  const nom=document.getElementById('t-nom').value.trim();
+  const taux=parseFloat(document.getElementById('t-taux').value);
+  if(!nom||isNaN(taux)){alert('Nom et taux obligatoires');return}
+  data.taxes.push({id:Date.now(),nom,taux,type:document.getElementById('t-type').value,actif:document.getElementById('t-actif').checked});
+  save('taxes');closeModal('modal-taxe');
+  ['t-nom','t-taux'].forEach(id=>document.getElementById(id).value='');
+  render('taxes');fillSelects();
+}
+function deleteTaxe(id){if(!confirm('Supprimer ?'))return;data.taxes=data.taxes.filter(t=>t.id!==id);save('taxes');render('taxes');fillSelects();}
+
+function savePaiement(){
+  const nom=document.getElementById('pay-nom').value.trim();
+  const code=document.getElementById('pay-code').value.trim().toUpperCase();
+  if(!nom||!code){alert('Nom et code obligatoires');return}
+  data.paiements.push({id:Date.now(),nom,code,desc:document.getElementById('pay-desc').value,actif:document.getElementById('pay-actif').checked});
+  save('paiements');closeModal('modal-paiement');
+  ['pay-nom','pay-code','pay-desc'].forEach(id=>document.getElementById(id).value='');
+  render('paiements');fillSelects();
+}
+function deletePaiement(id){if(!confirm('Supprimer ?'))return;data.paiements=data.paiements.filter(p=>p.id!==id);save('paiements');render('paiements');fillSelects();}
+
+function saveJournal(){
+  const nom=document.getElementById('j-nom').value.trim();
+  const code=document.getElementById('j-code').value.trim().toUpperCase();
+  if(!nom||!code){alert('Nom et code obligatoires');return}
+  data.journaux.push({id:Date.now(),nom,code,type:document.getElementById('j-type').value,devise:document.getElementById('j-devise').value||'FCFA',actif:document.getElementById('j-actif').checked});
+  save('journaux');closeModal('modal-journal');
+  ['j-nom','j-code'].forEach(id=>document.getElementById(id).value='');
+  render('journaux');fillSelects();
+}
+function deleteJournal(id){if(!confirm('Supprimer ?'))return;data.journaux=data.journaux.filter(j=>j.id!==id);save('journaux');render('journaux');fillSelects();}
+
+function saveDocConfig(){
+  data.docConfig={prefix:document.getElementById('doc-prefix').value,start:document.getElementById('doc-start').value,title:document.getElementById('doc-title').value,footer:document.getElementById('doc-footer').value,cond:document.getElementById('doc-cond').value,mentions:document.getElementById('doc-mentions').value,logo:document.getElementById('doc-logo').checked};
+  save('docConfig');closeModal('modal-doc');render('documents');
+}
+function loadDocForm(){
+  const c=data.docConfig;if(!c)return;
+  ['prefix','start','title','footer','cond','mentions'].forEach(k=>{const el=document.getElementById('doc-'+k);if(el&&c[k]!==undefined)el.value=c[k];});
+  document.getElementById('doc-logo').checked=c.logo!==false;
+}
+
+function render(page){
+  if(page==='stocks')renderStocks();
+  else if(page==='clients')renderClients();
+  else if(page==='ventes')renderVentes();
+  else if(page==='achats')renderAchats();
+  else if(page==='fournisseurs')renderFournisseurs();
+  else if(page==='caisse'){renderCaisse();fillSelects();}
+  else if(page==='dashboard')renderDash();
+  else if(page==='taxes')renderTaxes();
+  else if(page==='paiements')renderPaiements();
+  else if(page==='journaux')renderJournaux();
+  else if(page==='devises')renderDevises();
+  else if(page==='utilisateurs')renderUsers();
+  else if(page==='societes')renderSociete();
+  else if(page==='documents')renderDocConfig();
+}
+
+function renderStocks(){
+  const tb=document.getElementById('stocks-table');
+  if(!data.produits.length){tb.innerHTML='<tr><td colspan="9"><div class="empty-state"><p>Aucun produit.</p></div></td></tr>';return}
+  tb.innerHTML=data.produits.map(p=>{
+    const low=p.qty<=p.seuil;
+    const t=data.taxes.find(x=>x.id==p.taxeId);
+    const ttc=calcTTC(p.prix,p.taxeId);
+    const img=p.photo?`<img class="prod-thumb" src="${p.photo}" alt="">`:`<div class="prod-no-img">📦</div>`;
+    return `<tr class="${low?'stock-row-low':''}"><td>${img}</td><td><div style="font-weight:600;font-size:12px">${p.nom}</div>${p.code?`<div style="font-size:10px;font-family:monospace;color:var(--text3)">${p.code}</div>`:''}</td><td>${p.cat}</td><td style="color:var(--accent)">${fmt(p.prix)}</td><td>${t?t.taux+'%':'0%'}</td><td style="color:var(--green)">${fmt(ttc)}</td><td><strong>${p.qty}</strong></td><td>${low?'<span class="badge badge-red">Bas</span>':'<span class="badge badge-green">OK</span>'}</td><td><button class="btn btn-danger btn-sm" onclick="deleteProduit(${p.id})">✕</button></td></tr>`;
+  }).join('');
+}
+function renderClients(){
+  const tb=document.getElementById('clients-table');
+  if(!data.clients.length){tb.innerHTML='<tr><td colspan="6"><div class="empty-state"><p>Aucun client.</p></div></td></tr>';return}
+  tb.innerHTML=data.clients.map(c=>{
+    const total=data.ventes.filter(v=>v.client===c.nom).reduce((s,v)=>s+(v.ttc||v.montant),0);
+    return `<tr><td><strong>${c.nom}</strong></td><td>${c.tel||'—'}</td><td>${c.email||'—'}</td><td>${c.ville||'—'}</td><td style="color:var(--accent)">${fmt(total)}</td><td><button class="btn btn-danger btn-sm" onclick="deleteClient(${c.id})">Supprimer</button></td></tr>`;
+  }).join('');
+}
+function renderVentes(){
+  const tb=document.getElementById('ventes-table');
+  if(!data.ventes.length){tb.innerHTML='<tr><td colspan="8"><div class="empty-state"><p>Aucune vente.</p></div></td></tr>';return}
+  const sorted=[...data.ventes].reverse();
+  tb.innerHTML=sorted.map((v,i)=>{
+    const t=data.taxes.find(x=>x.id==v.taxeId);
+    return `<tr><td>#${sorted.length-i}</td><td>${v.date}</td><td>${v.client}</td><td style="color:var(--text2);font-size:11px">${v.articles||'—'}</td><td>${t?t.taux+'%':'0%'}</td><td><span class="badge badge-blue">${v.paiement||'—'}</span></td><td style="color:var(--accent);font-weight:500">${fmt(v.ttc||v.montant)}</td><td><span class="badge ${v.statut==='Payée'?'badge-green':'badge-yellow'}">${v.statut}</span></td></tr>`;
+  }).join('');
+}
+function renderAchats(){
+  const tb=document.getElementById('achats-table');
+  if(!data.achats.length){tb.innerHTML='<tr><td colspan="8"><div class="empty-state"><p>Aucun achat.</p></div></td></tr>';return}
+  tb.innerHTML=[...data.achats].reverse().map(a=>`<tr><td>${a.date}</td><td><strong>${a.fournisseur}</strong></td><td>${a.produit}</td><td>${a.qty}</td><td style="color:var(--accent)">${fmt(a.montant)}</td><td><span class="badge badge-blue">${a.paiement||'—'}</span></td><td style="color:var(--text3);font-family:monospace;font-size:11px">${a.journal||'—'}</td><td><span class="badge ${a.statut==='Livré'?'badge-green':'badge-yellow'}">${a.statut}</span></td></tr>`).join('');
+}
+function renderFournisseurs(){
+  const q=(document.getElementById('f-search').value||'').toLowerCase();
+  const tb=document.getElementById('fournisseurs-table');
+  const list=data.fournisseurs.filter(f=>!q||f.nom.toLowerCase().includes(q));
+  document.getElementById('f-stat-total').textContent=data.fournisseurs.length;
+  document.getElementById('f-stat-commandes').textContent=data.achats.length;
+  document.getElementById('f-stat-montant').textContent=fmt(data.achats.reduce((s,a)=>s+a.montant,0));
+  if(!list.length){tb.innerHTML='<tr><td colspan="8"><div class="empty-state"><p>Aucun fournisseur.</p></div></td></tr>';return}
+  tb.innerHTML=list.map(f=>{
+    const af=data.achats.filter(a=>a.fournisseurId===f.id);
+    const totalF=af.reduce((s,a)=>s+a.montant,0);
+    const bc=f.statut==='Actif'?'badge-green':f.statut==='Inactif'?'badge-red':'badge-yellow';
+    return `<tr><td><div style="display:flex;align-items:center;gap:8px"><div class="fournisseur-avatar">${initials(f.nom)}</div><div><div style="font-weight:600;font-size:12px">${f.nom}</div>${f.categorie?`<div style="font-size:10px;color:var(--text3)">${f.categorie}</div>`:''}</div></div></td><td>${f.contact||'—'}</td><td>${f.tel}</td><td>${f.ville||'—'}</td><td style="text-align:center"><strong>${af.length}</strong></td><td style="color:var(--accent)">${fmt(totalF)}</td><td><span class="badge ${bc}">${f.statut}</span></td><td><button class="btn btn-danger btn-sm" onclick="deleteFournisseur(${f.id})">✕</button></td></tr>`;
+  }).join('');
+}
+function renderTaxes(){
+  const tb=document.getElementById('taxes-table');
+  if(!data.taxes.length){tb.innerHTML='<tr><td colspan="6"><div class="empty-state"><p>Aucun taux configuré.<br>Ajoutez la TVA applicable à votre activité.</p></div></td></tr>';return}
+  tb.innerHTML=data.taxes.map(t=>`<tr><td><strong>${t.nom}</strong></td><td style="color:var(--accent);font-weight:600">${t.taux}%</td><td><span class="badge badge-blue">${t.type}</span></td><td style="font-size:11px;color:var(--text2)">Ventes, Caisse, Stocks</td><td><span class="badge ${t.actif?'badge-green':'badge-red'}">${t.actif?'Actif':'Inactif'}</span></td><td><button class="btn btn-danger btn-sm" onclick="deleteTaxe(${t.id})">✕</button></td></tr>`).join('');
+}
+function renderPaiements(){
+  const tb=document.getElementById('paiements-table');
+  if(!data.paiements.length){tb.innerHTML='<tr><td colspan="5"><div class="empty-state"><p>Aucun mode de paiement.<br>Ajoutez les modes acceptés (Espèces, Orange Money…).</p></div></td></tr>';return}
+  tb.innerHTML=data.paiements.map(p=>`<tr><td><strong>${p.nom}</strong></td><td style="font-family:monospace;font-size:11px;color:var(--text3)">${p.code}</td><td style="color:var(--text2)">${p.desc||'—'}</td><td><span class="badge ${p.actif?'badge-green':'badge-red'}">${p.actif?'Actif':'Inactif'}</span></td><td><button class="btn btn-danger btn-sm" onclick="deletePaiement(${p.id})">✕</button></td></tr>`).join('');
+}
+function renderJournaux(){
+  const tb=document.getElementById('journaux-table');
+  if(!data.journaux.length){tb.innerHTML='<tr><td colspan="6"><div class="empty-state"><p>Aucun journal.<br>Créez les journaux de vente et d\'achat.</p></div></td></tr>';return}
+  const typeColor={Ventes:'badge-green',Achats:'badge-red',Trésorerie:'badge-yellow',Banque:'badge-blue',OD:'badge-purple'};
+  tb.innerHTML=data.journaux.map(j=>`<tr><td><strong>${j.nom}</strong></td><td style="font-family:monospace;font-size:11px;color:var(--accent)">${j.code}</td><td><span class="badge ${typeColor[j.type]||'badge-blue'}">${j.type}</span></td><td>${j.devise||'FCFA'}</td><td><span class="badge ${j.actif?'badge-green':'badge-red'}">${j.actif?'Actif':'Inactif'}</span></td><td><button class="btn btn-danger btn-sm" onclick="deleteJournal(${j.id})">✕</button></td></tr>`).join('');
+}
+function renderDevises(){
+  const tb=document.getElementById('devises-table');
+  if(!data.devises.length){tb.innerHTML='<tr><td colspan="6"><div class="empty-state"><p>Aucune devise.<br>FCFA est la devise par défaut.</p></div></td></tr>';return}
+  tb.innerHTML=data.devises.map(d=>`<tr><td><strong>${d.nom}</strong></td><td style="font-family:monospace;font-size:11px">${d.code}</td><td style="color:var(--accent)">${d.symbole}</td><td>${d.taux}</td><td>${d.principale?'<span class="badge badge-green">Principale</span>':'—'}</td><td><button class="btn btn-danger btn-sm" onclick="deleteDevise(${d.id})">✕</button></td></tr>`).join('');
+}
+function renderUsers(){
+  const tb=document.getElementById('users-table');
+  if(!data.users.length){tb.innerHTML='<tr><td colspan="6"><div class="empty-state"><p>Aucun utilisateur.<br>Ajoutez des membres de votre équipe.</p></div></td></tr>';return}
+  const roleColor={Administrateur:'badge-red',Gérant:'badge-purple',Caissier:'badge-yellow',Vendeur:'badge-green',Comptable:'badge-blue'};
+  tb.innerHTML=data.users.map(u=>`<tr><td><strong>${u.nom}</strong></td><td style="color:var(--text2)">${u.email}</td><td><span class="badge ${roleColor[u.role]||'badge-blue'}">${u.role}</span></td><td style="font-size:11px;color:var(--text3)">${(u.modules||[]).join(', ')}</td><td><span class="badge ${u.statut==='Actif'?'badge-green':'badge-red'}">${u.statut}</span></td><td><button class="btn btn-danger btn-sm" onclick="deleteUser(${u.id})">✕</button></td></tr>`).join('');
+}
+function renderSociete(){
+  const el=document.getElementById('societe-display');
+  const s=data.societe;
+  if(!s||!s.nom){el.innerHTML='<div class="empty-state"><p>Aucune société configurée.</p></div>';return}
+  el.innerHTML=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+    <div style="background:var(--bg3);border-radius:8px;padding:12px"><div style="font-size:10px;color:var(--text3);margin-bottom:3px">RAISON SOCIALE</div><div style="font-weight:600">${s.nom} <span style="font-weight:400;color:var(--text2)">(${s.forme||''})</span></div></div>
+    <div style="background:var(--bg3);border-radius:8px;padding:12px"><div style="font-size:10px;color:var(--text3);margin-bottom:3px">N° CONTRIBUABLE</div><div style="font-family:monospace">${s.contrib||'—'}</div></div>
+    <div style="background:var(--bg3);border-radius:8px;padding:12px"><div style="font-size:10px;color:var(--text3);margin-bottom:3px">TÉLÉPHONE</div><div>${s.tel||'—'}</div></div>
+    <div style="background:var(--bg3);border-radius:8px;padding:12px"><div style="font-size:10px;color:var(--text3);margin-bottom:3px">EMAIL</div><div>${s.email||'—'}</div></div>
+    <div style="background:var(--bg3);border-radius:8px;padding:12px;grid-column:span 2"><div style="font-size:10px;color:var(--text3);margin-bottom:3px">ADRESSE</div><div>${s.adresse||s.ville||'—'}</div></div>
+    ${s.slogan?`<div style="background:rgba(245,197,66,.08);border:1px solid rgba(245,197,66,.2);border-radius:8px;padding:12px;grid-column:span 2;font-style:italic;color:var(--text2)">"${s.slogan}"</div>`:''}
+  </div>`;
+}
+function renderDocConfig(){
+  const el=document.getElementById('doc-display');
+  const pr=document.getElementById('doc-preview');
+  const c=data.docConfig;
+  if(!c){el.innerHTML='<div class="empty-state"><p>Non configuré.</p></div>';pr.innerHTML='<div style="border:1px dashed var(--border);border-radius:8px;padding:20px;font-size:12px;color:var(--text3);text-align:center">L\'aperçu apparaîtra après configuration</div>';return}
+  el.innerHTML=`<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px">
+    <div style="background:var(--bg3);border-radius:8px;padding:12px"><div style="font-size:10px;color:var(--text3);margin-bottom:3px">PRÉFIXE</div><div style="font-family:monospace;color:var(--accent)">${c.prefix||'FAC-'}</div></div>
+    <div style="background:var(--bg3);border-radius:8px;padding:12px"><div style="font-size:10px;color:var(--text3);margin-bottom:3px">N° DÉPART</div><div style="font-family:monospace">${c.start||'001'}</div></div>
+    <div style="background:var(--bg3);border-radius:8px;padding:12px"><div style="font-size:10px;color:var(--text3);margin-bottom:3px">TITRE</div><div>${c.title||'FACTURE'}</div></div>
+    <div style="background:var(--bg3);border-radius:8px;padding:12px;grid-column:span 3"><div style="font-size:10px;color:var(--text3);margin-bottom:3px">PIED DE PAGE</div><div style="color:var(--text2)">${c.footer||'—'}</div></div>
+  </div>`;
+  const soc=data.societe;
+  pr.innerHTML=`<div style="background:white;border-radius:8px;padding:20px;color:#111;font-size:12px;border:1px solid var(--border)">
+    <div style="display:flex;justify-content:space-between;margin-bottom:16px;padding-bottom:12px;border-bottom:2px solid #f5c542">
+      <div><div style="font-size:18px;font-weight:700;color:#1A2D6B">${soc?soc.nom:'Votre Société'}</div><div style="color:#666;font-size:11px">${soc?soc.adresse||soc.ville||'':''}</div></div>
+      <div style="text-align:right"><div style="font-size:16px;font-weight:700;color:#1A2D6B">${c.title||'FACTURE'}</div><div style="font-family:monospace;color:#666;font-size:11px">${c.prefix||'FAC-'}${c.start||'001'}</div></div>
+    </div>
+    <div style="color:#888;font-size:11px;margin-bottom:10px">Date : ${today()} | Conditions : ${c.cond||'Paiement immédiat'}</div>
+    <div style="background:#f8f8f8;border-radius:4px;padding:10px;margin-bottom:12px;font-size:11px;color:#999;text-align:center">[ Lignes de la facture ]</div>
+    <div style="text-align:right;font-weight:700;color:#1A2D6B;margin-bottom:12px">TOTAL TTC : 0 FCFA</div>
+    <div style="border-top:1px solid #eee;padding-top:8px;font-size:10px;color:#aaa;text-align:center">${c.footer||''} ${c.mentions?'| '+c.mentions.substring(0,60)+'…':''}</div>
+  </div>`;
+}
+
+function renderDash(){
+  const t=today();
+  const ventesJ=data.ventes.filter(v=>v.date===t);
+  const mois=t.slice(0,7);
+  document.getElementById('stat-ventes').textContent=fmt(ventesJ.reduce((s,v)=>s+(v.ttc||v.montant),0));
+  document.getElementById('stat-ventes-nb').textContent=ventesJ.length+' transaction(s)';
+  document.getElementById('stat-stock').textContent=data.produits.length;
+  document.getElementById('stat-stock-low').textContent=data.produits.filter(p=>p.qty<=p.seuil).length+' en alerte';
+  document.getElementById('stat-clients').textContent=data.clients.length;
+  document.getElementById('stat-fournisseurs').textContent=data.fournisseurs.length;
+  document.getElementById('stat-achats').textContent=fmt(data.achats.filter(a=>a.date.startsWith(mois)).reduce((s,a)=>s+a.montant,0));
+
+  const alerts=[];
+  if(data.taxes.length===0)alerts.push({msg:'Aucune taxe configurée — rendez-vous dans Paramétrage → Taxes',color:'var(--accent)'});
+  if(data.paiements.length===0)alerts.push({msg:'Aucun mode de paiement — rendez-vous dans Paramétrage → Modes de paiement',color:'var(--blue)'});
+  if(!data.societe)alerts.push({msg:'Société non configurée — rendez-vous dans Paramétrage → Sociétés',color:'var(--orange)'});
+  const al=document.getElementById('dash-alerts');
+  al.innerHTML=alerts.map(a=>`<div style="background:var(--bg2);border-left:3px solid ${a.color};border-radius:0 8px 8px 0;padding:8px 12px;margin-bottom:8px;font-size:12px;color:var(--text2)">⚠ ${a.msg}</div>`).join('');
+
+  const days=[];for(let i=6;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);days.push(d.toISOString().split('T')[0])}
+  const vals=days.map(d=>data.ventes.filter(v=>v.date===d).reduce((s,v)=>s+(v.ttc||v.montant),0));
+  const max=Math.max(...vals,1);
+  document.getElementById('chart-bars').innerHTML=days.map((d,i)=>`<div class="bar-wrap"><div class="bar-val">${vals[i]>0?Math.round(vals[i]/1000)+'k':''}</div><div class="bar" style="height:${Math.max(4,(vals[i]/max)*100)}px;background:${vals[i]>0?'var(--accent)':'var(--bg4)'}"></div><div class="bar-label">${['L','M','M','J','V','S','D'][new Date(d).getDay()==0?6:new Date(d).getDay()-1]}</div></div>`).join('');
+  const dv=document.getElementById('dash-ventes');
+  const rec=[...data.ventes].reverse().slice(0,5);
+  dv.innerHTML=rec.length?rec.map(v=>`<tr><td>${v.date}</td><td>${v.client}</td><td style="color:var(--accent)">${fmt(v.ttc||v.montant)}</td><td><span class="badge ${v.statut==='Payée'?'badge-green':'badge-yellow'}">${v.statut}</span></td></tr>`).join(''):'<tr><td colspan="4"><div class="empty-state" style="padding:16px"><p>Aucune vente.</p></div></td></tr>';
+  const df=document.getElementById('dash-fournisseurs');
+  const fStats=data.fournisseurs.map(f=>{const af=data.achats.filter(a=>a.fournisseurId===f.id);return{nom:f.nom,nb:af.length,total:af.reduce((s,a)=>s+a.montant,0)};}).sort((a,b)=>b.total-a.total).slice(0,5);
+  df.innerHTML=fStats.length?fStats.map(f=>`<tr><td><strong>${f.nom}</strong></td><td style="text-align:center">${f.nb}</td><td style="color:var(--accent)">${fmt(f.total)}</td></tr>`).join(''):'<tr><td colspan="3"><div class="empty-state" style="padding:16px"><p>Aucun fournisseur.</p></div></td></tr>';
+}
+
+document.getElementById('dash-date').textContent=new Date().toLocaleDateString('fr-FR',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+renderDash();
+</script>

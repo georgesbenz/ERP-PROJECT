@@ -1,0 +1,24 @@
+{
+  "name": "erp-platform",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Fullstack multi-tenant ERP/CRM/Budgeting platform (monorepo)",
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
+  "scripts": {
+    "dev": "echo \"Use docker compose up, or run workspaces individually:\" && echo \"  npm run dev -w backend\" && echo \"  npm run dev -w frontend\"",
+    "dev:backend": "npm run dev -w backend",
+    "dev:frontend": "npm run dev -w frontend",
+    "build": "npm run build -w backend && npm run build -w frontend",
+    "lint": "npm run lint -w backend && npm run lint -w frontend",
+    "test": "npm run test -w backend",
+    "docker:up": "docker compose up -d --build",
+    "docker:down": "docker compose down",
+    "docker:logs": "docker compose logs -f"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>ERP Architecture V2 — SAFIRA</title>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{font-size:14px}
+    body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:#f0f4ff;color:#1e293b;padding:56px 20px 40px}
+
+    .print-bar{position:fixed;top:0;left:0;right:0;z-index:100;background:#1e1b4b;display:flex;align-items:center;justify-content:space-between;padding:10px 24px;box-shadow:0 2px 12px rgba(0,0,0,.4)}
+    .print-bar span{color:#a5b4fc;font-size:.82rem}
+    .print-bar button{background:#6366f1;color:#fff;border:none;border-radius:8px;padding:8px 20px;font-size:.88rem;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:7px}
+    .print-bar button:hover{background:#4f46e5}
+
+    .page{max-width:920px;margin:0 auto;background:#fff;border-radius:16px;box-shadow:0 8px 40px rgba(99,102,241,.12);overflow:hidden}
+
+    /* Header */
+    .hdr{background:linear-gradient(135deg,#0f172a 0%,#1e1b4b 55%,#312e81 100%);padding:44px 48px 32px;position:relative;overflow:hidden}
+    .hdr::after{content:'';position:absolute;right:-80px;top:-80px;width:320px;height:320px;border-radius:50%;background:rgba(255,255,255,.04)}
+    .hdr-top{display:flex;align-items:center;gap:14px;margin-bottom:22px}
+    .logo{width:50px;height:50px;border-radius:12px;background:linear-gradient(135deg,#6366f1,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:#fff;box-shadow:0 4px 16px rgba(99,102,241,.5)}
+    .hdr-meta{color:#fff}
+    .hdr-meta strong{display:block;font-size:1.2rem}
+    .hdr-meta span{font-size:.78rem;color:#a5b4fc}
+    .hdr h1{color:#fff;font-size:1.75rem;font-weight:700;line-height:1.25}
+    .hdr p{color:#c7d2fe;margin-top:6px;font-size:.88rem}
+    .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+    .chip{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);color:#e0e7ff;border-radius:20px;padding:3px 12px;font-size:.73rem}
+
+    /* Body */
+    .body{padding:36px 48px 48px}
+
+    /* Section */
+    .sec-title{display:flex;align-items:center;gap:9px;font-size:1rem;font-weight:700;color:#1e1b4b;margin:30px 0 12px;padding-bottom:7px;border-bottom:2px solid #e0e7ff}
+    .sec-icon{width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,#6366f1,#8b5cf6);display:flex;align-items:center;justify-content:center;color:#fff;font-size:.82rem}
+    .sec-sub{font-size:.92rem;font-weight:700;color:#312e81;margin:18px 0 8px}
+
+    /* Principle cards */
+    .principles{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+    .pr{background:#f5f3ff;border:1px solid #ddd6fe;border-radius:10px;padding:14px 16px}
+    .pr h4{font-size:.83rem;font-weight:700;color:#1e1b4b;margin-bottom:5px;display:flex;align-items:center;gap:6px}
+    .pr p{font-size:.78rem;color:#4c1d95;line-height:1.55}
+    .pr-num{width:20px;height:20px;border-radius:50%;background:#6366f1;color:#fff;font-size:.68rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+
+    /* Tables */
+    table{width:100%;border-collapse:collapse;font-size:.8rem;margin:10px 0 18px}
+    thead tr{background:#1e1b4b}
+    thead th{color:#e0e7ff;font-weight:600;text-align:left;padding:9px 12px;font-size:.74rem;letter-spacing:.3px;text-transform:uppercase}
+    thead th:first-child{border-radius:7px 0 0 0}
+    thead th:last-child{border-radius:0 7px 0 0}
+    tbody tr{border-bottom:1px solid #e0e7ff}
+    tbody tr:nth-child(even){background:#f5f3ff}
+    td{padding:8px 12px;vertical-align:top}
+    td:first-child{font-weight:600;color:#1e1b4b;white-space:nowrap}
+
+    /* Code */
+    code{background:#f1f5f9;border:1px solid #cbd5e1;border-radius:4px;padding:1px 6px;font-family:'Cascadia Code','Fira Code',monospace;font-size:.78rem;color:#3730a3}
+    .code-block{background:#0f172a;border-radius:10px;padding:16px 20px;margin:8px 0 16px;overflow-x:auto}
+    .code-block pre{color:#94a3b8;font-family:'Cascadia Code','Fira Code',monospace;font-size:.76rem;line-height:1.65;white-space:pre}
+    .code-block .kw{color:#818cf8}
+    .code-block .str{color:#86efac}
+    .code-block .cm{color:#475569}
+    .code-block .nm{color:#f9a8d4}
+
+    /* Phase cards */
+    .phases{display:flex;flex-direction:column;gap:14px}
+    .phase{border:1px solid #e0e7ff;border-radius:10px;overflow:hidden}
+    .phase-hdr{background:#312e81;padding:11px 16px;display:flex;align-items:center;justify-content:space-between}
+    .phase-hdr h4{color:#fff;font-size:.88rem;font-weight:700}
+    .phase-hdr .ph-badge{background:rgba(255,255,255,.15);color:#e0e7ff;border-radius:12px;padding:3px 10px;font-size:.73rem;font-weight:600}
+    .phase-body{padding:12px 16px;background:#fafafa}
+    .phase-body p{font-size:.8rem;color:#475569;line-height:1.6;margin-bottom:6px}
+    .phase-tasks{list-style:none;display:flex;flex-direction:column;gap:4px;margin-top:6px}
+    .phase-tasks li{font-size:.78rem;color:#334155;display:flex;align-items:flex-start;gap:6px}
+    .phase-tasks li::before{content:'→';color:#6366f1;font-weight:700;flex-shrink:0}
+
+    /* Status/priority pills */
+    .prio{display:inline-flex;align-items:center;gap:4px;border-radius:12px;padding:2px 9px;font-size:.72rem;font-weight:600}
+    .p-critical{background:#fee2e2;color:#991b1b}
+    .p-high{background:#fef3c7;color:#92400e}
+    .p-medium{background:#d1fae5;color:#065f46}
+    .p-low{background:#dbeafe;color:#1e40af}
+
+    /* Flow diagram */
+    .flow{background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:16px 20px;margin:10px 0 16px;font-family:'Cascadia Code',monospace;font-size:.76rem;color:#334155;line-height:1.7;white-space:pre}
+
+    /* Two col */
+    .two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:10px 0}
+    .card{background:#f5f3ff;border:1px solid #ddd6fe;border-radius:10px;padding:14px}
+    .card h5{font-size:.82rem;font-weight:700;color:#1e1b4b;margin-bottom:6px}
+    .card ul{list-style:none;display:flex;flex-direction:column;gap:3px}
+    .card li{font-size:.78rem;color:#4c1d95;display:flex;gap:6px}
+    .card li::before{content:'•';color:#6366f1;font-weight:700}
+
+    /* Timeline */
+    .timeline{border-left:3px solid #c4b5fd;padding-left:20px;margin:12px 0}
+    .tl{margin-bottom:12px;position:relative}
+    .tl::before{content:'';position:absolute;left:-26px;top:5px;width:10px;height:10px;border-radius:50%;background:#6366f1;border:2px solid #fff;box-shadow:0 0 0 2px #6366f1}
+    .tl strong{color:#1e1b4b;font-size:.82rem}
+    .tl p{font-size:.78rem;color:#475569;margin-top:2px}
+
+    /* Summary box */
+    .summary-box{background:linear-gradient(135deg,#1e1b4b,#312e81);border-radius:12px;padding:24px 28px;margin-top:24px;color:#fff}
+    .summary-box h4{color:#e0e7ff;font-size:1rem;margin-bottom:14px}
+    .summary-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+    .s-item{background:rgba(255,255,255,.08);border-radius:8px;padding:12px;text-align:center}
+    .s-item .s-num{font-size:1.4rem;font-weight:700;color:#a5b4fc}
+    .s-item .s-lbl{font-size:.73rem;color:#c7d2fe;margin-top:2px}
+
+    /* Footer */
+    .footer{background:#f8fafc;border-top:1px solid #e2e8f0;padding:18px 48px;text-align:center;font-size:.76rem;color:#94a3b8}
+    .footer strong{color:#6366f1}
+
+    /* Print */
+    @media print{
+      body{background:#fff;padding:0;font-size:10pt}
+      .print-bar{display:none!important}
+      .page{max-width:100%;margin:0;border-radius:0;box-shadow:none}
+      .hdr{-webkit-print-color-adjust:exact;print-color-adjust:exact;padding:24px 32px 20px}
+      .body{padding:20px 32px 32px}
+      .principles{grid-template-columns:1fr 1fr}
+      .two-col{grid-template-columns:1fr 1fr}
+      .summary-grid{grid-template-columns:repeat(3,1fr)}
+      .sec-title{margin-top:16px}
+      .phase-hdr{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+      thead tr,.summary-box,.logo,.sec-icon,.pr-num{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+      @page{margin:10mm 8mm;size:A4}
+    }
+  </style>
+</head>
+<body>
+
+<div class="print-bar">
+  <span>📐 SAFIRA ERP — Architecture V2 · Document de spécification</span>
+  <button onclick="window.print()">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+    Télécharger PDF
+  </button>
+</div>
+
+<div class="page">
+  <div class="hdr">
+    <div class="hdr-top">
+      <div class="logo">S</div>
+      <div class="hdr-meta">
+        <strong>SAFIRA ERP — Architecture V2</strong>
+        <span>Senior ERP Solution Architect &amp; Product Owner · 12 Juin 2026</span>
+      </div>
+    </div>
+    <h1>Spécification de Conception Professionnelle</h1>
+    <p>Traçabilité complète · Gestion caisse POS · Intégration financière automatique · Moteur fiscal · Piste d'audit</p>
+    <div class="chips">
+      <span class="chip">📦 Stock Ledger</span>
+      <span class="chip">🔄 14 types de mouvements</span>
+      <span class="chip">💰 Sessions POS</span>
+      <span class="chip">📒 Journaux automatiques</span>
+      <span class="chip">🧾 Moteur TVA</span>
+      <span class="chip">🔍 Piste d'audit complète</span>
+      <span class="chip">📊 Rapports PDF/Excel/CSV</span>
+      <span class="chip">6 phases · 9 semaines</span>
+    </div>
+  </div>
+
+  <div class="body">
+
+    <!-- Principles -->
+    <div class="sec-title"><div class="sec-icon">⚡</div>Principes d'Architecture</div>
+    <div class="principles">
+      <div class="pr"><h4><div class="pr-num">P1</div>Transaction Complète</h4><p>Chaque transaction génère atomiquement : document métier + mouvements stock + écritures comptables + lignes taxes + entrée audit. Si l'un échoue, tout est annulé.</p></div>
+      <div class="pr"><h4><div class="pr-num">P2</div>Stock Ledger Immuable</h4><p>Le stock n'est jamais modifié directement. Toute variation passe par un enregistrement de mouvement. La quantité est calculée : Σ(IN) – Σ(OUT).</p></div>
+      <div class="pr"><h4><div class="pr-num">P3</div>Double Entrée par Défaut</h4><p>Aucune écriture manuelle. Le JournalEngine écoute les événements métier et génère les débits/crédits automatiquement, sans doublon.</p></div>
+      <div class="pr"><h4><div class="pr-num">P4</div>Piste d'Audit Immuable</h4><p>Les entrées d'audit sont en insert-only. Jamais de UPDATE, jamais de DELETE. Chaque modification capture l'état avant et après en JSON.</p></div>
+      <div class="pr"><h4><div class="pr-num">P5</div>TVA Centralisée</h4><p>Tout calcul fiscal passe par le TaxEngine. Aucun composant ne calcule la taxe de façon autonome. Un seul code, une seule règle, partout.</p></div>
+      <div class="pr"><h4><div class="pr-num">P6</div>Caisse Traçable</h4><p>Chaque franc entrant ou sortant de la caisse est enregistré avec : utilisateur, session, catégorie, référence et écriture comptable associée.</p></div>
+    </div>
+
+    <!-- Database Changes -->
+    <div class="sec-title"><div class="sec-icon">🗄️</div>Changements de Schéma Base de Données</div>
+
+    <div class="sec-sub">Nouveaux types de mouvements (MovementType)</div>
+    <div class="two-col">
+      <div class="card">
+        <h5>Entrées (direction +1)</h5>
+        <ul>
+          <li>PURCHASE_RECEIPT — Réception fournisseur</li>
+          <li>CUSTOMER_RETURN — Retour client</li>
+          <li>STOCK_ADJUSTMENT_IN — Ajustement positif</li>
+          <li>WAREHOUSE_TRANSFER_IN — Réception transfert</li>
+          <li>PRODUCTION_IN — Sortie production</li>
+          <li>OPENING_STOCK — Stock d'ouverture</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h5>Sorties (direction -1)</h5>
+        <ul>
+          <li>SALE_DELIVERY — Livraison vente</li>
+          <li>POS_SALE — Vente caisse</li>
+          <li>PURCHASE_RETURN — Retour fournisseur</li>
+          <li>SUPPLIER_RETURN — Renvoi fournisseur</li>
+          <li>STOCK_ADJUSTMENT_OUT — Ajustement négatif</li>
+          <li>WAREHOUSE_TRANSFER_OUT — Envoi transfert</li>
+          <li>WRITE_OFF — Perte / casse / périmé</li>
+          <li>PRODUCTION_OUT — Consommation matières</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="sec-sub">Nouveaux modèles Prisma</div>
+    <table>
+      <thead><tr><th>Modèle</th><th>Description</th><th>Champs clés</th></tr></thead>
+      <tbody>
+        <tr><td>PosSession</td><td>Session de caisse (shift)</td><td>openingCash, closedAt, variance, status, cashierId</td></tr>
+        <tr><td>CashEntry</td><td>Mouvement de caisse (entrée, sortie, dépense, revenu)</td><td>type, category, amount, sessionId, journalEntryId</td></tr>
+        <tr><td>WarehouseTransfer</td><td>Transfert inter-entrepôts</td><td>fromWarehouseId, toWarehouseId, status, transferPairId</td></tr>
+        <tr><td>TransferLine</td><td>Lignes du transfert</td><td>productId, quantity, unitCost, receivedQty</td></tr>
+        <tr><td>TaxLine</td><td>Détail TVA par ligne de transaction</td><td>taxId, taxRate, taxableAmount, taxAmount, referenceId</td></tr>
+        <tr><td>StockValuationSnapshot</td><td>Valorisation périodique du stock</td><td>snapshotDate, avgUnitCost, totalValue, valuationMethod</td></tr>
+      </tbody>
+    </table>
+
+    <div class="sec-sub">Champs ajoutés aux modèles existants</div>
+    <table>
+      <thead><tr><th>Modèle</th><th>Champs ajoutés</th></tr></thead>
+      <tbody>
+        <tr><td>InventoryMovement</td><td>direction, runningBalance, referenceType, transferPairId, sessionId, approvalStatus, reason</td></tr>
+        <tr><td>Product</td><td>reorderPoint, safetyStock, isTracked, valuationMethod</td></tr>
+        <tr><td>AuditLog</td><td>module, subModule, severity, branchId, warehouseId, sessionId, changeReason, checksum</td></tr>
+      </tbody>
+    </table>
+
+    <!-- Inventory Engine -->
+    <div class="sec-title"><div class="sec-icon">📦</div>Moteur Inventaire — Stock Ledger</div>
+
+    <div class="sec-sub">Calcul du stock en temps réel</div>
+    <div class="flow">Stock Physique  = Σ mouvements IN  - Σ mouvements OUT
+Stock Réservé   = Σ qté sur ventes confirmées non livrées
+Stock Disponible = Stock Physique - Stock Réservé
+Stock Attendu   = Σ qté sur commandes non reçues</div>
+
+    <div class="sec-sub">Workflow — Transfert inter-entrepôts</div>
+    <div class="flow">1. Création demande (DRAFT)
+   → Validation stock disponible à la source
+2. Approbation manager (IN_TRANSIT)
+   → Mouvement WAREHOUSE_TRANSFER_OUT à la source (-qty)
+   → Stock source réduit immédiatement
+3. Confirmation réception (COMPLETED)
+   → Mouvement WAREHOUSE_TRANSFER_IN à destination (+qty)
+   → Stock destination augmenté
+4. Les deux mouvements partagent le même transferPairId
+   → Traçabilité complète du déplacement physique</div>
+
+    <div class="sec-sub">Règles de validation stock</div>
+    <table>
+      <thead><tr><th>Règle</th><th>Description</th><th>Action</th></tr></thead>
+      <tbody>
+        <tr><td>INV-001</td><td>Stock direct JAMAIS modifiable</td><td>Erreur technique si tentative directe</td></tr>
+        <tr><td>INV-002</td><td>Vente bloquée si stock insuffisant</td><td>Erreur 400 ou backorder selon config</td></tr>
+        <tr><td>INV-003</td><td>Write-off > 100 000 XAF → approbation</td><td>Statut PENDING_APPROVAL</td></tr>
+        <tr><td>INV-004</td><td>Ajustement > 10 unités → approbation</td><td>Notif. manager + audit WARNING</td></tr>
+        <tr><td>INV-007</td><td>Stock négatif bloqué par défaut</td><td>Configurable par produit</td></tr>
+        <tr><td>INV-010</td><td>Méthode valorisation immuable si stock > 0</td><td>Erreur validation</td></tr>
+      </tbody>
+    </table>
+
+    <!-- POS Cash -->
+    <div class="sec-title"><div class="sec-icon">💰</div>Gestion de Caisse POS</div>
+
+    <div class="sec-sub">Cycle de vie d'une session</div>
+    <div class="flow">OUVERTURE                    PENDANT LA SESSION              CLÔTURE
+─────────                    ──────────────────              ──────────
+Caissier déclare             Ventes (espèces/MM)          Caissier saisit
+le fonds de caisse    ──►    Entrées / Sorties      ──►   le comptage physique
+(ex: 100 000 XAF)           Dépenses (carburant…)
+Approbation manager          Revenus divers               Calcul écart automatique
+Session OPEN                                              |écart| ≤ 5 000 → auto-OK
+                                                          |écart| > 5 000 → manager
+                                                          Session RECONCILED
+                                                          Écriture comptable écart</div>
+
+    <div class="sec-sub">Catégories de dépenses POS</div>
+    <div class="two-col">
+      <div class="card">
+        <h5>💸 Dépenses</h5>
+        <ul>
+          <li>Carburant / Transport</li>
+          <li>Internet / Téléphone</li>
+          <li>Nettoyage / Entretien</li>
+          <li>Fournitures de bureau</li>
+          <li>Maintenance / Réparations</li>
+          <li>Charges générales</li>
+          <li>Marketing / Publicité</li>
+          <li>Avance sur salaire</li>
+          <li>Autre dépense</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h5>💰 Revenus Divers</h5>
+        <ul>
+          <li>Frais de livraison</li>
+          <li>Consulting / Conseil</li>
+          <li>Prestation de service</li>
+          <li>Location</li>
+          <li>Commission</li>
+          <li>Intérêts</li>
+          <li>Autre revenu</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="sec-sub">Règles de gestion caisse</div>
+    <table>
+      <thead><tr><th>Règle</th><th>Description</th></tr></thead>
+      <tbody>
+        <tr><td>POS-001</td><td>Une seule session ouverte par caissier par succursale</td></tr>
+        <tr><td>POS-002</td><td>Fonds d'ouverture confirmé avant activation session</td></tr>
+        <tr><td>POS-005</td><td>Écart ≤ 5 000 XAF → auto-approuvé · > 5 000 → approbation manager</td></tr>
+        <tr><td>POS-008</td><td>Dépense > 50 000 XAF → reçu obligatoire (photo)</td></tr>
+      </tbody>
+    </table>
+
+    <!-- Finance Integration -->
+    <div class="sec-title"><div class="sec-icon">📒</div>Intégration Financière Automatique</div>
+
+    <div class="sec-sub">Règles d'écritures automatiques (SYSCOHADA)</div>
+    <table>
+      <thead><tr><th>Événement</th><th>Débit</th><th>Crédit</th></tr></thead>
+      <tbody>
+        <tr><td>Vente livrée</td><td>411 Clients (TTC)</td><td>701 Ventes HT + 4431 TVA collectée</td></tr>
+        <tr><td>Encaissement client</td><td>521 Banque / 5711 Caisse</td><td>411 Clients</td></tr>
+        <tr><td>Réception achat</td><td>311 Stocks (TTC)</td><td>401 Fournisseurs</td></tr>
+        <tr><td>Paiement fournisseur</td><td>401 Fournisseurs</td><td>521 Banque / 5711 Caisse</td></tr>
+        <tr><td>Vente POS espèces</td><td>5711 Caisse (TTC)</td><td>701 Ventes HT + 4431 TVA</td></tr>
+        <tr><td>Vente POS Mobile Money</td><td>5712 Caisse MM (TTC)</td><td>701 Ventes HT + 4431 TVA</td></tr>
+        <tr><td>Dépense POS</td><td>6xx Compte charge</td><td>5711 Caisse</td></tr>
+        <tr><td>Revenu divers POS</td><td>5711 Caisse</td><td>706 Prestations</td></tr>
+        <tr><td>Casse / Write-off</td><td>658 Pertes stocks</td><td>311 Stocks</td></tr>
+        <tr><td>Transfert entrepôts</td><td>311 Stocks (dest.)</td><td>311 Stocks (source)</td></tr>
+      </tbody>
+    </table>
+
+    <!-- Tax Engine -->
+    <div class="sec-title"><div class="sec-icon">🧾</div>Moteur Fiscal (Tax Engine)</div>
+
+    <div class="sec-sub">Codes TVA Cameroun</div>
+    <table>
+      <thead><tr><th>Code</th><th>Nom</th><th>Taux</th><th>S'applique à</th></tr></thead>
+      <tbody>
+        <tr><td>EXEMPT</td><td>Exonéré TVA</td><td>0.00%</td><td>Produits exonérés, clients exonérés</td></tr>
+        <tr><td>TVA_0</td><td>TVA taux zéro</td><td>0.00%</td><td>Exportations</td></tr>
+        <tr><td>TVA_5</td><td>TVA réduit</td><td>5.00%</td><td>Produits alimentaires de base</td></tr>
+        <tr><td>TVA_19</td><td>TVA standard</td><td>19.25%</td><td>La plupart des biens et services</td></tr>
+      </tbody>
+    </table>
+
+    <div class="sec-sub">Rapport TVA mensuel (exemple)</div>
+    <div class="flow">Période: Juin 2026
+───────────────────────────────────────────────────────────
+VENTES
+  TVA collectée (19.25%)    Base : 18 500 000   TVA :  3 561 250
+  Exonérées                 Base :  2 300 000   TVA :          0
+  Total ventes HT           Base : 20 800 000   TVA :  3 561 250
+
+ACHATS
+  TVA déductible (19.25%)   Base : 12 000 000   TVA :  2 310 000
+  Total achats HT           Base : 12 000 000   TVA :  2 310 000
+
+TVA NETTE À REVERSER À LA DGI                   TVA :  1 251 250
+───────────────────────────────────────────────────────────</div>
+
+    <!-- Audit -->
+    <div class="sec-title"><div class="sec-icon">🔍</div>Piste d'Audit Complète</div>
+
+    <div class="sec-sub">Chaque action enregistre</div>
+    <div class="two-col">
+      <div class="card">
+        <h5>Qui / Quand / Où</h5>
+        <ul>
+          <li>Utilisateur (ID + nom)</li>
+          <li>Date et heure précise</li>
+          <li>Adresse IP + User-Agent</li>
+          <li>Succursale / Entrepôt</li>
+          <li>Session POS (si applicable)</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h5>Quoi / Pourquoi</h5>
+        <ul>
+          <li>Module + Sous-module</li>
+          <li>Action (CREATE/UPDATE/DELETE)</li>
+          <li>Ancienne valeur (JSON)</li>
+          <li>Nouvelle valeur (JSON)</li>
+          <li>Raison obligatoire (ajustements)</li>
+          <li>Sévérité (INFO/WARNING/CRITICAL)</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="sec-sub">Matrice des permissions — Nouvelles fonctionnalités</div>
+    <table>
+      <thead><tr><th>Fonctionnalité</th><th>Super Admin</th><th>Finance</th><th>Commercial</th><th>Achats/Stock</th><th>Caissier</th><th>Auditeur</th></tr></thead>
+      <tbody>
+        <tr><td>Ouvrir/Clôturer session POS</td><td>✅</td><td>✅</td><td>✅</td><td>❌</td><td>✅</td><td>👁</td></tr>
+        <tr><td>Saisir dépense POS</td><td>✅</td><td>✅</td><td>✅</td><td>❌</td><td>✅</td><td>👁</td></tr>
+        <tr><td>Approuver écart caisse</td><td>✅</td><td>✅</td><td>✅</td><td>❌</td><td>❌</td><td>👁</td></tr>
+        <tr><td>Créer ajustement stock</td><td>✅</td><td>❌</td><td>❌</td><td>✅</td><td>❌</td><td>👁</td></tr>
+        <tr><td>Approuver ajustement stock</td><td>✅</td><td>✅</td><td>❌</td><td>✅ Achats</td><td>❌</td><td>👁</td></tr>
+        <tr><td>Créer transfert entrepôt</td><td>✅</td><td>❌</td><td>❌</td><td>✅</td><td>❌</td><td>👁</td></tr>
+        <tr><td>Valider écriture comptable</td><td>✅</td><td>✅</td><td>❌</td><td>❌</td><td>❌</td><td>👁</td></tr>
+        <tr><td>Voir journal d'audit</td><td>✅</td><td>✅</td><td>❌</td><td>❌</td><td>❌</td><td>✅</td></tr>
+      </tbody>
+    </table>
+
+    <!-- Implementation Plan -->
+    <div class="sec-title"><div class="sec-icon">🗓️</div>Plan d'Implémentation — 9 Semaines</div>
+
+    <div class="phases">
+      <div class="phase">
+        <div class="phase-hdr">
+          <h4>🏗️ Phase 1 — Moteur de Stock (Stock Ledger)</h4>
+          <span class="ph-badge"><span class="prio p-critical">CRITIQUE</span> &nbsp; Semaines 1–2 · ~59h</span>
+        </div>
+        <div class="phase-body">
+          <p>Fondation de tout le système. Sans cela, l'inventaire reste non fiable.</p>
+          <ul class="phase-tasks">
+            <li>Expansion enum MovementType (14 types)</li>
+            <li>Enrichissement modèle InventoryMovement (direction, runningBalance, approvalStatus…)</li>
+            <li>Nouveaux modèles : WarehouseTransfer, TransferLine, StockValuationSnapshot</li>
+            <li>Service StockLedgerService (calcul temps réel, réconciliation, valorisation)</li>
+            <li>Refactoring SalesService + PurchasesService → création automatique de mouvements</li>
+            <li>API stock temps réel : GET /inventory/products/:id/stock (par entrepôt)</li>
+            <li>Écran Transferts inter-entrepôts (frontend)</li>
+            <li>Panneau stock produit avec décomposition par entrepôt (frontend)</li>
+          </ul>
+        </div>
+      </div>
+      <div class="phase">
+        <div class="phase-hdr">
+          <h4>💰 Phase 2 — Gestion Caisse POS</h4>
+          <span class="ph-badge"><span class="prio p-high">HAUTE</span> &nbsp; Semaines 3–4 · ~64h</span>
+        </div>
+        <div class="phase-body">
+          <p>Traçabilité complète de chaque franc en caisse, du fonds d'ouverture à la réconciliation.</p>
+          <ul class="phase-tasks">
+            <li>Modèles PosSession + CashEntry + enums associés</li>
+            <li>PosSessionService : ouverture, clôture, réconciliation, rapport</li>
+            <li>CashEntryService : espèces IN/OUT, dépenses, revenus divers</li>
+            <li>Validation stock avant encaissement POS</li>
+            <li>Écran ouverture/clôture de session (frontend)</li>
+            <li>Formulaires dépenses et revenus divers (frontend)</li>
+            <li>Écran réconciliation avec comptage physique (frontend)</li>
+            <li>Rapport de session PDF (frontend)</li>
+          </ul>
+        </div>
+      </div>
+      <div class="phase">
+        <div class="phase-hdr">
+          <h4>📒 Phase 3 — Intégration Finance Automatique</h4>
+          <span class="ph-badge"><span class="prio p-high">HAUTE</span> &nbsp; Semaines 5–6 · ~62h</span>
+        </div>
+        <div class="phase-body">
+          <p>Zéro saisie manuelle. Toutes les écritures SYSCOHADA générées automatiquement.</p>
+          <ul class="phase-tasks">
+            <li>TaxEngine centralisé (calcul, validation, reporting)</li>
+            <li>JournalEngine (écoute événements → génère débits/crédits)</li>
+            <li>Mapping comptes configurables (Settings)</li>
+            <li>Branchement sur : Sales, Purchases, POS, CashEntry, Adjustments</li>
+            <li>API rapport TVA mensuel</li>
+            <li>Écran rapport TVA (frontend)</li>
+            <li>Visualisation écriture auto sur chaque transaction (frontend)</li>
+          </ul>
+        </div>
+      </div>
+      <div class="phase">
+        <div class="phase-hdr">
+          <h4>🔍 Phase 4 — Piste d'Audit &amp; Sécurité</h4>
+          <span class="ph-badge"><span class="prio p-medium">MOYENNE</span> &nbsp; Semaine 7 · ~42h</span>
+        </div>
+        <div class="phase-body">
+          <p>Conformité réglementaire. Chaque action tracée avec ancienne et nouvelle valeur.</p>
+          <ul class="phase-tasks">
+            <li>AuditService injectable (enrichi : module, sévérité, branche, entrepôt)</li>
+            <li>AuditInterceptor NestJS (automatique sur tous les endpoints write)</li>
+            <li>Capture before/after state sur tous les services</li>
+            <li>API audit avec filtres avancés + export CSV/PDF</li>
+            <li>Écran Journal d'Audit avec timeline (frontend)</li>
+            <li>Modal historique des modifications par enregistrement (frontend)</li>
+          </ul>
+        </div>
+      </div>
+      <div class="phase">
+        <div class="phase-hdr">
+          <h4>📊 Phase 5 — Alertes Stock &amp; Valorisation</h4>
+          <span class="ph-badge"><span class="prio p-medium">MOYENNE</span> &nbsp; Semaine 8 · ~52h</span>
+        </div>
+        <div class="phase-body">
+          <p>Gestion proactive des stocks, valorisation CMUP, réconciliation physique.</p>
+          <ul class="phase-tasks">
+            <li>Alertes temps réel (WebSocket) : rupture, seuil réapprovisionnement, surplus</li>
+            <li>Valorisation CMUP (Coût Moyen Unitaire Pondéré)</li>
+            <li>Service de réconciliation physique (comptage vs système)</li>
+            <li>Dashboard enrichi : stock total, ruptures, alertes</li>
+            <li>Écran alertes stock avec filtres (frontend)</li>
+            <li>Écran valorisation stock par entrepôt (frontend)</li>
+          </ul>
+        </div>
+      </div>
+      <div class="phase">
+        <div class="phase-hdr">
+          <h4>📤 Phase 6 — Rapports &amp; Exports</h4>
+          <span class="ph-badge"><span class="prio p-low">BASSE</span> &nbsp; Semaine 9 · ~39h</span>
+        </div>
+        <div class="phase-body">
+          <p>PDF, Excel et CSV pour chaque module. Exports réglementaires prêts pour la DGI.</p>
+          <ul class="phase-tasks">
+            <li>Rapport mouvements de stock (PDF/Excel/CSV)</li>
+            <li>Rapport valorisation inventaire</li>
+            <li>Rapport ventes / achats / trésorerie</li>
+            <li>Rapport TVA mensuel (format DGI)</li>
+            <li>Rapport de rentabilité</li>
+            <li>Rapport d'activité par entrepôt</li>
+            <li>Rapport de session POS (PDF)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Summary -->
+    <div class="summary-box">
+      <h4>📋 Résumé de l'Architecture V2</h4>
+      <div class="summary-grid">
+        <div class="s-item"><div class="s-num">14</div><div class="s-lbl">Types de mouvements</div></div>
+        <div class="s-item"><div class="s-num">6</div><div class="s-lbl">Nouveaux modèles DB</div></div>
+        <div class="s-item"><div class="s-num">5</div><div class="s-lbl">Principes d'architecture</div></div>
+        <div class="s-item"><div class="s-num">~318h</div><div class="s-lbl">Effort total estimé</div></div>
+        <div class="s-item"><div class="s-num">9 sem.</div><div class="s-lbl">Durée d'implémentation</div></div>
+        <div class="s-item"><div class="s-num">6</div><div class="s-lbl">Phases de livraison</div></div>
+        <div class="s-item"><div class="s-num">0</div><div class="s-lbl">Saisie comptable manuelle</div></div>
+        <div class="s-item"><div class="s-num">100%</div><div class="s-lbl">Traçabilité stock</div></div>
+        <div class="s-item"><div class="s-num">100%</div><div class="s-lbl">Traçabilité caisse</div></div>
+      </div>
+    </div>
+
+  </div><!-- /body -->
+  <div class="footer">
+    <strong>SAFIRA ERP Architecture V2</strong> &nbsp;·&nbsp; Document de spécification &nbsp;·&nbsp;
+    Senior ERP Solution Architect &amp; Product Owner &nbsp;·&nbsp; 12 Juin 2026 &nbsp;·&nbsp;
+    Groupe SAFIRA Distribution S.A. — Douala, Cameroun
+  </div>
+</div>
+
+</body>
+</html>

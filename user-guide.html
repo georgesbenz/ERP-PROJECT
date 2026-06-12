@@ -1,0 +1,1774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ERP Platform — Complete User Guide</title>
+<style>
+  /* ── Base ── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --indigo:  #4f46e5;
+    --indigo-l:#e0e7ff;
+    --emerald: #059669;
+    --em-l:    #d1fae5;
+    --amber:   #d97706;
+    --am-l:    #fef3c7;
+    --red:     #dc2626;
+    --red-l:   #fee2e2;
+    --sky:     #0284c7;
+    --sky-l:   #e0f2fe;
+    --gray9:   #111827;
+    --gray7:   #374151;
+    --gray5:   #6b7280;
+    --gray2:   #e5e7eb;
+    --gray1:   #f9fafb;
+    --page:    #ffffff;
+  }
+  html { font-size: 11pt; }
+  body {
+    font-family: 'Segoe UI', 'Inter', Helvetica, Arial, sans-serif;
+    color: var(--gray7);
+    background: #f0f2f5;
+    line-height: 1.6;
+  }
+
+  /* ── Layout ── */
+  .page {
+    max-width: 900px;
+    margin: 0 auto;
+    background: var(--page);
+  }
+
+  /* ── Cover ── */
+  .cover {
+    background: linear-gradient(135deg, var(--indigo) 0%, #7c3aed 100%);
+    color: white;
+    padding: 80px 60px 60px;
+    page-break-after: always;
+  }
+  .cover-logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255,255,255,.15);
+    border-radius: 12px;
+    padding: 10px 18px;
+    font-size: 1.1em;
+    font-weight: 700;
+    letter-spacing: .5px;
+    margin-bottom: 48px;
+  }
+  .cover h1 {
+    font-size: 2.6em;
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: 16px;
+  }
+  .cover .subtitle {
+    font-size: 1.15em;
+    opacity: .85;
+    margin-bottom: 48px;
+  }
+  .cover-meta {
+    border-top: 1px solid rgba(255,255,255,.3);
+    padding-top: 28px;
+    display: flex;
+    gap: 40px;
+    flex-wrap: wrap;
+  }
+  .cover-meta div { font-size: .9em; opacity: .8; }
+  .cover-meta strong { display: block; font-size: 1em; opacity: 1; color: white; margin-bottom: 2px; }
+
+  /* ── TOC ── */
+  .toc {
+    padding: 50px 60px;
+    page-break-after: always;
+  }
+  .toc h2 { font-size: 1.5em; color: var(--gray9); margin-bottom: 24px; font-weight: 700; }
+  .toc-list { list-style: none; }
+  .toc-list li { display: flex; align-items: baseline; margin-bottom: 8px; }
+  .toc-list li a { color: var(--indigo); text-decoration: none; font-weight: 500; }
+  .toc-list li a:hover { text-decoration: underline; }
+  .toc-dots { flex: 1; border-bottom: 1px dotted var(--gray2); margin: 0 8px 3px; }
+  .toc-pg { color: var(--gray5); font-size: .9em; }
+  .toc-section { font-size: .8em; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--gray5); margin: 18px 0 6px; }
+
+  /* ── Content pages ── */
+  .content { padding: 50px 60px; }
+
+  /* ── Section heading ── */
+  .module-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid var(--indigo-l);
+    page-break-before: always;
+  }
+  .module-header:first-child { page-break-before: avoid; }
+  .mod-icon {
+    width: 46px; height: 46px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.4em;
+    flex-shrink: 0;
+  }
+  .mod-icon.indigo  { background: var(--indigo-l); }
+  .mod-icon.emerald { background: var(--em-l); }
+  .mod-icon.amber   { background: var(--am-l); }
+  .mod-icon.sky     { background: var(--sky-l); }
+  .mod-icon.red     { background: var(--red-l); }
+  .mod-icon.purple  { background: #ede9fe; }
+  .mod-icon.teal    { background: #ccfbf1; }
+  .mod-icon.rose    { background: #ffe4e6; }
+  .mod-icon.slate   { background: #f1f5f9; }
+  .module-header h2 { font-size: 1.5em; font-weight: 700; color: var(--gray9); margin-bottom: 2px; }
+  .module-header p  { font-size: .9em; color: var(--gray5); }
+
+  /* ── Sub-headings ── */
+  h3 { font-size: 1.05em; font-weight: 700; color: var(--gray9); margin: 28px 0 10px; }
+  h4 { font-size: .95em; font-weight: 600; color: var(--indigo); margin: 20px 0 8px; }
+
+  /* ── Role badges ── */
+  .roles { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 12px; }
+  .role-badge {
+    display: inline-block;
+    padding: 2px 9px;
+    border-radius: 99px;
+    font-size: .75em;
+    font-weight: 600;
+    background: var(--indigo-l);
+    color: var(--indigo);
+  }
+  .role-badge.amber  { background: var(--am-l);  color: var(--amber);  }
+  .role-badge.emerald{ background: var(--em-l);  color: var(--emerald);}
+  .role-badge.red    { background: var(--red-l); color: var(--red);    }
+  .role-badge.sky    { background: var(--sky-l); color: var(--sky);    }
+  .role-badge.gray   { background: var(--gray2); color: var(--gray7);  }
+
+  /* ── Step cards ── */
+  .steps { counter-reset: step; list-style: none; margin: 12px 0; }
+  .steps li {
+    counter-increment: step;
+    display: flex;
+    gap: 14px;
+    margin-bottom: 12px;
+    padding: 12px 14px;
+    background: var(--gray1);
+    border-radius: 10px;
+    border-left: 3px solid var(--indigo);
+    align-items: flex-start;
+  }
+  .steps li::before {
+    content: counter(step);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    background: var(--indigo);
+    color: white;
+    font-size: .78em;
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .steps li .step-body { flex: 1; }
+  .steps li strong { color: var(--gray9); font-size: .95em; }
+  .steps li p { font-size: .88em; color: var(--gray5); margin-top: 3px; line-height: 1.5; }
+
+  /* ── Info/tip boxes ── */
+  .box {
+    border-radius: 10px;
+    padding: 12px 16px;
+    margin: 14px 0;
+    font-size: .88em;
+    line-height: 1.55;
+  }
+  .box.info    { background: var(--sky-l);   border-left: 4px solid var(--sky);     color: #0c4a6e; }
+  .box.tip     { background: var(--em-l);    border-left: 4px solid var(--emerald); color: #064e3b; }
+  .box.warning { background: var(--am-l);    border-left: 4px solid var(--amber);   color: #78350f; }
+  .box.danger  { background: var(--red-l);   border-left: 4px solid var(--red);     color: #7f1d1d; }
+  .box strong  { font-weight: 700; }
+
+  /* ── Field tables ── */
+  table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: .88em; }
+  thead tr { background: var(--indigo-l); }
+  thead th { padding: 8px 12px; text-align: left; font-weight: 700; color: var(--indigo); font-size: .82em; text-transform: uppercase; letter-spacing: .06em; }
+  tbody tr:nth-child(even) { background: var(--gray1); }
+  tbody td { padding: 8px 12px; color: var(--gray7); vertical-align: top; }
+  tbody td:first-child { font-weight: 500; color: var(--gray9); white-space: nowrap; }
+  .req { color: var(--red); font-weight: 700; }
+  .opt { color: var(--gray5); font-size: .85em; }
+
+  /* ── Status pills ── */
+  .pill {
+    display: inline-block;
+    padding: 1px 8px;
+    border-radius: 99px;
+    font-size: .78em;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .pill.green   { background: var(--em-l);    color: var(--emerald); }
+  .pill.yellow  { background: var(--am-l);    color: var(--amber);   }
+  .pill.red     { background: var(--red-l);   color: var(--red);     }
+  .pill.blue    { background: var(--indigo-l);color: var(--indigo);  }
+  .pill.gray    { background: var(--gray2);   color: var(--gray7);   }
+  .pill.sky     { background: var(--sky-l);   color: var(--sky);     }
+
+  /* ── Grid layout for quick ref ── */
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 14px 0; }
+  .card {
+    border: 1px solid var(--gray2);
+    border-radius: 10px;
+    padding: 14px;
+    background: var(--page);
+  }
+  .card h4 { margin-top: 0; font-size: .88em; }
+  .card ul { padding-left: 18px; font-size: .85em; margin-top: 6px; }
+  .card ul li { margin-bottom: 4px; color: var(--gray7); }
+
+  /* ── Kbd ── */
+  kbd {
+    display: inline-block;
+    padding: 1px 6px;
+    border: 1px solid var(--gray2);
+    border-radius: 4px;
+    background: var(--gray1);
+    font-size: .82em;
+    font-family: monospace;
+    color: var(--gray7);
+  }
+
+  /* ── Divider ── */
+  hr { border: none; border-top: 1px solid var(--gray2); margin: 32px 0; }
+
+  /* ── Footer ── */
+  .footer {
+    text-align: center;
+    padding: 24px;
+    font-size: .8em;
+    color: var(--gray5);
+    border-top: 1px solid var(--gray2);
+  }
+
+  /* ── Print styles ── */
+  @media print {
+    body { background: white; }
+    .page { max-width: 100%; }
+    .cover { padding: 60px 48px 48px; }
+    .content, .toc { padding: 40px 48px; }
+    .module-header { page-break-before: always; page-break-inside: avoid; }
+    h3 { page-break-after: avoid; }
+    .steps li { page-break-inside: avoid; }
+    table { page-break-inside: auto; }
+    thead { display: table-header-group; }
+    tr { page-break-inside: avoid; }
+    @page { margin: 1cm 1.5cm; size: A4; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- ══════════════════════════════════════════════════════════ COVER -->
+<div class="cover">
+  <div class="cover-logo">&#9670; ERP Platform</div>
+  <h1>Complete User Guide<br>Guide Complet Utilisateur</h1>
+  <p class="subtitle">Step-by-step instructions for every module — from onboarding to daily operations</p>
+  <div class="cover-meta">
+    <div><strong>Version</strong>Phase 2 · June 2026</div>
+    <div><strong>Audience</strong>All roles</div>
+    <div><strong>Language</strong>English / Français</div>
+    <div><strong>Modules</strong>14 covered</div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════ TOC -->
+<div class="toc">
+  <h2>Table of Contents</h2>
+
+  <p class="toc-section">Getting Started</p>
+  <ul class="toc-list">
+    <li><a href="#login">1. Logging In &amp; Authentication</a><span class="toc-dots"></span><span class="toc-pg">3</span></li>
+    <li><a href="#dashboard">2. Dashboard Overview</a><span class="toc-dots"></span><span class="toc-pg">4</span></li>
+    <li><a href="#navigation">3. Navigation &amp; Common UI Patterns</a><span class="toc-dots"></span><span class="toc-pg">5</span></li>
+  </ul>
+
+  <p class="toc-section">Operations Modules</p>
+  <ul class="toc-list">
+    <li><a href="#pos">4. POS — Point of Sale / Caisse</a><span class="toc-dots"></span><span class="toc-pg">6</span></li>
+    <li><a href="#sales">5. Sales / Ventes</a><span class="toc-dots"></span><span class="toc-pg">8</span></li>
+    <li><a href="#customers">6. Customers / Clients</a><span class="toc-dots"></span><span class="toc-pg">9</span></li>
+    <li><a href="#purchases">7. Purchases / Achats</a><span class="toc-dots"></span><span class="toc-pg">10</span></li>
+    <li><a href="#suppliers">8. Suppliers / Fournisseurs</a><span class="toc-dots"></span><span class="toc-pg">11</span></li>
+    <li><a href="#inventory">9. Inventory / Inventaire</a><span class="toc-dots"></span><span class="toc-pg">12</span></li>
+    <li><a href="#finance">10. Finance</a><span class="toc-dots"></span><span class="toc-pg">14</span></li>
+    <li><a href="#crm">11. CRM — Leads &amp; Opportunities</a><span class="toc-dots"></span><span class="toc-pg">16</span></li>
+    <li><a href="#budgeting">12. Budgeting / Budgétisation</a><span class="toc-dots"></span><span class="toc-pg">18</span></li>
+    <li><a href="#analytics">13. Analytics</a><span class="toc-dots"></span><span class="toc-pg">20</span></li>
+    <li><a href="#reports">14. Reports / Rapports</a><span class="toc-dots"></span><span class="toc-pg">21</span></li>
+  </ul>
+
+  <p class="toc-section">Administration</p>
+  <ul class="toc-list">
+    <li><a href="#users">15. Users &amp; Permissions</a><span class="toc-dots"></span><span class="toc-pg">23</span></li>
+    <li><a href="#settings">16. Settings / Paramètres</a><span class="toc-dots"></span><span class="toc-pg">25</span></li>
+  </ul>
+
+  <p class="toc-section">Reference</p>
+  <ul class="toc-list">
+    <li><a href="#roles">17. Roles &amp; Access Matrix</a><span class="toc-dots"></span><span class="toc-pg">27</span></li>
+    <li><a href="#statuses">18. Status Definitions</a><span class="toc-dots"></span><span class="toc-pg">28</span></li>
+    <li><a href="#tips">19. Tips &amp; Best Practices</a><span class="toc-dots"></span><span class="toc-pg">29</span></li>
+  </ul>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════ CONTENT -->
+<div class="content">
+
+<!-- ────────────────────── GETTING STARTED ────────────────────── -->
+
+<div id="login" class="module-header" style="page-break-before:avoid">
+  <div class="mod-icon indigo">🔐</div>
+  <div>
+    <h2>1. Logging In &amp; Authentication</h2>
+    <p>Secure access to your tenant workspace</p>
+  </div>
+</div>
+
+<h3>How to log in</h3>
+<ol class="steps">
+  <li>
+    <div class="step-body">
+      <strong>Open the application</strong>
+      <p>Navigate to the ERP URL provided by your administrator (e.g., <kbd>http://localhost</kbd> or your hosted domain).</p>
+    </div>
+  </li>
+  <li>
+    <div class="step-body">
+      <strong>Enter your credentials</strong>
+      <p>Type your <strong>email address</strong> and <strong>password</strong> then click <kbd>Sign In</kbd>.</p>
+    </div>
+  </li>
+  <li>
+    <div class="step-body">
+      <strong>You're in</strong>
+      <p>You land on the Dashboard. Your name and role appear in the top-right corner. A JWT access token is silently refreshed every session.</p>
+    </div>
+  </li>
+</ol>
+
+<div class="box warning">
+  <strong>Forgotten password?</strong> Contact your Super Admin or Admin. They can reset your account from the Users page.
+</div>
+
+<div class="box info">
+  <strong>Session security:</strong> Tokens expire automatically. If you are idle for an extended period you will be redirected to the login screen — simply sign in again.
+</div>
+
+<!-- ────────────────────── DASHBOARD ────────────────────── -->
+
+<div id="dashboard" class="module-header">
+  <div class="mod-icon indigo">📊</div>
+  <div>
+    <h2>2. Dashboard Overview</h2>
+    <p>Real-time KPIs and business health at a glance</p>
+  </div>
+</div>
+
+<p>The Dashboard is the first screen after login. It provides a live summary of key metrics across the entire platform.</p>
+
+<h3>Metric Cards</h3>
+<table>
+  <thead><tr><th>Card</th><th>What it shows</th></tr></thead>
+  <tbody>
+    <tr><td>Total Customers</td><td>Number of customer records in the system</td></tr>
+    <tr><td>Total Products</td><td>Active SKUs in your product catalogue</td></tr>
+    <tr><td>Sales This Month</td><td>Count of sales orders created this calendar month</td></tr>
+    <tr><td>Revenue This Month</td><td>Total value of confirmed/paid sales this month</td></tr>
+    <tr><td>Pending Purchases</td><td>Purchase orders awaiting receipt or approval</td></tr>
+    <tr><td>Open Leads</td><td>CRM leads not yet converted or lost</td></tr>
+    <tr><td>Open Opportunities</td><td>Sales pipeline items with status OPEN</td></tr>
+    <tr><td>Low Stock Count</td><td>Products below their minimum stock threshold</td></tr>
+    <tr><td>Active Budgets</td><td>Budget plans in APPROVED status</td></tr>
+    <tr><td>Unread Notifications</td><td>System alerts (low stock, approvals, etc.)</td></tr>
+  </tbody>
+</table>
+
+<div class="box tip">
+  <strong>Tip:</strong> Click any metric card where available to navigate directly to the relevant module (e.g., clicking Low Stock takes you to Inventory).
+</div>
+
+<!-- ────────────────────── NAVIGATION ────────────────────── -->
+
+<div id="navigation" class="module-header">
+  <div class="mod-icon slate">🗺️</div>
+  <div>
+    <h2>3. Navigation &amp; Common UI Patterns</h2>
+    <p>How to use the sidebar, tables, modals, and pagination</p>
+  </div>
+</div>
+
+<h3>Sidebar navigation</h3>
+<p>The left sidebar groups all modules. Collapsed on small screens (hamburger menu). Your current page is highlighted in indigo.</p>
+
+<h3>Search bars</h3>
+<p>Every list page has a search field at the top-left. Type to filter results instantly — results refresh as you type (no need to press Enter).</p>
+
+<h3>Pagination</h3>
+<p>Long lists are paginated (default 20 rows). Use the <kbd>←</kbd> / <kbd>→</kbd> buttons at the bottom of the table to navigate between pages.</p>
+
+<h3>Modals (pop-up forms)</h3>
+<p>Creating or editing records opens a modal overlay. Required fields are marked with <span class="req">*</span>. Press <kbd>Cancel</kbd> or click outside the modal to close without saving.</p>
+
+<h3>Status badges</h3>
+<p>Coloured pills indicate record status throughout the app:</p>
+<div style="display:flex;flex-wrap:wrap;gap:8px;margin:10px 0">
+  <span class="pill green">ACTIVE / PAID / APPROVED</span>
+  <span class="pill yellow">PENDING / DRAFT / PENDING_APPROVAL</span>
+  <span class="pill red">INACTIVE / OVERDUE / LOST</span>
+  <span class="pill blue">CONFIRMED / CONVERTED</span>
+  <span class="pill sky">NEW / OPEN</span>
+  <span class="pill gray">CANCELLED / CLOSED</span>
+</div>
+
+<h3>Buttons</h3>
+<table>
+  <thead><tr><th>Style</th><th>Meaning</th></tr></thead>
+  <tbody>
+    <tr><td>Indigo (solid)</td><td>Primary action — create, save, confirm</td></tr>
+    <tr><td>Outline</td><td>Secondary — cancel, edit, navigate</td></tr>
+    <tr><td>Red / Danger</td><td>Destructive — delete (always confirm first)</td></tr>
+    <tr><td>Orange</td><td>Disable / toggle off</td></tr>
+    <tr><td>Sky Blue</td><td>Clone / copy action</td></tr>
+    <tr><td>Green</td><td>Enable / approve</td></tr>
+  </tbody>
+</table>
+
+<hr>
+
+<!-- ────────────────────── POS ────────────────────── -->
+
+<div id="pos" class="module-header">
+  <div class="mod-icon emerald">🏪</div>
+  <div>
+    <h2>4. POS — Point of Sale / Caisse</h2>
+    <p>Fast cashier interface for walk-in and counter sales</p>
+  </div>
+</div>
+
+<div class="roles">
+  <span class="role-badge">All roles with sales:CREATE</span>
+</div>
+
+<p>The POS screen is split into two panels: the <strong>Product Grid</strong> on the left and the <strong>Cart &amp; Checkout</strong> on the right. It is designed for speed — no page reloads, no navigation.</p>
+
+<h3>Screen layout</h3>
+<div class="grid2">
+  <div class="card">
+    <h4>Left panel — Products</h4>
+    <ul>
+      <li>Session bar: today's sale count &amp; revenue</li>
+      <li>Search box to filter products by name or SKU</li>
+      <li>Product tiles showing name, SKU, sale price and type badge</li>
+      <li>Refresh button (↺) to sync session totals</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h4>Right panel — Cart</h4>
+    <ul>
+      <li>Item count badge</li>
+      <li>Line items with +/− quantity controls &amp; remove (🗑)</li>
+      <li>Subtotal &amp; Total</li>
+      <li>Payment method selector</li>
+      <li>Amount tendered + automatic change calculation</li>
+      <li>Charge button</li>
+    </ul>
+  </div>
+</div>
+
+<h3>Making a sale — step by step</h3>
+<ol class="steps">
+  <li>
+    <div class="step-body">
+      <strong>Search or browse products</strong>
+      <p>Type in the search box or scroll the grid. Each tile shows the product name, SKU, and sale price.</p>
+    </div>
+  </li>
+  <li>
+    <div class="step-body">
+      <strong>Add items to cart</strong>
+      <p>Click any product tile to add it. Click the same tile again to increase the quantity by 1.</p>
+    </div>
+  </li>
+  <li>
+    <div class="step-body">
+      <strong>Adjust quantities</strong>
+      <p>Use the <kbd>−</kbd> and <kbd>+</kbd> buttons next to each cart item. Pressing <kbd>−</kbd> when quantity is 1 removes the item.</p>
+    </div>
+  </li>
+  <li>
+    <div class="step-body">
+      <strong>Select payment method</strong>
+      <p>Choose: <strong>Cash</strong>, <strong>Card</strong>, <strong>Mobile Money</strong>, or <strong>Bank Transfer</strong>.</p>
+    </div>
+  </li>
+  <li>
+    <div class="step-body">
+      <strong>Enter amount tendered (optional for cash)</strong>
+      <p>Type the amount the customer hands you. The change due appears in green automatically.</p>
+    </div>
+  </li>
+  <li>
+    <div class="step-body">
+      <strong>Click "Charge [Total]"</strong>
+      <p>The system creates the sale order, records the payment, and shows the receipt modal.</p>
+    </div>
+  </li>
+  <li>
+    <div class="step-body">
+      <strong>Print or close receipt</strong>
+      <p>Click <kbd>Print Receipt</kbd> to send to printer, or close the modal. The cart clears automatically.</p>
+    </div>
+  </li>
+</ol>
+
+<div class="box tip">
+  <strong>Walk-in customers:</strong> The POS creates sales as "Walk-in" by default. No customer record is required.
+</div>
+<div class="box info">
+  <strong>Session totals</strong> in the top bar refresh automatically after each checkout. Click the ↺ icon to force a refresh.
+</div>
+
+<h3>Payment methods</h3>
+<table>
+  <thead><tr><th>Method</th><th>Use case</th></tr></thead>
+  <tbody>
+    <tr><td>CASH</td><td>Physical currency — change is calculated</td></tr>
+    <tr><td>CARD</td><td>Debit/credit card terminal</td></tr>
+    <tr><td>MOBILE_MONEY</td><td>Mobile payment (M-Pesa, Wave, etc.)</td></tr>
+    <tr><td>BANK_TRANSFER</td><td>Direct bank-to-bank</td></tr>
+  </tbody>
+</table>
+
+<hr>
+
+<!-- ────────────────────── SALES ────────────────────── -->
+
+<div id="sales" class="module-header">
+  <div class="mod-icon sky">📋</div>
+  <div>
+    <h2>5. Sales / Ventes</h2>
+    <p>Sales orders list, history, and status tracking</p>
+  </div>
+</div>
+
+<div class="roles">
+  <span class="role-badge">Sales Manager</span>
+  <span class="role-badge amber">Finance Manager</span>
+  <span class="role-badge gray">Admin / Super Admin</span>
+</div>
+
+<p>The Sales page lists all sales orders across all channels (POS and manual). Each order tracks its customer, date, amounts, and current status.</p>
+
+<h3>Columns explained</h3>
+<table>
+  <thead><tr><th>Column</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr><td>Reference</td><td>Auto-generated unique order number (e.g., <kbd>SAL-20260610-0001</kbd>)</td></tr>
+    <tr><td>Customer</td><td>Linked customer name, or "Walk-in" for POS walk-in sales</td></tr>
+    <tr><td>Date</td><td>Sale date</td></tr>
+    <tr><td>Total</td><td>Order total including tax</td></tr>
+    <tr><td>Paid</td><td>Amount already collected</td></tr>
+    <tr><td>Status</td><td>DRAFT · CONFIRMED · DELIVERED · CANCELLED</td></tr>
+  </tbody>
+</table>
+
+<h3>Sale statuses</h3>
+<div style="display:flex;flex-wrap:wrap;gap:8px;margin:10px 0">
+  <span class="pill gray">DRAFT</span>
+  <span class="pill blue">CONFIRMED</span>
+  <span class="pill green">DELIVERED</span>
+  <span class="pill red">CANCELLED</span>
+</div>
+
+<div class="box info">
+  <strong>Creating sales manually</strong> — The "New Sale" button opens a multi-line order form (planned for Phase 3). For immediate sales, use the POS module which creates a confirmed sale and payment automatically.
+</div>
+
+<div class="box tip">
+  <strong>Searching:</strong> Use the search bar to find sales by reference number or customer name.
+</div>
+
+<hr>
+
+<!-- ────────────────────── CUSTOMERS ────────────────────── -->
+
+<div id="customers" class="module-header">
+  <div class="mod-icon sky">👥</div>
+  <div>
+    <h2>6. Customers / Clients</h2>
+    <p>Customer master data — the people you sell to</p>
+  </div>
+</div>
+
+<div class="roles">
+  <span class="role-badge">Sales Manager</span>
+  <span class="role-badge amber">All roles with sales:READ</span>
+</div>
+
+<h3>Creating a customer</h3>
+<ol class="steps">
+  <li>
+    <div class="step-body">
+      <strong>Click "New Customer"</strong>
+      <p>Top-right button on the Customers page.</p>
+    </div>
+  </li>
+  <li>
+    <div class="step-body">
+      <strong>Fill in the form</strong>
+      <p>Required: <strong>Name</strong> and <strong>Code</strong> (unique shortcode, e.g., <kbd>CUST-001</kbd>). Optional: email, phone, address.</p>
+    </div>
+  </li>
+  <li>
+    <div class="step-body">
+      <strong>Click "Create"</strong>
+      <p>The customer is saved and appears in the table immediately.</p>
+    </div>
+  </li>
+</ol>
+
+<h3>Customer fields</h3>
+<table>
+  <thead><tr><th>Field</th><th>Required</th><th>Notes</th></tr></thead>
+  <tbody>
+    <tr><td>Name</td><td><span class="req">✓</span></td><td>Full company or individual name</td></tr>
+    <tr><td>Code</td><td><span class="req">✓</span></td><td>Unique identifier — used in reports and lookups</td></tr>
+    <tr><td>Email</td><td><span class="opt">Optional</span></td><td>Contact email for invoices</td></tr>
+    <tr><td>Phone</td><td><span class="opt">Optional</span></td><td>Primary contact number</td></tr>
+    <tr><td>Address</td><td><span class="opt">Optional</span></td><td>Delivery / billing address</td></tr>
+  </tbody>
+</table>
+
+<div class="box tip">
+  <strong>Searching:</strong> The search box filters by name or code in real time.
+</div>
+
+<hr>
+
+<!-- ────────────────────── PURCHASES ────────────────────── -->
+
+<div id="purchases" class="module-header">
+  <div class="mod-icon amber">🛒</div>
+  <div>
+    <h2>7. Purchases / Achats</h2>
+    <p>Purchase orders — buying from suppliers</p>
+  </div>
+</div>
+
+<div class="roles">
+  <span class="role-badge">Procurement Officer</span>
+  <span class="role-badge amber">Finance Manager</span>
+  <span class="role-badge gray">Admin / Super Admin</span>
+</div>
+
+<p>Purchase Orders (POs) track what your organisation buys from suppliers. Each PO has lines for individual products, quantities, and unit costs.</p>
+
+<h3>Columns explained</h3>
+<table>
+  <thead><tr><th>Column</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr><td>Reference</td><td>Auto-generated PO number (e.g., <kbd>PO-20260610-0001</kbd>)</td></tr>
+    <tr><td>Supplier</td><td>Linked supplier name</td></tr>
+    <tr><td>Order Date</td><td>Date the PO was created</td></tr>
+    <tr><td>Total</td><td>PO total including tax</td></tr>
+    <tr><td>Status</td><td>DRAFT · CONFIRMED · RECEIVED · CANCELLED</td></tr>
+  </tbody>
+</table>
+
+<h3>Purchase order statuses</h3>
+<div style="display:flex;flex-wrap:wrap;gap:8px;margin:10px 0">
+  <span class="pill gray">DRAFT</span>
+  <span class="pill blue">CONFIRMED</span>
+  <span class="pill green">RECEIVED</span>
+  <span class="pill red">CANCELLED</span>
+</div>
+
+<div class="box info">
+  <strong>Receiving inventory:</strong> When a PO status moves to RECEIVED, stock levels for the ordered products are automatically updated in the Inventory module.
+</div>
+
+<div class="box warning">
+  <strong>Before creating a PO</strong> make sure the supplier exists in the Suppliers module, and all products exist in the Inventory module.
+</div>
+
+<hr>
+
+<!-- ────────────────────── SUPPLIERS ────────────────────── -->
+
+<div id="suppliers" class="module-header">
+  <div class="mod-icon amber">🏭</div>
+  <div>
+    <h2>8. Suppliers / Fournisseurs</h2>
+    <p>Supplier master data — the companies you buy from</p>
+  </div>
+</div>
+
+<div class="roles">
+  <span class="role-badge">Procurement Officer</span>
+  <span class="role-badge amber">Finance Manager</span>
+  <span class="role-badge gray">Admin / Super Admin</span>
+</div>
+
+<h3>Creating a supplier</h3>
+<ol class="steps">
+  <li>
+    <div class="step-body">
+      <strong>Click "New Supplier"</strong>
+      <p>Top-right button on the Suppliers page.</p>
+    </div>
+  </li>
+  <li>
+    <div class="step-body">
+      <strong>Fill in the form</strong>
+      <p>Required: <strong>Name</strong> and <strong>Code</strong>. Optional: email, phone, address.</p>
+    </div>
+  </li>
+  <li>
+    <div class="step-body">
+      <strong>Click "Create"</strong>
+      <p>Supplier is saved and available for use in Purchase Orders.</p>
+    </div>
+  </li>
+</ol>
+
+<h3>Supplier fields</h3>
+<table>
+  <thead><tr><th>Field</th><th>Required</th><th>Notes</th></tr></thead>
+  <tbody>
+    <tr><td>Name</td><td><span class="req">✓</span></td><td>Full company name</td></tr>
+    <tr><td>Code</td><td><span class="req">✓</span></td><td>Unique shortcode — used in POs and reports</td></tr>
+    <tr><td>Email</td><td><span class="opt">Optional</span></td><td>Contact email for PO correspondence</td></tr>
+    <tr><td>Phone</td><td><span class="opt">Optional</span></td><td>Primary contact number</td></tr>
+    <tr><td>Address</td><td><span class="opt">Optional</span></td><td>Physical address</td></tr>
+  </tbody>
+</table>
+
+<div class="box tip">
+  <strong>Active vs Inactive:</strong> Inactive suppliers are hidden from PO creation dropdowns. A supplier becomes inactive if you deactivate it via the API or admin tools.
+</div>
+
+<hr>
+
+<!-- ────────────────────── INVENTORY ────────────────────── -->
+
+<div id="inventory" class="module-header">
+  <div class="mod-icon teal">📦</div>
+  <div>
+    <h2>9. Inventory / Inventaire</h2>
+    <p>Product catalogue, stock levels, and movements</p>
+  </div>
+</div>
+
+<div class="roles">
+  <span class="role-badge">Inventory Manager</span>
+  <span class="role-badge amber">Procurement Officer</span>
+  <span class="role-badge gray">Admin / Super Admin</span>
+</div>
+
+<h3>Creating a product</h3>
+<ol class="steps">
+  <li>
+    <div class="step-body">
+      <strong>Click "New Product"</strong>
+      <p>Button at top-right of the Inventory page.</p>
+    </div>
+  </li>
+  <li>
+    <div class="step-body">
+      <strong>Enter product details</strong>
+      <p>Fill in the form fields listed below.</p>
+    </div>
+  </li>
+  <li>
+    <div class="step-body">
+      <strong>Click "Create"</strong>
+      <p>Product is added to the catalogue and is immediately searchable in POS.</p>
+    </div>
+  </li>
+</ol>
+
+<h3>Product form fields</h3>
+<table>
+  <thead><tr><th>Field</th><th>Required</th><th>Notes</th></tr></thead>
+  <tbody>
+    <tr><td>Product Name</td><td><span class="req">✓</span></td><td>Full product name shown everywhere</td></tr>
+    <tr><td>SKU</td><td><span class="req">✓</span></td><td>Stock-Keeping Unit — must be unique within your tenant. e.g., <kbd>PROD-001</kbd></td></tr>
+    <tr><td>Sale Price</td><td><span class="req">✓</span></td><td>Price charged to customers. Used in POS and sales lines.</td></tr>
+    <tr><td>Cost Price</td><td><span class="req">✓</span></td><td>Purchase cost — used for gross profit calculation. Enter 0 if unknown.</td></tr>
+    <tr><td>Is a Service</td><td><span class="opt">Optional</span></td><td>Check this if the product has no physical stock (consulting, labour, etc.). Service items are excluded from stock tracking.</td></tr>
+  </tbody>
+</table>
+
+<h3>Product columns in the list</h3>
+<table>
+  <thead><tr><th>Column</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr><td>Name</td><td>Product name</td></tr>
+    <tr><td>SKU</td><td>Unique stock code</td></tr>
+    <tr><td>Unit Price</td><td>Sale price (what customers pay)</td></tr>
+    <tr><td>Type</td><td><span class="pill sky">Service</span> or <span class="pill gray">Physical</span></td></tr>
+    <tr><td>Status</td><td><span class="pill green">Active</span> or <span class="pill gray">Inactive</span></td></tr>
+  </tbody>
+</table>
+
+<h3>Stock movements</h3>
+<p>Every time inventory changes (purchase received, sale, adjustment, return) a movement record is created automatically. You can also record manual adjustments.</p>
+
+<table>
+  <thead><tr><th>Movement type</th><th>Effect on stock</th><th>Triggered by</th></tr></thead>
+  <tbody>
+    <tr><td>IN</td><td>Increases quantity</td><td>Purchase received, manual stock-in</td></tr>
+    <tr><td>OUT</td><td>Decreases quantity</td><td>Sale confirmed, manual stock-out</td></tr>
+    <tr><td>ADJUST</td><td>Set to exact quantity</td><td>Physical stock count reconciliation</td></tr>
+    <tr><td>RETURN</td><td>Increases quantity</td><td>Customer returns</td></tr>
+  </tbody>
+</table>
+
+<h3>Low stock alerts</h3>
+<p>When a product's stock level drops below its <strong>Min Stock</strong> threshold, it appears on the Dashboard under "Low Stock Count" and in the Analytics inventory summary. Set <code>minStock</code> when creating or editing a product.</p>
+
+<div class="box warning">
+  <strong>SKU uniqueness:</strong> Two products cannot share the same SKU within your tenant. The system returns an error on duplicate SKU.
+</div>
+
+<hr>
+
+<!-- ────────────────────── FINANCE ────────────────────── -->
+
+<div id="finance" class="module-header">
+  <div class="mod-icon rose">💰</div>
+  <div>
+    <h2>10. Finance</h2>
+    <p>Invoices, payments, and chart of accounts</p>
+  </div>
+</div>
+
+<div class="roles">
+  <span class="role-badge">Finance Manager</span>
+  <span class="role-badge amber">Auditor</span>
+  <span class="role-badge gray">Admin / Super Admin</span>
+</div>
+
+<p>The Finance page is split into three sections: Chart of Accounts summary, Invoices table, and Payments table.</p>
+
+<h3>Chart of Accounts</h3>
+<p>Displays the first 8 accounts in your plan comptable. Each card shows the account code, name, and type (ASSET, LIABILITY, EQUITY, REVENUE, EXPENSE).</p>
+
+<div class="box info">
+  <strong>Account setup:</strong> The full chart of accounts is managed by your system administrator or accountant via the API. The Finance page provides a read-only summary view.
+</div>
+
+<h3>Invoices</h3>
+<p>Invoices are generated automatically when a sale is confirmed. They can also be created manually for services rendered or subscriptions.</p>
+
+<table>
+  <thead><tr><th>Column</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr><td>Number</td><td>Invoice reference (e.g., <kbd>INV-00001</kbd>)</td></tr>
+    <tr><td>Customer</td><td>Billed customer</td></tr>
+    <tr><td>Issue Date</td><td>Date invoice was raised</td></tr>
+    <tr><td>Due Date</td><td>Payment deadline (may be blank for immediate payment)</td></tr>
+    <tr><td>Total</td><td>Amount due</td></tr>
+    <tr><td>Status</td><td>DRAFT · ISSUED · PAID · OVERDUE · CANCELLED</td></tr>
+  </tbody>
+</table>
+
+<h3>Invoice statuses</h3>
+<div style="display:flex;flex-wrap:wrap;gap:8px;margin:10px 0">
+  <span class="pill gray">DRAFT</span>
+  <span class="pill blue">ISSUED</span>
+  <span class="pill green">PAID</span>
+  <span class="pill red">OVERDUE</span>
+  <span class="pill red">CANCELLED</span>
+</div>
+
+<h3>Payments</h3>
+<p>Each payment record links to one or more invoices and records the method, amount, and date.</p>
+
+<table>
+  <thead><tr><th>Column</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr><td>Reference</td><td>Payment reference code</td></tr>
+    <tr><td>Method</td><td>CASH · CARD · MOBILE_MONEY · BANK_TRANSFER · CHEQUE</td></tr>
+    <tr><td>Amount</td><td>Amount received</td></tr>
+    <tr><td>Date</td><td>Payment date</td></tr>
+    <tr><td>Status</td><td>PENDING · CONFIRMED · FAILED · REFUNDED</td></tr>
+  </tbody>
+</table>
+
+<div class="box tip">
+  <strong>Reconciliation tip:</strong> Use the <em>Customer Aging</em> report (Reports module) to see all outstanding invoices by age bucket and identify overdue accounts.
+</div>
+
+<hr>
+
+<!-- ────────────────────── CRM ────────────────────── -->
+
+<div id="crm" class="module-header">
+  <div class="mod-icon purple">🎯</div>
+  <div>
+    <h2>11. CRM — Leads &amp; Opportunities</h2>
+    <p>Pipeline management from first contact to closed deal</p>
+  </div>
+</div>
+
+<div class="roles">
+  <span class="role-badge">Sales Manager</span>
+  <span class="role-badge amber">All roles with crm:READ</span>
+</div>
+
+<h3>Understanding the lead lifecycle</h3>
+<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:14px 0;font-size:.9em">
+  <span class="pill sky">NEW</span>
+  <span style="color:var(--gray5)">→</span>
+  <span class="pill blue">CONTACTED</span>
+  <span style="color:var(--gray5)">→</span>
+  <span class="pill green">QUALIFIED</span>
+  <span style="color:var(--gray5)">→</span>
+  <span class="pill blue">CONVERTED</span>
+  <span style="color:var(--gray5)">&nbsp;or&nbsp;</span>
+  <span class="pill red">LOST</span>
+</div>
+
+<h3>Creating a lead</h3>
+<ol class="steps">
+  <li>
+    <div class="step-body">
+      <strong>Click "New Lead"</strong>
+      <p>Button at top-right of the CRM page.</p>
+    </div>
+  </li>
+  <li>
+    <div class="step-body">
+      <strong>Fill in contact details</strong>
+      <p>Required: <strong>First Name</strong> and <strong>Last Name</strong>. Optional but recommended: email, phone, company, source.</p>
+    </div>
+  </li>
+  <li>
+    <div class="step-body">
+      <strong>Click "Create Lead"</strong>
+      <p>Lead is added with status <span class="pill sky">NEW</span>.</p>
+    </div>
+  </li>
+</ol>
+
+<h3>Lead form fields</h3>
+<table>
+  <thead><tr><th>Field</th><th>Required</th><th>Notes</th></tr></thead>
+  <tbody>
+    <tr><td>First Name</td><td><span class="req">✓</span></td><td>Contact's first name</td></tr>
+    <tr><td>Last Name</td><td><span class="req">✓</span></td><td>Contact's last name</td></tr>
+    <tr><td>Email</td><td><span class="opt">Optional</span></td><td>Must be a valid email format if provided</td></tr>
+    <tr><td>Phone</td><td><span class="opt">Optional</span></td><td>Contact phone number</td></tr>
+    <tr><td>Company</td><td><span class="opt">Optional</span></td><td>Company or organisation name</td></tr>
+    <tr><td>Source</td><td><span class="opt">Optional</span></td><td>Where the lead came from (Website, Referral, Trade Show, etc.)</td></tr>
+  </tbody>
+</table>
+
+<h3>Converting a lead to a customer</h3>
+<ol class="steps">
+  <li>
+    <div class="step-body">
+      <strong>Find the lead</strong>
+      <p>Use the search bar or scroll the leads table to find the lead you want to convert.</p>
+    </div>
+  </li>
+  <li>
+    <div class="step-body">
+      <strong>Click "Convert"</strong>
+      <p>The orange "Convert" button appears in the Actions column for leads that are not yet CONVERTED or LOST.</p>
+    </div>
+  </li>
+  <li>
+    <div class="step-body">
+      <strong>Conversion complete</strong>
+      <p>The lead status changes to <span class="pill blue">CONVERTED</span>. A new Customer record is created automatically with the same name and contact details. The "Convert" button disappears.</p>
+    </div>
+  </li>
+</ol>
+
+<div class="box tip">
+  <strong>After converting:</strong> Navigate to the Customers module to find the newly created customer and complete their record (add address, code, etc.).
+</div>
+<div class="box info">
+  <strong>Lost leads:</strong> If a lead does not become a customer, update their status to LOST via the API or admin tools. LOST leads remain in the system for historical reporting.
+</div>
+
+<h3>Searching leads</h3>
+<p>The search bar filters by lead name or company in real time. Combine with pagination to navigate large lead lists.</p>
+
+<hr>
+
+<!-- ────────────────────── BUDGETING ────────────────────── -->
+
+<div id="budgeting" class="module-header">
+  <div class="mod-icon amber">📅</div>
+  <div>
+    <h2>12. Budgeting / Budgétisation</h2>
+    <p>Create, submit, and approve annual budget plans</p>
+  </div>
+</div>
+
+<div class="roles">
+  <span class="role-badge">Finance Manager</span>
+  <span class="role-badge amber">Department Manager</span>
+  <span class="role-badge gray">Admin / Super Admin</span>
+</div>
+
+<h3>Budget plan lifecycle</h3>
+<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:14px 0;font-size:.9em">
+  <span class="pill gray">DRAFT</span>
+  <span style="color:var(--gray5)">→ Submit →</span>
+  <span class="pill yellow">PENDING_APPROVAL</span>
+  <span style="color:var(--gray5)">→ Approve →</span>
+  <span class="pill green">APPROVED</span>
+</div>
+
+<h3>Creating a budget plan</h3>
+<ol class="steps">
+  <li>
+    <div class="step-body">
+      <strong>Click "New Budget Plan"</strong>
+      <p>Button at top-right of the Budgeting page.</p>
+    </div>
+  </li>
+  <li>
+    <div class="step-body">
+      <strong>Enter plan details</strong>
+      <p>See field descriptions below.</p>
+    </div>
+  </li>
+  <li>
+    <div class="step-body">
+      <strong>Click "Create Plan"</strong>
+      <p>Plan is saved with status <span class="pill gray">DRAFT</span>.</p>
+    </div>
+  </li>
+</ol>
+
+<h3>Budget plan fields</h3>
+<table>
+  <thead><tr><th>Field</th><th>Required</th><th>Notes</th></tr></thead>
+  <tbody>
+    <tr><td>Plan Name</td><td><span class="req">✓</span></td><td>Descriptive name (e.g., "Operations Budget 2026")</td></tr>
+    <tr><td>Fiscal Year</td><td><span class="req">✓</span></td><td>4-digit year between 2020 and 2099</td></tr>
+    <tr><td>Start Date</td><td><span class="req">✓</span></td><td>Budget period start</td></tr>
+    <tr><td>End Date</td><td><span class="req">✓</span></td><td>Budget period end (must be after start date)</td></tr>
+    <tr><td>Total Budget Amount</td><td><span class="req">✓</span></td><td>Total planned spend in your base currency</td></tr>
+    <tr><td>Notes</td><td><span class="opt">Optional</span></td><td>Free-text comments or justification</td></tr>
+  </tbody>
+</table>
+
+<h3>Submitting for approval</h3>
+<ol class="steps">
+  <li>
+    <div class="step-body">
+      <strong>Find the DRAFT plan</strong>
+      <p>Locate the budget plan in the table. Its status will be <span class="pill gray">DRAFT</span>.</p>
+    </div>
+  </li>
+  <li>
+    <div class="step-body">
+      <strong>Click "Submit"</strong>
+      <p>The <kbd>Submit</kbd> button (clock icon) appears in the Actions column for DRAFT plans. Status changes to <span class="pill yellow">PENDING_APPROVAL</span>.</p>
+    </div>
+  </li>
+</ol>
+
+<h3>Approving a budget plan</h3>
+<div class="roles" style="margin-bottom:10px">
+  <span class="role-badge">Finance Manager</span>
+  <span class="role-badge gray">Admin / Super Admin</span>
+</div>
+<ol class="steps">
+  <li>
+    <div class="step-body">
+      <strong>Find the PENDING_APPROVAL plan</strong>
+      <p>Plans awaiting approval show the <kbd>Approve</kbd> button (checkmark icon) in the Actions column.</p>
+    </div>
+  </li>
+  <li>
+    <div class="step-body">
+      <strong>Click "Approve"</strong>
+      <p>Status changes to <span class="pill green">APPROVED</span>. The plan is now locked and active. The Dashboard "Active Budgets" count increments.</p>
+    </div>
+  </li>
+</ol>
+
+<div class="box warning">
+  <strong>Only Finance Managers and Admins</strong> can approve budget plans. If you submitted a plan and need it approved, notify your Finance Manager.
+</div>
+
+<hr>
+
+<!-- ────────────────────── ANALYTICS ────────────────────── -->
+
+<div id="analytics" class="module-header">
+  <div class="mod-icon indigo">📈</div>
+  <div>
+    <h2>13. Analytics</h2>
+    <p>Visual KPIs, revenue trends, cash flow, and inventory health</p>
+  </div>
+</div>
+
+<div class="roles">
+  <span class="role-badge">All roles with analytics:READ</span>
+</div>
+
+<p>The Analytics page provides interactive charts drawn from live data. No date filters are needed — charts are auto-refreshed.</p>
+
+<h3>KPI cards (top row)</h3>
+<table>
+  <thead><tr><th>Card</th><th>What it shows</th></tr></thead>
+  <tbody>
+    <tr><td>Total Sales</td><td>Total count of all sales orders ever recorded</td></tr>
+    <tr><td>Total Revenue</td><td>Cumulative revenue across all confirmed sales</td></tr>
+    <tr><td>Outstanding</td><td>Total unpaid balance on issued invoices</td></tr>
+  </tbody>
+</table>
+
+<h3>Revenue by Period chart</h3>
+<p>An area chart showing revenue aggregated by month. Hover any data point to see the exact figure. Use this to identify seasonal trends and peak sales periods.</p>
+
+<h3>Cash Flow Forecast chart</h3>
+<p>A grouped bar chart comparing projected <strong>inflow</strong> (green) vs <strong>outflow</strong> (amber) by period. Helps identify periods where cash may be tight before they arrive.</p>
+
+<h3>Inventory Summary</h3>
+<p>Shows total product count and a list of items currently below their minimum stock threshold (red). Acts as a quick-action list — go to Inventory to reorder or adjust.</p>
+
+<div class="box tip">
+  <strong>Drilling down:</strong> Analytics is a read-only summary. For detailed date-range analysis, use the Reports module.
+</div>
+
+<hr>
+
+<!-- ────────────────────── REPORTS ────────────────────── -->
+
+<div id="reports" class="module-header">
+  <div class="mod-icon rose">🗂️</div>
+  <div>
+    <h2>14. Reports / Rapports</h2>
+    <p>Generate on-demand financial and operational reports</p>
+  </div>
+</div>
+
+<div class="roles">
+  <span class="role-badge">Finance Manager</span>
+  <span class="role-badge amber">Auditor</span>
+  <span class="role-badge sky">Sales Manager</span>
+  <span class="role-badge gray">Admin / Super Admin</span>
+</div>
+
+<h3>Running a report</h3>
+<ol class="steps">
+  <li>
+    <div class="step-body">
+      <strong>Select report type</strong>
+      <p>Choose from the "Report Type" dropdown (see types below).</p>
+    </div>
+  </li>
+  <li>
+    <div class="step-body">
+      <strong>Set the date range</strong>
+      <p>Enter <strong>Start Date</strong> and <strong>End Date</strong>. The default range is the past 12 months.</p>
+    </div>
+  </li>
+  <li>
+    <div class="step-body">
+      <strong>Choose grouping (period reports)</strong>
+      <p>For Sales by Period and Purchases by Period, select <strong>By Month</strong>, <strong>By Week</strong>, or <strong>By Day</strong>.</p>
+    </div>
+  </li>
+  <li>
+    <div class="step-body">
+      <strong>Click "Run Report"</strong>
+      <p>Results appear below the controls. The report automatically recalculates when you change parameters and click Run again.</p>
+    </div>
+  </li>
+</ol>
+
+<h3>Available report types</h3>
+<table>
+  <thead><tr><th>Report Type</th><th>What it shows</th><th>Group By</th></tr></thead>
+  <tbody>
+    <tr>
+      <td><strong>Sales by Period</strong></td>
+      <td>Sales count, revenue, collected amount, and confirmed count per time period. Totals row at top.</td>
+      <td>Month / Week / Day</td>
+    </tr>
+    <tr>
+      <td><strong>Inventory Valuation</strong></td>
+      <td>Every SKU per warehouse with quantity, cost value, and sale value. Total items, total cost value, total sale value.</td>
+      <td>—</td>
+    </tr>
+    <tr>
+      <td><strong>Customer Aging</strong></td>
+      <td>Outstanding invoices grouped by how overdue they are (0–30, 31–60, 61–90, 91–120, 120+ days). Total outstanding balance.</td>
+      <td>—</td>
+    </tr>
+    <tr>
+      <td><strong>Purchases by Period</strong></td>
+      <td>Purchase order count, total value, and received count per time period.</td>
+      <td>Month / Week / Day</td>
+    </tr>
+    <tr>
+      <td><strong>Profit &amp; Loss</strong></td>
+      <td>Gross revenue, tax collected, discounts, net revenue, cost of goods sold, gross profit, and gross margin % for the period.</td>
+      <td>—</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>Report columns — Sales by Period</h3>
+<table>
+  <thead><tr><th>Column</th><th>Meaning</th></tr></thead>
+  <tbody>
+    <tr><td>Period</td><td>Month/week/day bucket</td></tr>
+    <tr><td>Sales</td><td>Total sales orders created in this period</td></tr>
+    <tr><td>Revenue</td><td>Sum of total order values</td></tr>
+    <tr><td>Collected</td><td>Sum of paid amounts</td></tr>
+    <tr><td>Confirmed</td><td>Count of confirmed orders only</td></tr>
+  </tbody>
+</table>
+
+<h3>Report columns — Customer Aging</h3>
+<table>
+  <thead><tr><th>Column</th><th>Meaning</th></tr></thead>
+  <tbody>
+    <tr><td>Customer</td><td>Customer name</td></tr>
+    <tr><td>Invoice</td><td>Invoice reference number</td></tr>
+    <tr><td>Due Date</td><td>Payment deadline</td></tr>
+    <tr><td>Balance</td><td>Outstanding amount on this invoice</td></tr>
+    <tr><td>Status</td><td>Current / 1–30 / 31–60 / 61–90 / 90+ days overdue</td></tr>
+  </tbody>
+</table>
+
+<div class="box tip">
+  <strong>Exporting:</strong> Use your browser's <kbd>Ctrl+P</kbd> / <kbd>Cmd+P</kbd> → Save as PDF to export any report to PDF for sharing.
+</div>
+
+<hr>
+
+<!-- ────────────────────── USERS ────────────────────── -->
+
+<div id="users" class="module-header">
+  <div class="mod-icon indigo">👤</div>
+  <div>
+    <h2>15. Users &amp; Permissions</h2>
+    <p>Manage who has access to the system and what they can do</p>
+  </div>
+</div>
+
+<div class="roles">
+  <span class="role-badge">Super Admin</span>
+  <span class="role-badge amber">Admin</span>
+  <span class="role-badge sky">HR Manager</span>
+</div>
+
+<h3>User table columns</h3>
+<table>
+  <thead><tr><th>Column</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr><td>Name</td><td>First and last name</td></tr>
+    <tr><td>Email</td><td>Login email</td></tr>
+    <tr><td>Roles</td><td>Coloured badges showing all assigned roles</td></tr>
+    <tr><td>Status</td><td>ACTIVE · INACTIVE · SUSPENDED</td></tr>
+    <tr><td>Last Login</td><td>Timestamp of most recent login (— if never)</td></tr>
+    <tr><td>Joined</td><td>Account creation date</td></tr>
+    <tr><td>Permissions</td><td>Button to manage direct permission overrides (Admins only)</td></tr>
+  </tbody>
+</table>
+
+<h3>Creating a new user</h3>
+<ol class="steps">
+  <li>
+    <div class="step-body">
+      <strong>Click "Add User"</strong>
+      <p>Button appears at top-right for Super Admin, Admin, and HR Manager roles only.</p>
+    </div>
+  </li>
+  <li>
+    <div class="step-body">
+      <strong>Fill in the form</strong>
+      <p>Required: First Name, Last Name, Email (must be unique), Password (min 8 characters). Optional: Phone, Role assignment.</p>
+    </div>
+  </li>
+  <li>
+    <div class="step-body">
+      <strong>Assign a role</strong>
+      <p>Select from the Role dropdown. Only active roles are shown. A user can have additional roles added later.</p>
+    </div>
+  </li>
+  <li>
+    <div class="step-body">
+      <strong>Click "Create User"</strong>
+      <p>The account is created and the user can log in immediately with their email and password.</p>
+    </div>
+  </li>
+</ol>
+
+<div class="box warning">
+  <strong>Share credentials securely.</strong> Ask the user to change their password on first login. Password reset is done by creating a new password through the admin API.
+</div>
+
+<h3>New user form fields</h3>
+<table>
+  <thead><tr><th>Field</th><th>Required</th><th>Notes</th></tr></thead>
+  <tbody>
+    <tr><td>First Name</td><td><span class="req">✓</span></td><td>User's first name</td></tr>
+    <tr><td>Last Name</td><td><span class="req">✓</span></td><td>User's last name</td></tr>
+    <tr><td>Email</td><td><span class="req">✓</span></td><td>Unique email — used as login credential</td></tr>
+    <tr><td>Password</td><td><span class="req">✓</span></td><td>Minimum 8 characters. Sent to user to log in first time.</td></tr>
+    <tr><td>Phone</td><td><span class="opt">Optional</span></td><td>Contact number</td></tr>
+    <tr><td>Role</td><td><span class="opt">Optional</span></td><td>Initial role. More roles can be added later via the API.</td></tr>
+  </tbody>
+</table>
+
+<h3>Managing permission overrides</h3>
+<p>Beyond role-based permissions, you can grant individual permissions directly to a user. These are <em>additive</em> — the user keeps their role permissions plus these extras.</p>
+<ol class="steps">
+  <li>
+    <div class="step-body">
+      <strong>Click "Permissions" on the user's row</strong>
+      <p>The shield + arrow button opens the Permission Overrides modal.</p>
+    </div>
+  </li>
+  <li>
+    <div class="step-body">
+      <strong>Review existing overrides</strong>
+      <p>Overrides are grouped by module (e.g., <kbd>INVENTORY: CREATE UPDATE</kbd>). Remove any with the ✕ button.</p>
+    </div>
+  </li>
+  <li>
+    <div class="step-body">
+      <strong>Add a new override</strong>
+      <p>Click <kbd>Add Permission Override</kbd>, select a permission from the dropdown (e.g., <kbd>finance:APPROVE</kbd>), and click <kbd>Grant</kbd>.</p>
+    </div>
+  </li>
+</ol>
+
+<div class="box info">
+  <strong>When to use overrides:</strong> Use them sparingly for exceptions — e.g., a Sales Manager who also needs read access to Finance. Prefer assigning a second role instead when the need is permanent.
+</div>
+
+<hr>
+
+<!-- ────────────────────── SETTINGS ────────────────────── -->
+
+<div id="settings" class="module-header">
+  <div class="mod-icon slate">⚙️</div>
+  <div>
+    <h2>16. Settings / Paramètres</h2>
+    <p>Company info, branches, roles, and your profile</p>
+  </div>
+</div>
+
+<p>The Settings page is divided into four tabs in the left sidebar:</p>
+<div class="grid2">
+  <div class="card">
+    <h4>My Profile</h4>
+    <ul>
+      <li>View your name, email, and assigned roles</li>
+      <li>See your Tenant ID (for support use)</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h4>Company</h4>
+    <ul>
+      <li>Edit company name, email, phone</li>
+      <li>Set address, city, country</li>
+      <li>Set base currency (e.g., USD, EUR, XOF)</li>
+      <li>Set timezone</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h4>Branches</h4>
+    <ul>
+      <li>List all business locations</li>
+      <li>Add, edit, or delete branches</li>
+      <li>Main branch is protected</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h4>Roles &amp; Permissions</h4>
+    <ul>
+      <li>View all roles and their permissions</li>
+      <li>Create / edit / delete custom roles</li>
+      <li>Clone any role</li>
+      <li>Enable / disable roles</li>
+      <li>Assign permissions via the matrix</li>
+    </ul>
+  </div>
+</div>
+
+<h3>Updating company information</h3>
+<ol class="steps">
+  <li>
+    <div class="step-body">
+      <strong>Go to Settings → Company</strong>
+      <p>Click the "Company" tab in the left sidebar.</p>
+    </div>
+  </li>
+  <li>
+    <div class="step-body">
+      <strong>Edit the form fields</strong>
+      <p>Change any field (name, address, currency, timezone, etc.).</p>
+    </div>
+  </li>
+  <li>
+    <div class="step-body">
+      <strong>Click "Save Changes"</strong>
+      <p>The button activates only when something has changed. A green "Saved!" confirmation appears briefly.</p>
+    </div>
+  </li>
+</ol>
+
+<h3>Managing branches</h3>
+<ol class="steps">
+  <li>
+    <div class="step-body">
+      <strong>Go to Settings → Branches</strong>
+    </div>
+  </li>
+  <li>
+    <div class="step-body">
+      <strong>Click "Add Branch"</strong>
+      <p>Fill in Name (required), Code (required), and optional address fields. Click Save.</p>
+    </div>
+  </li>
+  <li>
+    <div class="step-body">
+      <strong>Edit a branch</strong>
+      <p>Click the <kbd>Edit</kbd> button on any branch row. The same form opens pre-filled. Save to update.</p>
+    </div>
+  </li>
+  <li>
+    <div class="step-body">
+      <strong>Delete a branch</strong>
+      <p>Click the red trash icon. The <strong>Main</strong> branch cannot be deleted.</p>
+    </div>
+  </li>
+</ol>
+
+<h3>Managing roles &amp; permissions</h3>
+<div class="roles" style="margin-bottom:12px">
+  <span class="role-badge">Super Admin</span>
+  <span class="role-badge amber">Admin</span>
+</div>
+
+<h4>Viewing a role's permissions</h4>
+<p>Click any role in the left list. The right panel shows the permission matrix: rows = modules, columns = actions (READ, CREATE, UPDATE, DELETE, APPROVE). Filled coloured buttons = permission granted.</p>
+
+<h4>Creating a custom role</h4>
+<ol class="steps">
+  <li>
+    <div class="step-body">
+      <strong>Click "New" button</strong>
+      <p>Top-right of the role list (visible to Admins only).</p>
+    </div>
+  </li>
+  <li>
+    <div class="step-body">
+      <strong>Enter name and optional description</strong>
+      <p>Click <kbd>Create</kbd>.</p>
+    </div>
+  </li>
+  <li>
+    <div class="step-body">
+      <strong>Assign permissions</strong>
+      <p>Select the new role in the list. The matrix is empty. Click individual cells or click a module name to toggle all actions for that module. Click <kbd>Save changes</kbd>.</p>
+    </div>
+  </li>
+</ol>
+
+<h4>Cloning a role</h4>
+<p>Click the <span style="color:var(--sky)">Clone</span> button on any role card. A copy is created with the same permissions as a new custom role named "Original Name (Copy)". Useful for creating role variants.</p>
+
+<h4>Enabling / Disabling a role</h4>
+<p>Click the orange <strong>Disable</strong> or green <strong>Enable</strong> button on a role card. Disabled roles:</p>
+<ul style="font-size:.9em;padding-left:20px;margin:8px 0">
+  <li>Are shown with a <span class="pill gray">Disabled</span> badge</li>
+  <li>Cannot be assigned to new users</li>
+  <li>Users already holding the role lose the permissions it granted until it is re-enabled</li>
+</ul>
+
+<h4>Editing a role</h4>
+<p>Click the <kbd>Edit</kbd> (pencil) button to rename the role or update its description. Not available for the Super Admin role.</p>
+
+<h4>Deleting a role</h4>
+<p>Click the red <kbd>Delete</kbd> button. Only <strong>custom (non-system) roles</strong> can be deleted. System roles (Super Admin, Admin, HR Manager, etc.) are protected.</p>
+
+<div class="box danger">
+  <strong>Warning:</strong> Deleting a custom role removes it from all users assigned to it. Verify no active users depend on the role before deleting.
+</div>
+
+<h4>Editing system role permissions</h4>
+<p>System roles (lock icon) can only have their permissions modified by an <strong>Admin</strong> or <strong>Super Admin</strong>. Lower roles see a read-only view with a "Only the Admin can modify system roles" notice.</p>
+
+<hr>
+
+<!-- ────────────────────── ROLES REFERENCE ────────────────────── -->
+
+<div id="roles" class="module-header">
+  <div class="mod-icon indigo">🛡️</div>
+  <div>
+    <h2>17. Roles &amp; Access Matrix</h2>
+    <p>Who can do what — quick reference</p>
+  </div>
+</div>
+
+<p>The system ships with 10 pre-built roles. You can create additional custom roles.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Role</th>
+      <th>Type</th>
+      <th>Primary access areas</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Super Admin</strong></td>
+      <td><span class="pill blue">System</span></td>
+      <td>Full access to everything. Can manage all users, all system roles, all settings. Cannot be disabled or deleted.</td>
+    </tr>
+    <tr>
+      <td><strong>Admin</strong></td>
+      <td><span class="pill blue">System</span></td>
+      <td>Full access. Can manage users, roles, company settings, and branches. Cannot modify the Super Admin role.</td>
+    </tr>
+    <tr>
+      <td><strong>HR Manager</strong></td>
+      <td><span class="pill blue">System</span></td>
+      <td>Users (create, read, update), Settings (read). Cannot delete users or manage roles.</td>
+    </tr>
+    <tr>
+      <td><strong>Finance Manager</strong></td>
+      <td><span class="pill blue">System</span></td>
+      <td>Finance (full), Budgeting (full), Reports (full), Analytics (read), Customers (read).</td>
+    </tr>
+    <tr>
+      <td><strong>Procurement Officer</strong></td>
+      <td><span class="pill blue">System</span></td>
+      <td>Purchases (full), Suppliers (full), Inventory (read), Finance (read).</td>
+    </tr>
+    <tr>
+      <td><strong>Sales Manager</strong></td>
+      <td><span class="pill blue">System</span></td>
+      <td>Sales (full), Customers (full), CRM (full), Analytics (read), Finance (read).</td>
+    </tr>
+    <tr>
+      <td><strong>Inventory Manager</strong></td>
+      <td><span class="pill blue">System</span></td>
+      <td>Inventory (full), Analytics (read), Reports (read).</td>
+    </tr>
+    <tr>
+      <td><strong>Department Manager</strong></td>
+      <td><span class="pill blue">System</span></td>
+      <td>Budgeting (create, read), Analytics (read), relevant operational modules (read).</td>
+    </tr>
+    <tr>
+      <td><strong>Employee</strong></td>
+      <td><span class="pill blue">System</span></td>
+      <td>Read-only access to modules relevant to their function. Cannot create or modify records.</td>
+    </tr>
+    <tr>
+      <td><strong>Auditor</strong></td>
+      <td><span class="pill blue">System</span></td>
+      <td>Read-only access to Finance, Sales, Purchases, Inventory, and Reports. No create/edit/delete.</td>
+    </tr>
+    <tr>
+      <td><strong>Custom roles</strong></td>
+      <td><span class="pill gray">Custom</span></td>
+      <td>Permissions are fully configurable by an Admin via the Roles &amp; Permissions matrix in Settings.</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>Permission actions</h3>
+<table>
+  <thead><tr><th>Action</th><th>Meaning</th></tr></thead>
+  <tbody>
+    <tr><td>READ</td><td>View lists and detail records</td></tr>
+    <tr><td>CREATE</td><td>Add new records</td></tr>
+    <tr><td>UPDATE</td><td>Edit existing records</td></tr>
+    <tr><td>DELETE</td><td>Remove records permanently</td></tr>
+    <tr><td>APPROVE</td><td>Change status to approved (budgets, purchases, invoices)</td></tr>
+  </tbody>
+</table>
+
+<hr>
+
+<!-- ────────────────────── STATUSES ────────────────────── -->
+
+<div id="statuses" class="module-header">
+  <div class="mod-icon teal">🔖</div>
+  <div>
+    <h2>18. Status Definitions</h2>
+    <p>Meaning of every status badge in the system</p>
+  </div>
+</div>
+
+<h3>Sales orders</h3>
+<table>
+  <thead><tr><th>Status</th><th>Meaning</th></tr></thead>
+  <tbody>
+    <tr><td><span class="pill gray">DRAFT</span></td><td>Order created but not yet confirmed. Can be edited or deleted.</td></tr>
+    <tr><td><span class="pill blue">CONFIRMED</span></td><td>Order approved and stock reserved. Payment may or may not be collected.</td></tr>
+    <tr><td><span class="pill green">DELIVERED</span></td><td>Goods or services delivered to the customer. Order complete.</td></tr>
+    <tr><td><span class="pill red">CANCELLED</span></td><td>Order cancelled. Stock is released back.</td></tr>
+  </tbody>
+</table>
+
+<h3>Purchase orders</h3>
+<table>
+  <thead><tr><th>Status</th><th>Meaning</th></tr></thead>
+  <tbody>
+    <tr><td><span class="pill gray">DRAFT</span></td><td>PO being prepared. Not yet sent to supplier.</td></tr>
+    <tr><td><span class="pill blue">CONFIRMED</span></td><td>PO sent/approved. Awaiting delivery.</td></tr>
+    <tr><td><span class="pill green">RECEIVED</span></td><td>Goods received. Inventory updated.</td></tr>
+    <tr><td><span class="pill red">CANCELLED</span></td><td>PO cancelled.</td></tr>
+  </tbody>
+</table>
+
+<h3>Invoices</h3>
+<table>
+  <thead><tr><th>Status</th><th>Meaning</th></tr></thead>
+  <tbody>
+    <tr><td><span class="pill gray">DRAFT</span></td><td>Invoice created but not yet sent to customer.</td></tr>
+    <tr><td><span class="pill blue">ISSUED</span></td><td>Invoice sent to customer. Payment expected.</td></tr>
+    <tr><td><span class="pill green">PAID</span></td><td>Full payment received.</td></tr>
+    <tr><td><span class="pill red">OVERDUE</span></td><td>Past due date with outstanding balance.</td></tr>
+    <tr><td><span class="pill red">CANCELLED</span></td><td>Invoice voided.</td></tr>
+  </tbody>
+</table>
+
+<h3>Budget plans</h3>
+<table>
+  <thead><tr><th>Status</th><th>Meaning</th></tr></thead>
+  <tbody>
+    <tr><td><span class="pill gray">DRAFT</span></td><td>Being prepared. Can be edited.</td></tr>
+    <tr><td><span class="pill yellow">PENDING_APPROVAL</span></td><td>Submitted. Awaiting Finance Manager or Admin approval.</td></tr>
+    <tr><td><span class="pill green">APPROVED</span></td><td>Active. Counts in Dashboard and Analytics.</td></tr>
+    <tr><td><span class="pill red">REJECTED</span></td><td>Returned. Edit and resubmit.</td></tr>
+  </tbody>
+</table>
+
+<h3>CRM leads</h3>
+<table>
+  <thead><tr><th>Status</th><th>Meaning</th></tr></thead>
+  <tbody>
+    <tr><td><span class="pill sky">NEW</span></td><td>Lead just entered the system. Not yet contacted.</td></tr>
+    <tr><td><span class="pill blue">CONTACTED</span></td><td>First contact made.</td></tr>
+    <tr><td><span class="pill green">QUALIFIED</span></td><td>Lead confirmed as a genuine prospect.</td></tr>
+    <tr><td><span class="pill blue">CONVERTED</span></td><td>Lead became a customer. Customer record created automatically.</td></tr>
+    <tr><td><span class="pill red">LOST</span></td><td>Lead did not convert. Kept for historical records.</td></tr>
+  </tbody>
+</table>
+
+<h3>Users</h3>
+<table>
+  <thead><tr><th>Status</th><th>Meaning</th></tr></thead>
+  <tbody>
+    <tr><td><span class="pill green">ACTIVE</span></td><td>User can log in normally.</td></tr>
+    <tr><td><span class="pill gray">INACTIVE</span></td><td>Account deactivated. User cannot log in.</td></tr>
+    <tr><td><span class="pill red">SUSPENDED</span></td><td>Account temporarily blocked by an administrator.</td></tr>
+  </tbody>
+</table>
+
+<hr>
+
+<!-- ────────────────────── TIPS ────────────────────── -->
+
+<div id="tips" class="module-header">
+  <div class="mod-icon emerald">💡</div>
+  <div>
+    <h2>19. Tips &amp; Best Practices</h2>
+    <p>Getting the most out of the ERP platform</p>
+  </div>
+</div>
+
+<h3>Daily operations checklist</h3>
+<ol class="steps">
+  <li><div class="step-body"><strong>Check the Dashboard first</strong><p>Review the Low Stock count and Outstanding balance before starting your day.</p></div></li>
+  <li><div class="step-body"><strong>Process POS transactions in real time</strong><p>Do not batch POS entries — enter each sale as it happens for accurate session totals and live inventory.</p></div></li>
+  <li><div class="step-body"><strong>Confirm purchase orders promptly</strong><p>Move POs from DRAFT to CONFIRMED once sent to the supplier, and to RECEIVED when goods arrive to trigger inventory updates.</p></div></li>
+  <li><div class="step-body"><strong>Review customer aging weekly</strong><p>Run the Customer Aging report every week to follow up on OVERDUE invoices before they become bad debt.</p></div></li>
+  <li><div class="step-body"><strong>Approve budget plans before the fiscal period starts</strong><p>Plans must be APPROVED to show in the Dashboard active count and to be used for variance analysis.</p></div></li>
+</ol>
+
+<h3>Data hygiene tips</h3>
+<div class="box tip">
+  <strong>Unique codes matter.</strong> Customer codes, supplier codes, and product SKUs must be unique. Develop a consistent naming convention from the start (e.g., <kbd>CUST-001</kbd>, <kbd>SUPP-001</kbd>, <kbd>PRD-001</kbd>).
+</div>
+<div class="box tip">
+  <strong>Set min stock thresholds.</strong> Enter a <code>minStock</code> value for every physical product. This powers the Low Stock alert on the Dashboard and Analytics page.
+</div>
+<div class="box tip">
+  <strong>Keep roles lean.</strong> Prefer assigning one well-defined role per user. Use direct permission overrides only for genuine exceptions, not as a way to avoid creating a proper role.
+</div>
+<div class="box warning">
+  <strong>Deactivate, don't delete.</strong> When an employee leaves, disable their user account (change status to INACTIVE) rather than deleting it. Historical records linked to that user (sales, approvals) remain intact.
+</div>
+<div class="box info">
+  <strong>Currency consistency.</strong> Set your base currency in Settings → Company before entering any financial records. Changing it later does not retroactively convert stored amounts.
+</div>
+
+<h3>Role assignment recommendations</h3>
+<table>
+  <thead><tr><th>Job function</th><th>Recommended role(s)</th></tr></thead>
+  <tbody>
+    <tr><td>Cashier / Teller</td><td>Employee + custom "Cashier" role with <kbd>sales:CREATE</kbd></td></tr>
+    <tr><td>Warehouse staff</td><td>Inventory Manager</td></tr>
+    <tr><td>Purchasing agent</td><td>Procurement Officer</td></tr>
+    <tr><td>Accountant</td><td>Finance Manager</td></tr>
+    <tr><td>Sales rep</td><td>Sales Manager</td></tr>
+    <tr><td>External auditor</td><td>Auditor</td></tr>
+    <tr><td>Department head</td><td>Department Manager</td></tr>
+    <tr><td>IT / System admin</td><td>Admin</td></tr>
+    <tr><td>CEO / Owner</td><td>Super Admin</td></tr>
+  </tbody>
+</table>
+
+<h3>Keyboard shortcuts</h3>
+<table>
+  <thead><tr><th>Shortcut</th><th>Action</th></tr></thead>
+  <tbody>
+    <tr><td><kbd>Ctrl+P</kbd> / <kbd>Cmd+P</kbd></td><td>Print current page / export as PDF</td></tr>
+    <tr><td><kbd>Escape</kbd></td><td>Close open modal without saving</td></tr>
+    <tr><td><kbd>Tab</kbd></td><td>Move between form fields</td></tr>
+    <tr><td><kbd>Enter</kbd></td><td>Submit focused form (when cursor is in a text field)</td></tr>
+  </tbody>
+</table>
+
+<h3>Getting help</h3>
+<div class="box info">
+  For technical issues, provide your <strong>Tenant ID</strong> (visible in Settings → My Profile) and a description of the error to your system administrator.
+</div>
+
+</div><!-- end .content -->
+
+<div class="footer">
+  ERP Platform — Complete User Guide &nbsp;·&nbsp; Phase 2, June 2026 &nbsp;·&nbsp; Confidential
+</div>
+
+</div><!-- end .page -->
+</body>
+</html>

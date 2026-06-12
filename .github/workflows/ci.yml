@@ -1,0 +1,58 @@
+name: CI
+
+# Continuous Integration: lint, typecheck, test, build on every push/PR.
+# Intégration continue : lint, vérification de types, tests, build.
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  backend:
+    name: Backend (NestJS)
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: erp
+          POSTGRES_PASSWORD: erp
+          POSTGRES_DB: erp_test
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U erp" --health-interval 10s
+          --health-timeout 5s --health-retries 5
+      redis:
+        image: redis:7-alpine
+        ports: ["6379:6379"]
+    env:
+      DATABASE_URL: postgresql://erp:erp@localhost:5432/erp_test?schema=public
+      REDIS_URL: redis://localhost:6379
+      JWT_ACCESS_SECRET: test_access_secret
+      JWT_REFRESH_SECRET: test_refresh_secret
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci -w backend
+      - run: npm run prisma:generate -w backend
+      - run: npm run lint -w backend
+      - run: npm run test -w backend
+      - run: npm run build -w backend
+
+  frontend:
+    name: Frontend (Next.js)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci -w frontend
+      - run: npm run lint -w frontend
+      - run: npm run build -w frontend
