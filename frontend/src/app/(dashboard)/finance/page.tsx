@@ -40,13 +40,13 @@ export default function FinancePage() {
         <Card>
           <CardHeader><CardTitle>Chart of Accounts / Plan Comptable</CardTitle></CardHeader>
           <CardContent>
-            {!accounts?.length && <p className="text-sm text-gray-400">No accounts configured yet.</p>}
+            {!accounts?.length && <p className="text-sm text-slate-400">No accounts configured yet.</p>}
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
               {accounts?.slice(0, 8).map((a) => (
-                <div key={a.id} className="rounded-lg border border-gray-100 p-3">
-                  <p className="text-xs font-mono text-gray-500">{a.code}</p>
-                  <p className="text-sm font-medium text-gray-900 truncate">{a.name}</p>
-                  <p className="text-xs text-gray-400">{a.type}</p>
+                <div key={a.id} className="rounded-lg border border-stone-100 p-3">
+                  <p className="text-xs font-mono text-slate-500">{a.code}</p>
+                  <p className="text-sm font-medium text-slate-800 truncate">{a.name}</p>
+                  <p className="text-xs text-slate-400">{a.type}</p>
                 </div>
               ))}
             </div>
@@ -55,7 +55,7 @@ export default function FinancePage() {
 
         {/* Invoices */}
         <div>
-          <h2 className="mb-3 text-sm font-semibold text-gray-700">Invoices / Factures</h2>
+          <h2 className="mb-3 text-sm font-semibold text-slate-700">Invoices / Factures</h2>
           {loadingInvoices ? <PageLoader /> : (
             <>
               <Table>
@@ -70,7 +70,7 @@ export default function FinancePage() {
                   </tr>
                 </Thead>
                 <Tbody>
-                  {invoices?.data?.length === 0 && <tr><Td className="text-gray-400">No invoices yet</Td></tr>}
+                  {invoices?.data?.length === 0 && <tr><Td className="text-slate-400">No invoices yet</Td></tr>}
                   {invoices?.data?.map((inv) => (
                     <Tr key={inv.id}>
                       <Td className="font-mono">{inv.number}</Td>
@@ -90,7 +90,7 @@ export default function FinancePage() {
 
         {/* Payments */}
         <div>
-          <h2 className="mb-3 text-sm font-semibold text-gray-700">Payments / Paiements</h2>
+          <h2 className="mb-3 text-sm font-semibold text-slate-700">Payments / Paiements</h2>
           {loadingPayments ? <PageLoader /> : (
             <>
               <Table>
@@ -98,7 +98,7 @@ export default function FinancePage() {
                   <tr><Th>Reference</Th><Th>Method</Th><Th>Amount</Th><Th>Date</Th><Th>Status</Th></tr>
                 </Thead>
                 <Tbody>
-                  {payments?.data?.length === 0 && <tr><Td className="text-gray-400">No payments yet</Td></tr>}
+                  {payments?.data?.length === 0 && <tr><Td className="text-slate-400">No payments yet</Td></tr>}
                   {payments?.data?.map((p) => (
                     <Tr key={p.id}>
                       <Td className="font-mono">{p.reference}</Td>

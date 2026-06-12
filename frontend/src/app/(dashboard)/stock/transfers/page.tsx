@@ -13,7 +13,7 @@ import { inventoryService } from '@/services/inventory.service';
 
 // ── Status config ─────────────────────────────────────────────────────────────
 const STATUS_CONFIG: Record<string, { label: string; color: string }> = {
-  DRAFT: { label: 'Brouillon', color: 'bg-gray-100 text-gray-600' },
+  DRAFT: { label: 'Brouillon', color: 'bg-stone-100 text-slate-600' },
   PENDING: { label: 'En attente', color: 'bg-yellow-100 text-yellow-700' },
   IN_TRANSIT: { label: 'En transit', color: 'bg-sky-100 text-sky-700' },
   PARTIALLY_RECEIVED: { label: 'Partiellement reçu', color: 'bg-orange-100 text-orange-700' },
@@ -22,7 +22,7 @@ const STATUS_CONFIG: Record<string, { label: string; color: string }> = {
 };
 
 function StatusBadge({ status }: { status: string }) {
-  const cfg = STATUS_CONFIG[status] ?? { label: status, color: 'bg-gray-100 text-gray-600' };
+  const cfg = STATUS_CONFIG[status] ?? { label: status, color: 'bg-stone-100 text-slate-600' };
   return (
     <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-semibold ${cfg.color}`}>
       {cfg.label}
@@ -86,12 +86,12 @@ function NewTransferForm({
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="mb-1 block text-sm font-medium text-gray-700">Entrepôt source *</label>
+          <label className="mb-1 block text-sm font-medium text-slate-700">Entrepôt source *</label>
           <select
             required
             value={fromWarehouseId}
             onChange={(e) => setFromWarehouseId(e.target.value)}
-            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            className="w-full rounded-lg border border-stone-200 bg-white text-slate-800 px-3 py-2 text-sm focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-300"
           >
             <option value="">Sélectionner…</option>
             {(warehouses as any[]).map((w: any) => (
@@ -100,12 +100,12 @@ function NewTransferForm({
           </select>
         </div>
         <div>
-          <label className="mb-1 block text-sm font-medium text-gray-700">Entrepôt destination *</label>
+          <label className="mb-1 block text-sm font-medium text-slate-700">Entrepôt destination *</label>
           <select
             required
             value={toWarehouseId}
             onChange={(e) => setToWarehouseId(e.target.value)}
-            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+            className="w-full rounded-lg border border-stone-200 bg-white text-slate-800 px-3 py-2 text-sm focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-300"
           >
             <option value="">Sélectionner…</option>
             {(warehouses as any[])
@@ -118,12 +118,12 @@ function NewTransferForm({
       </div>
 
       <div>
-        <label className="mb-1 block text-sm font-medium text-gray-700">Notes</label>
+        <label className="mb-1 block text-sm font-medium text-slate-700">Notes</label>
         <textarea
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
           rows={2}
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+          className="w-full rounded-lg border border-stone-200 bg-white text-slate-800 px-3 py-2 text-sm focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-300"
           placeholder="Notes optionnelles…"
         />
       </div>
@@ -131,7 +131,7 @@ function NewTransferForm({
       {/* Lines */}
       <div>
         <div className="flex items-center justify-between mb-2">
-          <label className="text-sm font-medium text-gray-700">Articles à transférer</label>
+          <label className="text-sm font-medium text-slate-700">Articles à transférer</label>
           <button
             type="button"
             onClick={() => setLines((p) => [...p, { productId: '', requestedQty: 1, unitCost: 0 }])}
@@ -140,18 +140,18 @@ function NewTransferForm({
             <Plus size={13} /> Ajouter ligne
           </button>
         </div>
-        <div className="overflow-x-auto rounded-lg border border-gray-200">
+        <div className="overflow-x-auto rounded-lg border border-stone-200">
           <table className="min-w-full text-sm">
-            <thead className="bg-gray-50">
+            <thead className="bg-stone-50">
               <tr>
-                <th className="px-3 py-2 text-left text-xs font-medium text-gray-500">Produit</th>
-                <th className="px-3 py-2 text-right text-xs font-medium text-gray-500">Disponible</th>
-                <th className="px-3 py-2 text-right text-xs font-medium text-gray-500">Qté à transférer</th>
-                <th className="px-3 py-2 text-right text-xs font-medium text-gray-500">Coût unit.</th>
+                <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Produit</th>
+                <th className="px-3 py-2 text-right text-xs font-medium text-slate-500">Disponible</th>
+                <th className="px-3 py-2 text-right text-xs font-medium text-slate-500">Qté à transférer</th>
+                <th className="px-3 py-2 text-right text-xs font-medium text-slate-500">Coût unit.</th>
                 <th className="px-3 py-2"></th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody className="divide-y divide-stone-100">
               {lines.map((line, idx) => {
                 const available = line.productId ? getAvailable(line.productId) : 0;
                 return (
@@ -165,7 +165,7 @@ function NewTransferForm({
                             prev.map((l, i) => i === idx ? { ...l, productId: e.target.value } : l)
                           )
                         }
-                        className="w-full rounded border border-gray-300 px-2 py-1 text-sm focus:border-indigo-500 focus:outline-none"
+                        className="w-full rounded border border-stone-200 px-2 py-1 text-sm focus:border-blue-400 focus:outline-none"
                       >
                         <option value="">Sélectionner…</option>
                         {products.filter((p: any) => !p.isService).map((p: any) => (
@@ -174,7 +174,7 @@ function NewTransferForm({
                       </select>
                     </td>
                     <td className="px-3 py-2 text-right">
-                      <span className={`text-xs font-semibold tabular-nums ${available <= 0 ? 'text-red-600' : 'text-gray-600'}`}>
+                      <span className={`text-xs font-semibold tabular-nums ${available <= 0 ? 'text-red-600' : 'text-slate-600'}`}>
                         {available.toLocaleString()}
                       </span>
                     </td>
@@ -190,7 +190,7 @@ function NewTransferForm({
                             prev.map((l, i) => i === idx ? { ...l, requestedQty: parseFloat(e.target.value) || 0 } : l)
                           )
                         }
-                        className="w-24 rounded border border-gray-300 px-2 py-1 text-right text-sm focus:border-indigo-500 focus:outline-none"
+                        className="w-24 rounded border border-stone-200 px-2 py-1 text-right text-sm focus:border-blue-400 focus:outline-none"
                       />
                     </td>
                     <td className="px-3 py-2">
@@ -204,14 +204,14 @@ function NewTransferForm({
                             prev.map((l, i) => i === idx ? { ...l, unitCost: parseFloat(e.target.value) || 0 } : l)
                           )
                         }
-                        className="w-24 rounded border border-gray-300 px-2 py-1 text-right text-sm focus:border-indigo-500 focus:outline-none"
+                        className="w-24 rounded border border-stone-200 px-2 py-1 text-right text-sm focus:border-blue-400 focus:outline-none"
                       />
                     </td>
                     <td className="px-3 py-2">
                       <button
                         type="button"
                         onClick={() => setLines((prev) => prev.filter((_, i) => i !== idx))}
-                        className="text-gray-400 hover:text-red-500"
+                        className="text-slate-400 hover:text-red-500"
                         disabled={lines.length <= 1}
                       >
                         <Trash2 size={14} />
@@ -270,32 +270,32 @@ function ReceiveModal({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <p className="text-sm text-gray-600">
+      <p className="text-sm text-slate-600">
         Transfert <strong>{transfer.reference}</strong>: {transfer.fromWarehouse?.name} → {transfer.toWarehouse?.name}
       </p>
-      <div className="overflow-x-auto rounded-lg border border-gray-200">
+      <div className="overflow-x-auto rounded-lg border border-stone-200">
         <table className="min-w-full text-sm">
-          <thead className="bg-gray-50">
+          <thead className="bg-stone-50">
             <tr>
-              <th className="px-3 py-2 text-left text-xs font-medium text-gray-500">Produit</th>
-              <th className="px-3 py-2 text-right text-xs font-medium text-gray-500">Envoyé</th>
-              <th className="px-3 py-2 text-right text-xs font-medium text-gray-500">Déjà reçu</th>
-              <th className="px-3 py-2 text-right text-xs font-medium text-gray-500">Qté reçue</th>
+              <th className="px-3 py-2 text-left text-xs font-medium text-slate-500">Produit</th>
+              <th className="px-3 py-2 text-right text-xs font-medium text-slate-500">Envoyé</th>
+              <th className="px-3 py-2 text-right text-xs font-medium text-slate-500">Déjà reçu</th>
+              <th className="px-3 py-2 text-right text-xs font-medium text-slate-500">Qté reçue</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-100">
+          <tbody className="divide-y divide-stone-100">
             {transfer.lines.map((line: any) => {
               const pending = Number(line.sentQty) - Number(line.receivedQty);
               return (
                 <tr key={line.id}>
-                  <td className="px-3 py-2 font-medium text-gray-900">
+                  <td className="px-3 py-2 font-medium text-slate-800">
                     {line.product?.name ?? '—'}
-                    <span className="ml-1 text-xs text-gray-400">({line.product?.sku})</span>
+                    <span className="ml-1 text-xs text-slate-400">({line.product?.sku})</span>
                   </td>
-                  <td className="px-3 py-2 text-right tabular-nums text-gray-600">
+                  <td className="px-3 py-2 text-right tabular-nums text-slate-600">
                     {Number(line.sentQty).toLocaleString()}
                   </td>
-                  <td className="px-3 py-2 text-right tabular-nums text-gray-500">
+                  <td className="px-3 py-2 text-right tabular-nums text-slate-500">
                     {Number(line.receivedQty).toLocaleString()}
                   </td>
                   <td className="px-3 py-2">
@@ -311,7 +311,7 @@ function ReceiveModal({
                           [line.id]: parseFloat(e.target.value) || 0,
                         }))
                       }
-                      className="w-24 rounded border border-gray-300 px-2 py-1 text-right text-sm focus:border-indigo-500 focus:outline-none"
+                      className="w-24 rounded border border-stone-200 px-2 py-1 text-right text-sm focus:border-blue-400 focus:outline-none"
                     />
                   </td>
                 </tr>
@@ -366,13 +366,13 @@ export default function TransfersPage() {
       <div className="p-6 space-y-4">
 
         {/* Tabs */}
-        <div className="flex gap-1 rounded-xl border border-gray-200 bg-gray-50 p-1 w-fit">
+        <div className="flex gap-1 rounded-xl border border-stone-200 bg-stone-50 p-1 w-fit">
           <button
             onClick={() => setActiveTab('list')}
             className={`rounded-lg px-4 py-2 text-sm font-medium transition-all ${
               activeTab === 'list'
                 ? 'bg-white text-indigo-700 shadow-sm'
-                : 'text-gray-500 hover:text-gray-700'
+                : 'text-slate-500 hover:text-slate-700'
             }`}
           >
             Liste des transferts
@@ -382,7 +382,7 @@ export default function TransfersPage() {
             className={`rounded-lg px-4 py-2 text-sm font-medium transition-all ${
               activeTab === 'new'
                 ? 'bg-white text-indigo-700 shadow-sm'
-                : 'text-gray-500 hover:text-gray-700'
+                : 'text-slate-500 hover:text-slate-700'
             }`}
           >
             Nouveau transfert
@@ -390,8 +390,8 @@ export default function TransfersPage() {
         </div>
 
         {activeTab === 'new' ? (
-          <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm max-w-4xl">
-            <h2 className="mb-4 text-base font-semibold text-gray-800">Créer un transfert d'entrepôt</h2>
+          <div className="rounded-xl border border-stone-200 bg-white p-6 shadow-sm max-w-4xl">
+            <h2 className="mb-4 text-base font-semibold text-slate-700">Créer un transfert d'entrepôt</h2>
             <NewTransferForm
               onClose={() => setActiveTab('list')}
               onCreated={() => {
@@ -404,11 +404,11 @@ export default function TransfersPage() {
           <>
             {/* Filter */}
             <div className="flex items-center gap-3">
-              <label className="text-xs font-medium text-gray-500">Statut :</label>
+              <label className="text-xs font-medium text-slate-500">Statut :</label>
               <select
                 value={statusFilter}
                 onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
-                className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                className="rounded-lg border border-stone-200 px-3 py-1.5 text-sm focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-300"
               >
                 <option value="">Tous les statuts</option>
                 {Object.entries(STATUS_CONFIG).map(([k, v]) => (
@@ -420,7 +420,7 @@ export default function TransfersPage() {
             {isLoading ? (
               <PageLoader />
             ) : (
-              <div className="overflow-hidden rounded-xl border border-gray-200 shadow-sm">
+              <div className="overflow-hidden rounded-xl border border-stone-200 shadow-sm">
                 <Table>
                   <Thead>
                     <tr>
@@ -436,25 +436,25 @@ export default function TransfersPage() {
                   <Tbody>
                     {transfers.length === 0 && (
                       <tr>
-                        <td colSpan={7} className="py-10 text-center text-sm text-gray-400">
+                        <td colSpan={7} className="py-10 text-center text-sm text-slate-400">
                           Aucun transfert trouvé
                         </td>
                       </tr>
                     )}
                     {transfers.map((t: any) => (
                       <Tr key={t.id}>
-                        <Td className="text-xs text-gray-500 whitespace-nowrap">
+                        <Td className="text-xs text-slate-500 whitespace-nowrap">
                           {new Date(t.createdAt).toLocaleDateString('fr-FR')}
                         </Td>
-                        <Td className="font-mono text-xs font-medium text-gray-700">{t.reference}</Td>
-                        <Td className="text-gray-700">
+                        <Td className="font-mono text-xs font-medium text-slate-700">{t.reference}</Td>
+                        <Td className="text-slate-700">
                           <span className="font-medium">{t.fromWarehouse?.name}</span>
-                          <span className="mx-1.5 text-gray-400">→</span>
+                          <span className="mx-1.5 text-slate-400">→</span>
                           <span className="font-medium">{t.toWarehouse?.name}</span>
                         </Td>
                         <Td className="text-right tabular-nums">{t.lines?.length ?? 0}</Td>
                         <Td><StatusBadge status={t.status} /></Td>
-                        <Td className="text-xs text-gray-400">
+                        <Td className="text-xs text-slate-400">
                           {t.createdBy ? t.createdBy.slice(0, 8) + '…' : '—'}
                         </Td>
                         <Td>

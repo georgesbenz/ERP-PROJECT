@@ -23,18 +23,18 @@ export function Modal({ open, onClose, title, children, className }: ModalProps)
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/40" onClick={onClose} />
+      <div className="absolute inset-0 bg-slate-900/30 backdrop-blur-[2px]" onClick={onClose} />
       <div
         className={cn(
-          'relative z-10 w-full max-w-lg rounded-xl bg-white shadow-xl',
+          'relative z-10 w-full max-w-lg rounded-xl bg-white shadow-lg border border-stone-200',
           className,
         )}
       >
-        <div className="flex items-center justify-between border-b border-gray-100 px-6 py-4">
-          <h2 className="text-base font-semibold text-gray-900">{title}</h2>
+        <div className="flex items-center justify-between border-b border-stone-100 px-6 py-4">
+          <h2 className="text-base font-semibold text-slate-800">{title}</h2>
           <button
             onClick={onClose}
-            className="rounded-md p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+            className="rounded-md p-1 text-slate-400 hover:bg-stone-100 hover:text-slate-600 transition-colors"
           >
             <X size={16} />
           </button>

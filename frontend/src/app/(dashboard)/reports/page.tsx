@@ -52,7 +52,7 @@ function Stat({ label, value }: { label: string; value: string | number }) {
   return (
     <div className="text-center">
       <p className="text-xl font-bold text-indigo-700">{value}</p>
-      <p className="text-xs text-gray-500">{label}</p>
+      <p className="text-xs text-slate-500">{label}</p>
     </div>
   );
 }
@@ -155,7 +155,7 @@ function ImportPanel() {
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex items-center justify-between gap-4">
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-slate-600">
             Upload a filled-in template to bulk-create products.
           </p>
           <Button variant="outline" size="sm" onClick={() => downloadImportTemplate('products')}>
@@ -182,30 +182,30 @@ function ImportPanel() {
 
         {preview.length > 0 && (
           <div>
-            <p className="mb-2 text-sm font-medium text-gray-700">
+            <p className="mb-2 text-sm font-medium text-slate-700">
               Preview — {preview.length} row(s) ready to import
             </p>
-            <div className="overflow-x-auto rounded-lg border border-gray-200">
+            <div className="overflow-x-auto rounded-lg border border-stone-200">
               <table className="min-w-full text-xs">
                 <thead>
-                  <tr className="bg-gray-50">
+                  <tr className="bg-stone-50">
                     {Object.keys(preview[0]).map((h) => (
-                      <th key={h} className="border-b border-gray-200 px-3 py-1.5 text-left font-semibold text-gray-600">{h}</th>
+                      <th key={h} className="border-b border-stone-200 px-3 py-1.5 text-left font-semibold text-slate-600">{h}</th>
                     ))}
                   </tr>
                 </thead>
                 <tbody>
                   {preview.slice(0, 5).map((row, i) => (
-                    <tr key={i} className={i % 2 === 0 ? '' : 'bg-gray-50'}>
+                    <tr key={i} className={i % 2 === 0 ? '' : 'bg-stone-50'}>
                       {Object.values(row).map((val, j) => (
-                        <td key={j} className="border-b border-gray-100 px-3 py-1.5 text-gray-700">{val}</td>
+                        <td key={j} className="border-b border-stone-100 px-3 py-1.5 text-slate-700">{val}</td>
                       ))}
                     </tr>
                   ))}
                 </tbody>
               </table>
               {preview.length > 5 && (
-                <p className="px-3 py-1.5 text-xs text-gray-400">…and {preview.length - 5} more row(s)</p>
+                <p className="px-3 py-1.5 text-xs text-slate-400">…and {preview.length - 5} more row(s)</p>
               )}
             </div>
             <div className="mt-3 flex items-center gap-3">
@@ -383,7 +383,7 @@ export default function ReportsPage() {
 
         {/* Per-module cards */}
         <div>
-          <h2 className="mb-4 text-base font-semibold text-gray-900">Export by Module</h2>
+          <h2 className="mb-4 text-base font-semibold text-slate-800">Export by Module</h2>
           <div className="grid gap-4 md:grid-cols-3">
             {modules.map((mod) => {
               const Icon = mod.icon;
@@ -398,8 +398,8 @@ export default function ReportsPage() {
                       </div>
                       <Stat label={mod.unit} value={mod.count} />
                     </div>
-                    <h3 className="text-base font-semibold text-gray-900">{mod.label}</h3>
-                    <p className="mt-1 text-xs text-gray-500">{mod.desc}</p>
+                    <h3 className="text-base font-semibold text-slate-800">{mod.label}</h3>
+                    <p className="mt-1 text-xs text-slate-500">{mod.desc}</p>
 
                     <details className="mt-3">
                       <summary className="flex cursor-pointer list-none items-center gap-1 text-xs font-medium text-indigo-600 hover:text-indigo-800">
@@ -407,7 +407,7 @@ export default function ReportsPage() {
                       </summary>
                       <div className="mt-2 flex flex-wrap gap-1.5">
                         {mod.sheets.map((sh) => (
-                          <span key={sh} className="rounded-md bg-gray-100 px-2 py-0.5 text-xs text-gray-600">{sh}</span>
+                          <span key={sh} className="rounded-md bg-stone-100 px-2 py-0.5 text-xs text-slate-600">{sh}</span>
                         ))}
                       </div>
                     </details>
@@ -429,7 +429,7 @@ export default function ReportsPage() {
 
         {/* Import panel */}
         <div>
-          <h2 className="mb-4 text-base font-semibold text-gray-900">Import Data</h2>
+          <h2 className="mb-4 text-base font-semibold text-slate-800">Import Data</h2>
           <ImportPanel />
         </div>
 
@@ -439,8 +439,8 @@ export default function ReportsPage() {
             <div className="flex items-start gap-4">
               <BarChart3 size={24} className="mt-0.5 shrink-0 text-indigo-500" />
               <div>
-                <h3 className="font-semibold text-gray-900">About the Excel Export</h3>
-                <ul className="mt-2 space-y-1 text-sm text-gray-600">
+                <h3 className="font-semibold text-slate-800">About the Excel Export</h3>
+                <ul className="mt-2 space-y-1 text-sm text-slate-600">
                   <li>• Each module exports as a <strong>.xlsx</strong> workbook with 4–5 sheets</li>
                   <li>• The <strong>Summary sheet</strong> shows KPI cards with key metrics at a glance</li>
                   <li>• Data sheets have <strong>AutoFilter</strong> and <strong>frozen headers</strong> for easy navigation</li>

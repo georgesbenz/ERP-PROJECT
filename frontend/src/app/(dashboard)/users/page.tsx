@@ -76,12 +76,12 @@ export default function UsersPage() {
       <div className="p-6 space-y-4">
         <div className="flex items-center justify-between gap-4">
           <div className="relative w-72">
-            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
             <input
               value={search}
               onChange={(e) => { setSearch(e.target.value); setPage(1); }}
               placeholder="Search users…"
-              className="w-full rounded-lg border border-gray-300 py-2 pl-9 pr-3 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              className="w-full rounded-lg border border-stone-200 bg-white text-slate-800 py-2 pl-9 pr-3 text-sm focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-300"
             />
           </div>
           {canManageUsers && (
@@ -106,10 +106,10 @@ export default function UsersPage() {
                 </tr>
               </Thead>
               <Tbody>
-                {data?.data?.length === 0 && <tr><Td className="text-gray-400">No users</Td></tr>}
+                {data?.data?.length === 0 && <tr><Td className="text-slate-400">No users</Td></tr>}
                 {data?.data?.map((u) => (
                   <Tr key={u.id}>
-                    <Td className="font-medium text-gray-900">{u.firstName} {u.lastName}</Td>
+                    <Td className="font-medium text-slate-800">{u.firstName} {u.lastName}</Td>
                     <Td>{u.email}</Td>
                     <Td>
                       <div className="flex flex-wrap gap-1">
@@ -175,10 +175,10 @@ export default function UsersPage() {
             {...register('phone')}
           />
           <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700">Role</label>
+            <label className="mb-1 block text-sm font-medium text-slate-700">Role</label>
             <select
               {...register('roleId')}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              className="w-full rounded-lg border border-stone-200 bg-white text-slate-800 px-3 py-2 text-sm focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-300"
             >
               <option value="">— No role assigned —</option>
               {(roles as Role[]).filter((r) => r.isActive).map((r) => (
@@ -264,7 +264,7 @@ function UserPermissionsModal({ user, onClose }: { user: User; onClose: () => vo
     DELETE:          'bg-red-100 text-red-700',
     APPROVE:         'bg-purple-100 text-purple-700',
     MANAGE_ROLES:    'bg-indigo-100 text-indigo-700',
-    MANAGE_SETTINGS: 'bg-gray-200 text-gray-700',
+    MANAGE_SETTINGS: 'bg-stone-200 text-slate-700',
   };
 
   return (
@@ -274,26 +274,26 @@ function UserPermissionsModal({ user, onClose }: { user: User; onClose: () => vo
       title={`Permission Overrides — ${user.firstName} ${user.lastName}`}
     >
       <div className="space-y-4">
-        <p className="text-sm text-gray-500">
+        <p className="text-sm text-slate-500">
           These permissions are granted <strong>directly</strong> to this user, in addition to their role permissions.
         </p>
 
         {permsLoading ? (
           <PageLoader />
         ) : Object.keys(grouped).length === 0 ? (
-          <p className="rounded-lg border border-dashed border-gray-200 py-6 text-center text-sm text-gray-400">
+          <p className="rounded-lg border border-dashed border-stone-200 py-6 text-center text-sm text-slate-400">
             No extra permissions granted to this user
           </p>
         ) : (
           <div className="space-y-2">
             {Object.entries(grouped).sort(([a], [b]) => a.localeCompare(b)).map(([mod, perms]) => (
-              <div key={mod} className="rounded-lg border border-gray-100 bg-gray-50 px-3 py-2">
-                <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-gray-500">{mod}</p>
+              <div key={mod} className="rounded-lg border border-stone-100 bg-stone-50 px-3 py-2">
+                <p className="mb-1.5 text-xs font-semibold uppercase tracking-wide text-slate-500">{mod}</p>
                 <div className="flex flex-wrap gap-1.5">
                   {perms.map((up: UserPermission) => (
                     <span
                       key={up.permissionId}
-                      className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium ${ACTION_COLORS[up.permission.action] ?? 'bg-gray-100 text-gray-600'}`}
+                      className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-medium ${ACTION_COLORS[up.permission.action] ?? 'bg-stone-100 text-slate-600'}`}
                     >
                       {up.permission.action}
                       <button
@@ -320,7 +320,7 @@ function UserPermissionsModal({ user, onClose }: { user: User; onClose: () => vo
             <select
               value={selectedPermId}
               onChange={(e) => setSelectedPermId(e.target.value)}
-              className="flex-1 rounded-lg border border-gray-300 px-3 py-1.5 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              className="flex-1 rounded-lg border border-stone-200 px-3 py-1.5 text-sm focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-300"
             >
               <option value="">Select a permission…</option>
               {available.map((p: Permission) => (

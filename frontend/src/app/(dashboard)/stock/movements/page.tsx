@@ -24,12 +24,12 @@ const TYPE_CONFIG: Record<string, { label: string; color: string }> = {
   SALE_DELIVERY: { label: 'Livraison vente', color: 'bg-red-100 text-red-700' },
   SALE_PARTIAL_DELIVERY: { label: 'Livraison partielle', color: 'bg-red-100 text-red-700' },
   CUSTOMER_RETURN_RESALABLE: { label: 'Retour client (bon état)', color: 'bg-green-100 text-green-700' },
-  CUSTOMER_RETURN_DAMAGED: { label: 'Retour client (endommagé)', color: 'bg-gray-100 text-gray-700' },
+  CUSTOMER_RETURN_DAMAGED: { label: 'Retour client (endommagé)', color: 'bg-stone-100 text-slate-700' },
   POS_SALE: { label: 'Vente POS', color: 'bg-red-100 text-red-700' },
   ADJUSTMENT_IN: { label: 'Ajust. positif', color: 'bg-orange-100 text-orange-700' },
   ADJUSTMENT_OUT: { label: 'Ajust. négatif', color: 'bg-orange-100 text-orange-700' },
-  DAMAGE_WRITE_OFF: { label: 'Perte dommage', color: 'bg-gray-100 text-gray-600' },
-  EXPIRY_WRITE_OFF: { label: 'Perte expiration', color: 'bg-gray-100 text-gray-600' },
+  DAMAGE_WRITE_OFF: { label: 'Perte dommage', color: 'bg-stone-100 text-slate-600' },
+  EXPIRY_WRITE_OFF: { label: 'Perte expiration', color: 'bg-stone-100 text-slate-600' },
   STATE_CHANGE: { label: 'Changement état', color: 'bg-yellow-100 text-yellow-700' },
   TRANSFER_OUT: { label: 'Transfert sortant', color: 'bg-purple-100 text-purple-700' },
   TRANSFER_IN: { label: 'Transfert entrant', color: 'bg-purple-100 text-purple-700' },
@@ -98,14 +98,14 @@ export default function StockMovementsPage() {
       <div className="p-6 space-y-4">
 
         {/* Filters */}
-        <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+        <div className="rounded-xl border border-stone-200 bg-white p-4 shadow-sm">
           <div className="flex flex-wrap items-end gap-3">
             <div className="min-w-[180px]">
-              <label className="mb-1 block text-xs font-medium text-gray-500">Produit</label>
+              <label className="mb-1 block text-xs font-medium text-slate-500">Produit</label>
               <select
                 value={productId}
                 onChange={(e) => { setProductId(e.target.value); setPage(1); }}
-                className="w-full rounded-lg border border-gray-300 px-3 py-1.5 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                className="w-full rounded-lg border border-stone-200 bg-white text-slate-800 px-3 py-1.5 text-sm focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-300"
               >
                 <option value="">Tous les produits</option>
                 {products.map((p: any) => (
@@ -115,11 +115,11 @@ export default function StockMovementsPage() {
             </div>
 
             <div className="min-w-[160px]">
-              <label className="mb-1 block text-xs font-medium text-gray-500">Entrepôt</label>
+              <label className="mb-1 block text-xs font-medium text-slate-500">Entrepôt</label>
               <select
                 value={warehouseId}
                 onChange={(e) => { setWarehouseId(e.target.value); setPage(1); }}
-                className="w-full rounded-lg border border-gray-300 px-3 py-1.5 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                className="w-full rounded-lg border border-stone-200 bg-white text-slate-800 px-3 py-1.5 text-sm focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-300"
               >
                 <option value="">Tous les entrepôts</option>
                 {(warehouses as any[]).map((w: any) => (
@@ -129,11 +129,11 @@ export default function StockMovementsPage() {
             </div>
 
             <div className="min-w-[180px]">
-              <label className="mb-1 block text-xs font-medium text-gray-500">Type de mouvement</label>
+              <label className="mb-1 block text-xs font-medium text-slate-500">Type de mouvement</label>
               <select
                 value={typeFilter}
                 onChange={(e) => { setTypeFilter(e.target.value); setPage(1); }}
-                className="w-full rounded-lg border border-gray-300 px-3 py-1.5 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                className="w-full rounded-lg border border-stone-200 bg-white text-slate-800 px-3 py-1.5 text-sm focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-300"
               >
                 <option value="">Tous les types</option>
                 {Object.entries(TYPE_CONFIG).map(([k, v]) => (
@@ -143,28 +143,28 @@ export default function StockMovementsPage() {
             </div>
 
             <div>
-              <label className="mb-1 block text-xs font-medium text-gray-500">Du</label>
+              <label className="mb-1 block text-xs font-medium text-slate-500">Du</label>
               <input
                 type="date"
                 value={dateFrom}
                 onChange={(e) => { setDateFrom(e.target.value); setPage(1); }}
-                className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                className="rounded-lg border border-stone-200 px-3 py-1.5 text-sm focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-300"
               />
             </div>
             <div>
-              <label className="mb-1 block text-xs font-medium text-gray-500">Au</label>
+              <label className="mb-1 block text-xs font-medium text-slate-500">Au</label>
               <input
                 type="date"
                 value={dateTo}
                 onChange={(e) => { setDateTo(e.target.value); setPage(1); }}
-                className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                className="rounded-lg border border-stone-200 px-3 py-1.5 text-sm focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-300"
               />
             </div>
 
             {hasFilters && (
               <button
                 onClick={resetFilters}
-                className="ml-auto flex items-center gap-1.5 rounded-lg border border-gray-200 px-3 py-1.5 text-sm text-gray-500 hover:bg-gray-50"
+                className="ml-auto flex items-center gap-1.5 rounded-lg border border-stone-200 px-3 py-1.5 text-sm text-slate-500 hover:bg-stone-50"
               >
                 <RotateCcw size={13} /> Réinitialiser
               </button>
@@ -173,7 +173,7 @@ export default function StockMovementsPage() {
         </div>
 
         {!isLoading && meta && (
-          <p className="text-xs text-gray-500">
+          <p className="text-xs text-slate-500">
             {meta.total} mouvement{meta.total !== 1 ? 's' : ''} trouvé{meta.total !== 1 ? 's' : ''}
             {hasFilters ? ' (filtré)' : ''}
           </p>
@@ -183,7 +183,7 @@ export default function StockMovementsPage() {
           <PageLoader />
         ) : (
           <>
-            <div className="overflow-hidden rounded-xl border border-gray-200 shadow-sm">
+            <div className="overflow-hidden rounded-xl border border-stone-200 shadow-sm">
               <Table>
                 <Thead>
                   <tr>
@@ -202,24 +202,24 @@ export default function StockMovementsPage() {
                 <Tbody>
                   {movements.length === 0 && (
                     <tr>
-                      <td colSpan={10} className="py-10 text-center text-sm text-gray-400">
+                      <td colSpan={10} className="py-10 text-center text-sm text-slate-400">
                         Aucun mouvement trouvé{hasFilters ? ' — modifiez vos filtres' : ''}
                       </td>
                     </tr>
                   )}
                   {movements.map((m: any) => {
-                    const cfg = TYPE_CONFIG[m.type] ?? { label: m.type, color: 'bg-gray-100 text-gray-600' };
+                    const cfg = TYPE_CONFIG[m.type] ?? { label: m.type, color: 'bg-stone-100 text-slate-600' };
                     const positive = POSITIVE_TYPES.has(m.type);
                     return (
                       <Tr key={m.id}>
-                        <Td className="whitespace-nowrap text-xs text-gray-500">
+                        <Td className="whitespace-nowrap text-xs text-slate-500">
                           {new Date(m.createdAt).toLocaleString('fr-FR')}
                         </Td>
-                        <Td className="font-medium text-gray-900 max-w-[140px] truncate">
+                        <Td className="font-medium text-slate-800 max-w-[140px] truncate">
                           {m.product?.name ?? '—'}
                         </Td>
-                        <Td className="font-mono text-xs text-gray-500">{m.product?.sku ?? '—'}</Td>
-                        <Td className="text-gray-600">{m.warehouse?.name ?? '—'}</Td>
+                        <Td className="font-mono text-xs text-slate-500">{m.product?.sku ?? '—'}</Td>
+                        <Td className="text-slate-600">{m.warehouse?.name ?? '—'}</Td>
                         <Td>
                           <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-semibold ${cfg.color}`}>
                             {cfg.label}
@@ -230,16 +230,16 @@ export default function StockMovementsPage() {
                             {positive ? '+' : '−'}{Number(m.quantity).toLocaleString(undefined, { maximumFractionDigits: 3 })}
                           </span>
                         </Td>
-                        <Td className="text-right text-gray-600 tabular-nums">
+                        <Td className="text-right text-slate-600 tabular-nums">
                           {m.unitCost != null
                             ? Number(m.unitCost).toLocaleString(undefined, { minimumFractionDigits: 2 })
                             : '—'}
                         </Td>
-                        <Td className="font-mono text-xs text-gray-500">{m.reference ?? '—'}</Td>
-                        <Td className="text-xs text-gray-500 max-w-[120px] truncate">
+                        <Td className="font-mono text-xs text-slate-500">{m.reference ?? '—'}</Td>
+                        <Td className="text-xs text-slate-500 max-w-[120px] truncate">
                           {m.reason ?? m.notes ?? '—'}
                         </Td>
-                        <Td className="text-xs text-gray-400">
+                        <Td className="text-xs text-slate-400">
                           {m.createdBy ? m.createdBy.slice(0, 8) + '…' : '—'}
                         </Td>
                       </Tr>

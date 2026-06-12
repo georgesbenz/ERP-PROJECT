@@ -87,12 +87,12 @@ export default function InventoryPage() {
       <div className="p-6 space-y-4">
         <div className="flex items-center justify-between gap-4">
           <div className="relative w-72">
-            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
             <input
               value={search}
               onChange={(e) => { setSearch(e.target.value); setPage(1); }}
               placeholder="Search products…"
-              className="w-full rounded-lg border border-gray-300 py-2 pl-9 pr-3 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              className="w-full rounded-lg border border-stone-200 bg-white text-slate-800 py-2 pl-9 pr-3 text-sm focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-300"
             />
           </div>
           <div className="flex gap-2">
@@ -121,17 +121,17 @@ export default function InventoryPage() {
               </Thead>
               <Tbody>
                 {data?.data?.length === 0 && (
-                  <tr><Td className="text-gray-400 col-span-5">No products yet</Td></tr>
+                  <tr><Td className="text-slate-400 col-span-5">No products yet</Td></tr>
                 )}
                 {data?.data?.map((p) => (
                   <Tr key={p.id}>
-                    <Td className="font-medium text-gray-900">{p.name}</Td>
+                    <Td className="font-medium text-slate-800">{p.name}</Td>
                     <Td>{p.sku ?? '—'}</Td>
                     <Td>{formatCurrency(Number(p.salePrice))}</Td>
                     <Td>
                       {p.tax
                         ? <span className="rounded-md bg-amber-50 px-1.5 py-0.5 text-xs font-medium text-amber-700">{p.tax.code} {Number(p.tax.rate).toFixed(1)}%</span>
-                        : <span className="text-gray-400 text-xs">—</span>
+                        : <span className="text-slate-400 text-xs">—</span>
                       }
                     </Td>
                     <Td><Badge variant="info">{p.isService ? 'Service' : 'Physical'}</Badge></Td>
@@ -156,10 +156,10 @@ export default function InventoryPage() {
             <Input label="Cost Price *" type="number" step="0.01" error={errors.costPrice?.message} {...register('costPrice')} />
           </div>
           <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700">Tax Code</label>
+            <label className="mb-1 block text-sm font-medium text-slate-700">Tax Code</label>
             <select
               {...register('taxId')}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              className="w-full rounded-lg border border-stone-200 bg-white text-slate-800 px-3 py-2 text-sm focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-300"
             >
               <option value="">No tax / Exempt</option>
               {activeTaxes.map((t) => (
@@ -169,7 +169,7 @@ export default function InventoryPage() {
               ))}
             </select>
           </div>
-          <label className="flex items-center gap-2 text-sm text-gray-700">
+          <label className="flex items-center gap-2 text-sm text-slate-700">
             <input type="checkbox" {...register('isService')} className="rounded" />
             This is a service (no stock tracking)
           </label>

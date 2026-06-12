@@ -21,8 +21,8 @@ function KpiCard({
           <Icon size={20} className="text-white" />
         </div>
         <div>
-          <p className="text-sm text-gray-500">{label}</p>
-          <p className="text-xl font-bold text-gray-900">{value}</p>
+          <p className="text-sm text-slate-500">{label}</p>
+          <p className="text-xl font-bold text-slate-800">{value}</p>
         </div>
       </CardContent>
     </Card>
@@ -68,22 +68,22 @@ export default function DashboardPage() {
         {!loadingActivity && activity && (
           <div className="grid gap-6 lg:grid-cols-3">
             <Card>
-              <div className="border-b border-gray-100 px-5 py-3 text-sm font-semibold text-gray-700">
+              <div className="border-b border-stone-100 px-5 py-3 text-sm font-semibold text-slate-700">
                 Recent Sales
               </div>
               <ul className="divide-y divide-gray-50">
                 {activity.recentSales?.length === 0 && (
-                  <li className="px-5 py-3 text-sm text-gray-400">No sales yet</li>
+                  <li className="px-5 py-3 text-sm text-slate-400">No sales yet</li>
                 )}
                 {activity.recentSales?.map((s: { id: string; reference: string; customer?: { name: string }; total: number; createdAt: string }) => (
                   <li key={s.id} className="flex items-center justify-between px-5 py-3">
                     <div>
-                      <p className="text-sm font-medium text-gray-900">{s.reference}</p>
-                      <p className="text-xs text-gray-400">{s.customer?.name ?? 'Walk-in'}</p>
+                      <p className="text-sm font-medium text-slate-800">{s.reference}</p>
+                      <p className="text-xs text-slate-400">{s.customer?.name ?? 'Walk-in'}</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-sm font-semibold text-gray-900">{formatCurrency(Number(s.total))}</p>
-                      <p className="text-xs text-gray-400">{formatDateTime(s.createdAt)}</p>
+                      <p className="text-sm font-semibold text-slate-800">{formatCurrency(Number(s.total))}</p>
+                      <p className="text-xs text-slate-400">{formatDateTime(s.createdAt)}</p>
                     </div>
                   </li>
                 ))}
@@ -91,22 +91,22 @@ export default function DashboardPage() {
             </Card>
 
             <Card>
-              <div className="border-b border-gray-100 px-5 py-3 text-sm font-semibold text-gray-700">
+              <div className="border-b border-stone-100 px-5 py-3 text-sm font-semibold text-slate-700">
                 Recent Purchases
               </div>
               <ul className="divide-y divide-gray-50">
                 {activity.recentPurchases?.length === 0 && (
-                  <li className="px-5 py-3 text-sm text-gray-400">No purchases yet</li>
+                  <li className="px-5 py-3 text-sm text-slate-400">No purchases yet</li>
                 )}
                 {activity.recentPurchases?.map((p: { id: string; reference: string; supplier?: { name: string }; total: number; createdAt: string }) => (
                   <li key={p.id} className="flex items-center justify-between px-5 py-3">
                     <div>
-                      <p className="text-sm font-medium text-gray-900">{p.reference}</p>
-                      <p className="text-xs text-gray-400">{p.supplier?.name ?? '—'}</p>
+                      <p className="text-sm font-medium text-slate-800">{p.reference}</p>
+                      <p className="text-xs text-slate-400">{p.supplier?.name ?? '—'}</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-sm font-semibold text-gray-900">{formatCurrency(Number(p.total))}</p>
-                      <p className="text-xs text-gray-400">{formatDateTime(p.createdAt)}</p>
+                      <p className="text-sm font-semibold text-slate-800">{formatCurrency(Number(p.total))}</p>
+                      <p className="text-xs text-slate-400">{formatDateTime(p.createdAt)}</p>
                     </div>
                   </li>
                 ))}
@@ -114,20 +114,20 @@ export default function DashboardPage() {
             </Card>
 
             <Card>
-              <div className="border-b border-gray-100 px-5 py-3 text-sm font-semibold text-gray-700">
+              <div className="border-b border-stone-100 px-5 py-3 text-sm font-semibold text-slate-700">
                 Recent Leads
               </div>
               <ul className="divide-y divide-gray-50">
                 {activity.recentLeads?.length === 0 && (
-                  <li className="px-5 py-3 text-sm text-gray-400">No leads yet</li>
+                  <li className="px-5 py-3 text-sm text-slate-400">No leads yet</li>
                 )}
                 {activity.recentLeads?.map((l: { id: string; firstName: string; lastName: string; status: string; createdAt: string }) => (
                   <li key={l.id} className="flex items-center justify-between px-5 py-3">
                     <div>
-                      <p className="text-sm font-medium text-gray-900">{l.firstName} {l.lastName}</p>
-                      <p className="text-xs text-gray-400">{l.status}</p>
+                      <p className="text-sm font-medium text-slate-800">{l.firstName} {l.lastName}</p>
+                      <p className="text-xs text-slate-400">{l.status}</p>
                     </div>
-                    <p className="text-xs text-gray-400">{formatDateTime(l.createdAt)}</p>
+                    <p className="text-xs text-slate-400">{formatDateTime(l.createdAt)}</p>
                   </li>
                 ))}
               </ul>

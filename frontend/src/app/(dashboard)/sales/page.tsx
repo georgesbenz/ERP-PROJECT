@@ -40,8 +40,8 @@ export default function SalesPage() {
       <div className="p-6 space-y-4">
         <div className="flex items-center justify-between">
           <div className="relative w-72">
-            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-            <input placeholder="Search sales…" className="w-full rounded-lg border border-gray-300 py-2 pl-9 pr-3 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500" />
+            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+            <input placeholder="Search sales…" className="w-full rounded-lg border border-stone-200 bg-white text-slate-800 py-2 pl-9 pr-3 text-sm focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-300" />
           </div>
           <div className="flex gap-2">
             <Button variant="outline" size="sm" onClick={handleExport} loading={exporting}>
@@ -66,7 +66,7 @@ export default function SalesPage() {
               </Thead>
               <Tbody>
                 {data?.data?.length === 0 && (
-                  <tr><Td className="text-gray-400">No sales yet</Td></tr>
+                  <tr><Td className="text-slate-400">No sales yet</Td></tr>
                 )}
                 {data?.data?.map((s) => (
                   <Tr key={s.id}>

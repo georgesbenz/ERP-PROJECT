@@ -15,7 +15,7 @@ function StockAlertBadge({ status }: { status: string }) {
     LOW_STOCK: { label: 'Stock faible', color: 'bg-amber-100 text-amber-700' },
     REORDER_NEEDED: { label: 'Réappro. nécessaire', color: 'bg-orange-100 text-orange-700' },
   };
-  const cfg = configs[status] ?? { label: status, color: 'bg-gray-100 text-gray-600' };
+  const cfg = configs[status] ?? { label: status, color: 'bg-stone-100 text-slate-600' };
   return (
     <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-semibold ${cfg.color}`}>
       {cfg.label}
@@ -64,7 +64,7 @@ export default function StockAlertsPage() {
         <section>
           <div className="mb-3 flex items-center gap-2">
             <AlertTriangle size={18} className="text-amber-500" />
-            <h2 className="text-base font-semibold text-gray-800">
+            <h2 className="text-base font-semibold text-slate-700">
               Stock faible / Ruptures de stock
             </h2>
             <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-700">
@@ -75,7 +75,7 @@ export default function StockAlertsPage() {
           {loadingLow ? (
             <PageLoader />
           ) : (
-            <div className="overflow-hidden rounded-xl border border-gray-200 shadow-sm">
+            <div className="overflow-hidden rounded-xl border border-stone-200 shadow-sm">
               <Table>
                 <Thead>
                   <tr>
@@ -91,16 +91,16 @@ export default function StockAlertsPage() {
                 <Tbody>
                   {(lowStockAlerts as any[]).length === 0 && (
                     <tr>
-                      <td colSpan={7} className="py-10 text-center text-sm text-gray-400">
+                      <td colSpan={7} className="py-10 text-center text-sm text-slate-400">
                         Aucune alerte de stock — tout est en ordre
                       </td>
                     </tr>
                   )}
                   {(lowStockAlerts as any[]).map((alert: any, idx: number) => (
                     <Tr key={`${alert.productId}-${alert.warehouseId}-${idx}`}>
-                      <Td className="font-medium text-gray-900">{alert.product?.name ?? '—'}</Td>
-                      <Td className="font-mono text-xs text-gray-500">{alert.product?.sku ?? '—'}</Td>
-                      <Td className="text-gray-600">{alert.warehouse?.name ?? '—'}</Td>
+                      <Td className="font-medium text-slate-800">{alert.product?.name ?? '—'}</Td>
+                      <Td className="font-mono text-xs text-slate-500">{alert.product?.sku ?? '—'}</Td>
+                      <Td className="text-slate-600">{alert.warehouse?.name ?? '—'}</Td>
                       <Td className="text-right">
                         <span className={`font-bold tabular-nums ${
                           Number(alert.available) <= 0 ? 'text-red-600' : 'text-amber-600'
@@ -108,10 +108,10 @@ export default function StockAlertsPage() {
                           {Number(alert.available).toLocaleString()}
                         </span>
                       </Td>
-                      <Td className="text-right tabular-nums text-gray-600">
+                      <Td className="text-right tabular-nums text-slate-600">
                         {Number(alert.minStock ?? 0).toLocaleString()}
                       </Td>
-                      <Td className="text-right tabular-nums text-gray-500">
+                      <Td className="text-right tabular-nums text-slate-500">
                         {alert.reorderPoint != null
                           ? Number(alert.reorderPoint).toLocaleString()
                           : '—'}
@@ -131,18 +131,18 @@ export default function StockAlertsPage() {
         <section>
           <div className="mb-3 flex items-center gap-3">
             <Clock size={18} className="text-orange-500" />
-            <h2 className="text-base font-semibold text-gray-800">
+            <h2 className="text-base font-semibold text-slate-700">
               Alertes d'expiration
             </h2>
             <span className="rounded-full bg-orange-100 px-2 py-0.5 text-xs font-medium text-orange-700">
               {(expiryAlerts as any[]).length} lot{(expiryAlerts as any[]).length !== 1 ? 's' : ''}
             </span>
             <div className="ml-auto flex items-center gap-2">
-              <label className="text-xs font-medium text-gray-500">Horizon :</label>
+              <label className="text-xs font-medium text-slate-500">Horizon :</label>
               <select
                 value={daysAhead}
                 onChange={(e) => setDaysAhead(Number(e.target.value))}
-                className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                className="rounded-lg border border-stone-200 px-3 py-1.5 text-sm focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-300"
               >
                 <option value={7}>7 jours</option>
                 <option value={14}>14 jours</option>
@@ -156,7 +156,7 @@ export default function StockAlertsPage() {
           {loadingExpiry ? (
             <PageLoader />
           ) : (
-            <div className="overflow-hidden rounded-xl border border-gray-200 shadow-sm">
+            <div className="overflow-hidden rounded-xl border border-stone-200 shadow-sm">
               <Table>
                 <Thead>
                   <tr>
@@ -172,7 +172,7 @@ export default function StockAlertsPage() {
                 <Tbody>
                   {(expiryAlerts as any[]).length === 0 && (
                     <tr>
-                      <td colSpan={7} className="py-10 text-center text-sm text-gray-400">
+                      <td colSpan={7} className="py-10 text-center text-sm text-slate-400">
                         Aucune alerte d'expiration dans les prochains {daysAhead} jours
                       </td>
                     </tr>
@@ -184,22 +184,22 @@ export default function StockAlertsPage() {
                     );
                     return (
                       <Tr key={batch.id}>
-                        <Td className="font-mono text-xs font-medium text-gray-700">
+                        <Td className="font-mono text-xs font-medium text-slate-700">
                           {batch.batchNumber}
                         </Td>
-                        <Td className="font-medium text-gray-900">{batch.product?.name ?? '—'}</Td>
-                        <Td className="text-gray-600">{batch.warehouse?.name ?? '—'}</Td>
-                        <Td className="text-gray-600 whitespace-nowrap">
+                        <Td className="font-medium text-slate-800">{batch.product?.name ?? '—'}</Td>
+                        <Td className="text-slate-600">{batch.warehouse?.name ?? '—'}</Td>
+                        <Td className="text-slate-600 whitespace-nowrap">
                           {expiryDate.toLocaleDateString('fr-FR')}
                         </Td>
                         <Td>
                           <ExpiryBadge daysLeft={daysLeft} />
                         </Td>
-                        <Td className="text-right tabular-nums font-semibold text-gray-800">
+                        <Td className="text-right tabular-nums font-semibold text-slate-700">
                           {Number(batch.quantity).toLocaleString()}
                         </Td>
                         <Td>
-                          <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-600">
+                          <span className="rounded-full bg-stone-100 px-2 py-0.5 text-xs text-slate-600">
                             {batch.state}
                           </span>
                         </Td>

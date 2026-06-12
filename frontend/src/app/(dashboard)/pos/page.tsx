@@ -77,7 +77,7 @@ function QtyPopup({
         <div className="p-5 space-y-4">
           {/* Quantity input */}
           <div>
-            <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-gray-500">
+            <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-500">
               Quantity
             </label>
             <input
@@ -88,7 +88,7 @@ function QtyPopup({
               value={qty}
               onChange={(e) => setQty(e.target.value)}
               onKeyDown={(e) => { if (e.key === 'Enter') confirm(); if (e.key === 'Escape') onCancel(); }}
-              className="w-full rounded-xl border-2 border-indigo-300 px-4 py-3 text-center text-3xl font-bold text-gray-900 focus:border-indigo-600 focus:outline-none focus:ring-0"
+              className="w-full rounded-xl border-2 border-indigo-300 px-4 py-3 text-center text-3xl font-bold text-slate-800 focus:border-indigo-600 focus:outline-none focus:ring-0"
             />
           </div>
 
@@ -102,7 +102,7 @@ function QtyPopup({
                 className={`rounded-lg border py-2 text-sm font-semibold transition-colors ${
                   qty === String(q)
                     ? 'border-indigo-600 bg-indigo-600 text-white'
-                    : 'border-gray-200 bg-gray-50 text-gray-700 hover:border-indigo-300 hover:bg-indigo-50 hover:text-indigo-700'
+                    : 'border-stone-200 bg-stone-50 text-slate-700 hover:border-indigo-300 hover:bg-indigo-50 hover:text-indigo-700'
                 }`}
               >
                 {q}
@@ -127,7 +127,7 @@ function QtyPopup({
             <button
               type="button"
               onClick={onCancel}
-              className="flex-1 rounded-xl border border-gray-200 py-2.5 text-sm font-medium text-gray-600 hover:bg-gray-50"
+              className="flex-1 rounded-xl border border-stone-200 py-2.5 text-sm font-medium text-slate-600 hover:bg-stone-50"
             >
               Cancel
             </button>
@@ -238,27 +238,27 @@ export default function PosPage() {
       <div className="flex h-[calc(100vh-3.5rem)] overflow-hidden">
 
         {/* LEFT — Product Grid */}
-        <div className="flex w-3/5 flex-col border-r border-gray-200 bg-gray-50">
+        <div className="flex w-3/5 flex-col border-r border-stone-200 bg-stone-50">
           {/* Session bar */}
-          <div className="flex items-center justify-between border-b border-gray-200 bg-white px-4 py-2">
-            <span className="text-xs text-gray-500">
+          <div className="flex items-center justify-between border-b border-stone-200 bg-white px-4 py-2">
+            <span className="text-xs text-slate-500">
               Today: <strong>{session?.salesToday ?? 0}</strong> sales ·{' '}
               <strong>{formatCurrency(Number(session?.revenueToday ?? 0))}</strong> revenue
             </span>
-            <button onClick={() => refetchSession()} className="text-gray-400 hover:text-indigo-600">
+            <button onClick={() => refetchSession()} className="text-slate-400 hover:text-indigo-600">
               <RefreshCw size={14} />
             </button>
           </div>
 
           {/* Search */}
-          <div className="border-b border-gray-200 bg-white p-3">
+          <div className="border-b border-stone-200 bg-white p-3">
             <div className="relative">
-              <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+              <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
               <input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search products…"
-                className="w-full rounded-lg border border-gray-300 py-2 pl-9 pr-3 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                className="w-full rounded-lg border border-stone-200 bg-white text-slate-800 py-2 pl-9 pr-3 text-sm focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-300"
               />
             </div>
           </div>
@@ -266,20 +266,20 @@ export default function PosPage() {
           {/* Product Grid */}
           <div className="flex-1 overflow-y-auto p-3">
             {isLoading ? (
-              <p className="text-center text-sm text-gray-400 mt-8">Loading products…</p>
+              <p className="text-center text-sm text-slate-400 mt-8">Loading products…</p>
             ) : (
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
                 {products?.data.map((p) => (
                   <button
                     key={p.id}
                     onClick={() => openQtyPopup(p)}
-                    className="flex flex-col items-start rounded-xl border border-gray-200 bg-white p-3 text-left shadow-sm hover:border-indigo-400 hover:shadow-md transition-all active:scale-95"
+                    className="flex flex-col items-start rounded-xl border border-stone-200 bg-white p-3 text-left shadow-sm hover:border-indigo-400 hover:shadow-md transition-all active:scale-95"
                   >
                     <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-50 text-indigo-600 font-bold text-sm">
                       {p.name.slice(0, 2).toUpperCase()}
                     </div>
-                    <p className="text-xs font-semibold text-gray-900 line-clamp-2">{p.name}</p>
-                    {p.sku && <p className="mt-0.5 text-[10px] text-gray-400">{p.sku}</p>}
+                    <p className="text-xs font-semibold text-slate-800 line-clamp-2">{p.name}</p>
+                    {p.sku && <p className="mt-0.5 text-[10px] text-slate-400">{p.sku}</p>}
                     <p className="mt-1.5 text-sm font-bold text-indigo-700">{formatCurrency(Number(p.salePrice))}</p>
                     <Badge variant={p.isService ? 'info' : 'default'} className="mt-1 text-[10px]">
                       {p.isService ? 'Service' : 'Product'}
@@ -287,7 +287,7 @@ export default function PosPage() {
                   </button>
                 ))}
                 {products?.data.length === 0 && (
-                  <p className="col-span-4 text-center text-sm text-gray-400 mt-8">No products found</p>
+                  <p className="col-span-4 text-center text-sm text-slate-400 mt-8">No products found</p>
                 )}
               </div>
             )}
@@ -297,9 +297,9 @@ export default function PosPage() {
         {/* RIGHT — Cart + Checkout */}
         <div className="flex w-2/5 flex-col bg-white">
           {/* Cart header */}
-          <div className="flex items-center gap-2 border-b border-gray-200 px-4 py-3">
+          <div className="flex items-center gap-2 border-b border-stone-200 px-4 py-3">
             <ShoppingCart size={18} className="text-indigo-600" />
-            <span className="font-semibold text-gray-900">Cart</span>
+            <span className="font-semibold text-slate-800">Cart</span>
             <span className="ml-auto rounded-full bg-indigo-100 px-2 py-0.5 text-xs font-bold text-indigo-700">
               {cart.reduce((s, i) => s + i.quantity, 0)} items
             </span>
@@ -308,37 +308,37 @@ export default function PosPage() {
           {/* Cart items */}
           <div className="flex-1 overflow-y-auto">
             {cart.length === 0 ? (
-              <div className="flex h-full items-center justify-center text-sm text-gray-400">
+              <div className="flex h-full items-center justify-center text-sm text-slate-400">
                 Add products to start a sale
               </div>
             ) : (
-              <ul className="divide-y divide-gray-100">
+              <ul className="divide-y divide-stone-100">
                 {cart.map((item) => (
                   <li key={item.product.id} className="flex items-center gap-3 px-4 py-3">
                     <div className="flex-1 min-w-0">
-                      <p className="truncate text-sm font-medium text-gray-900">{item.product.name}</p>
-                      <p className="text-xs text-gray-500">{formatCurrency(item.unitPrice)} each</p>
+                      <p className="truncate text-sm font-medium text-slate-800">{item.product.name}</p>
+                      <p className="text-xs text-slate-500">{formatCurrency(item.unitPrice)} each</p>
                     </div>
                     <div className="flex items-center gap-1">
-                      <button onClick={() => updateQty(item.product.id, -1)} className="rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-700">
+                      <button onClick={() => updateQty(item.product.id, -1)} className="rounded p-1 text-slate-400 hover:bg-stone-100 hover:text-slate-700">
                         <Minus size={14} />
                       </button>
                       <button
                         title="Click to set quantity"
                         onClick={() => setQtyPopup({ product: item.product, qty: String(item.quantity) })}
-                        className="flex min-w-[2rem] items-center justify-center gap-0.5 rounded px-1 py-0.5 text-sm font-semibold text-gray-900 hover:bg-indigo-50 hover:text-indigo-700"
+                        className="flex min-w-[2rem] items-center justify-center gap-0.5 rounded px-1 py-0.5 text-sm font-semibold text-slate-800 hover:bg-indigo-50 hover:text-indigo-700"
                       >
                         {item.quantity}
                         <Hash size={9} className="text-indigo-400" />
                       </button>
-                      <button onClick={() => updateQty(item.product.id, 1)} className="rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-700">
+                      <button onClick={() => updateQty(item.product.id, 1)} className="rounded p-1 text-slate-400 hover:bg-stone-100 hover:text-slate-700">
                         <Plus size={14} />
                       </button>
                     </div>
-                    <p className="w-20 text-right text-sm font-semibold text-gray-900">
+                    <p className="w-20 text-right text-sm font-semibold text-slate-800">
                       {formatCurrency(item.quantity * item.unitPrice)}
                     </p>
-                    <button onClick={() => removeFromCart(item.product.id)} className="text-gray-300 hover:text-red-500">
+                    <button onClick={() => removeFromCart(item.product.id)} className="text-slate-300 hover:text-red-500">
                       <Trash2 size={14} />
                     </button>
                   </li>
@@ -348,13 +348,13 @@ export default function PosPage() {
           </div>
 
           {/* Checkout panel */}
-          <div className="border-t border-gray-200 p-4 space-y-3">
+          <div className="border-t border-stone-200 p-4 space-y-3">
             {/* Totals */}
             <div className="space-y-1 text-sm">
-              <div className="flex justify-between text-gray-500">
+              <div className="flex justify-between text-slate-500">
                 <span>Subtotal</span><span>{formatCurrency(subtotal)}</span>
               </div>
-              <div className="flex justify-between text-base font-bold text-gray-900">
+              <div className="flex justify-between text-base font-bold text-slate-800">
                 <span>Total</span><span>{formatCurrency(total)}</span>
               </div>
             </div>
@@ -369,7 +369,7 @@ export default function PosPage() {
 
             {/* Amount tendered */}
             <div className="flex flex-col gap-1">
-              <label className="text-sm font-medium text-gray-700">Amount tendered</label>
+              <label className="text-sm font-medium text-slate-700">Amount tendered</label>
               <input
                 type="number"
                 min={0}
@@ -377,7 +377,7 @@ export default function PosPage() {
                 value={amountTendered}
                 onChange={(e) => setAmountTendered(e.target.value)}
                 placeholder={formatCurrency(total)}
-                className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                className="rounded-lg border border-stone-200 px-3 py-2 text-sm focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-300"
               />
               {amountTendered && (
                 <p className="text-xs text-emerald-600 font-medium">
@@ -423,11 +423,11 @@ export default function PosPage() {
           <div className="space-y-3 text-sm">
             <div className="text-center">
               <p className="font-bold text-lg">ERP Platform</p>
-              <p className="text-gray-500 text-xs">{new Date(receipt.date).toLocaleString()}</p>
+              <p className="text-slate-500 text-xs">{new Date(receipt.date).toLocaleString()}</p>
               <p className="font-mono font-semibold">{receipt.reference}</p>
-              <p className="text-gray-500 text-xs">Customer: {receipt.customer}</p>
+              <p className="text-slate-500 text-xs">Customer: {receipt.customer}</p>
             </div>
-            <div className="border-t border-dashed border-gray-300 pt-2 space-y-1">
+            <div className="border-t border-dashed border-stone-200 pt-2 space-y-1">
               {receipt.items.map((item, i) => (
                 <div key={i} className="flex justify-between">
                   <span className="flex-1">{item.name} × {item.qty}</span>
@@ -435,16 +435,16 @@ export default function PosPage() {
                 </div>
               ))}
             </div>
-            <div className="border-t border-gray-200 pt-2 space-y-1">
-              <div className="flex justify-between text-gray-500"><span>Subtotal</span><span>{formatCurrency(receipt.subtotal)}</span></div>
-              <div className="flex justify-between text-gray-500"><span>Tax</span><span>{formatCurrency(receipt.taxAmount)}</span></div>
+            <div className="border-t border-stone-200 pt-2 space-y-1">
+              <div className="flex justify-between text-slate-500"><span>Subtotal</span><span>{formatCurrency(receipt.subtotal)}</span></div>
+              <div className="flex justify-between text-slate-500"><span>Tax</span><span>{formatCurrency(receipt.taxAmount)}</span></div>
               <div className="flex justify-between font-bold text-base"><span>Total</span><span>{formatCurrency(receipt.total)}</span></div>
-              <div className="flex justify-between text-gray-500"><span>Paid ({receipt.paymentMethod})</span><span>{formatCurrency(receipt.paid)}</span></div>
+              <div className="flex justify-between text-slate-500"><span>Paid ({receipt.paymentMethod})</span><span>{formatCurrency(receipt.paid)}</span></div>
               {receipt.change > 0 && (
                 <div className="flex justify-between text-emerald-600 font-semibold"><span>Change</span><span>{formatCurrency(receipt.change)}</span></div>
               )}
             </div>
-            <div className="text-center text-xs text-gray-400 pt-2 border-t border-dashed border-gray-300">
+            <div className="text-center text-xs text-slate-400 pt-2 border-t border-dashed border-stone-200">
               Thank you! / Merci !
             </div>
             <Button variant="outline" className="w-full" onClick={() => window.print()}>

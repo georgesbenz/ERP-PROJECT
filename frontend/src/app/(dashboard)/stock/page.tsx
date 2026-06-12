@@ -29,9 +29,9 @@ const TYPE_COLORS: Record<string, string> = {
   TRANSFER_IN: 'bg-purple-100 text-purple-700',
   TRANSFER_OUT: 'bg-purple-100 text-purple-700',
   CUSTOMER_RETURN_RESALABLE: 'bg-green-100 text-green-700',
-  CUSTOMER_RETURN_DAMAGED: 'bg-gray-100 text-gray-700',
-  DAMAGE_WRITE_OFF: 'bg-gray-100 text-gray-600',
-  EXPIRY_WRITE_OFF: 'bg-gray-100 text-gray-600',
+  CUSTOMER_RETURN_DAMAGED: 'bg-stone-100 text-slate-700',
+  DAMAGE_WRITE_OFF: 'bg-stone-100 text-slate-600',
+  EXPIRY_WRITE_OFF: 'bg-stone-100 text-slate-600',
   OPENING_STOCK: 'bg-indigo-100 text-indigo-700',
 };
 
@@ -55,12 +55,12 @@ function KpiCard({
   href?: string;
 }) {
   const card = (
-    <div className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm hover:shadow-md transition-shadow">
+    <div className="rounded-xl border border-stone-100 bg-white p-5 shadow-sm hover:shadow-md transition-shadow">
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">{label}</p>
-          <p className="mt-1 text-2xl font-bold text-gray-900">{value}</p>
-          {sub && <p className="mt-0.5 text-xs text-gray-400">{sub}</p>}
+          <p className="text-xs font-medium text-slate-500 uppercase tracking-wide">{label}</p>
+          <p className="mt-1 text-2xl font-bold text-slate-800">{value}</p>
+          {sub && <p className="mt-0.5 text-xs text-slate-400">{sub}</p>}
         </div>
         <div className={`flex h-10 w-10 items-center justify-center rounded-xl ${color}`}>
           <Icon size={20} />
@@ -128,9 +128,9 @@ export default function StockDashboardPage() {
 
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           {/* Recent Movements */}
-          <div className="lg:col-span-2 rounded-xl border border-gray-200 bg-white shadow-sm">
-            <div className="flex items-center justify-between border-b border-gray-100 px-5 py-3">
-              <h2 className="font-semibold text-gray-800 text-sm">Mouvements récents</h2>
+          <div className="lg:col-span-2 rounded-xl border border-stone-200 bg-white shadow-sm">
+            <div className="flex items-center justify-between border-b border-stone-100 px-5 py-3">
+              <h2 className="font-semibold text-slate-700 text-sm">Mouvements récents</h2>
               <Link href="/stock/movements" className="text-xs text-indigo-600 hover:underline">
                 Voir tout
               </Link>
@@ -149,23 +149,23 @@ export default function StockDashboardPage() {
                 <Tbody>
                   {recentMovements.length === 0 && (
                     <tr>
-                      <td colSpan={5} className="py-8 text-center text-sm text-gray-400">
+                      <td colSpan={5} className="py-8 text-center text-sm text-slate-400">
                         Aucun mouvement récent
                       </td>
                     </tr>
                   )}
                   {recentMovements.map((m: any) => {
                     const positive = isPositiveType(m.type);
-                    const color = TYPE_COLORS[m.type] ?? 'bg-gray-100 text-gray-600';
+                    const color = TYPE_COLORS[m.type] ?? 'bg-stone-100 text-slate-600';
                     return (
                       <Tr key={m.id}>
-                        <Td className="text-xs text-gray-500 whitespace-nowrap">
+                        <Td className="text-xs text-slate-500 whitespace-nowrap">
                           {new Date(m.createdAt).toLocaleDateString('fr-FR')}
                         </Td>
-                        <Td className="font-medium text-gray-900 max-w-[140px] truncate">
+                        <Td className="font-medium text-slate-800 max-w-[140px] truncate">
                           {m.product?.name ?? '—'}
                         </Td>
-                        <Td className="text-gray-600 text-xs">{m.warehouse?.name ?? '—'}</Td>
+                        <Td className="text-slate-600 text-xs">{m.warehouse?.name ?? '—'}</Td>
                         <Td>
                           <span className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${color}`}>
                             {m.type.replace(/_/g, ' ')}
@@ -185,16 +185,16 @@ export default function StockDashboardPage() {
           </div>
 
           {/* Low Stock Items */}
-          <div className="rounded-xl border border-gray-200 bg-white shadow-sm">
-            <div className="flex items-center justify-between border-b border-gray-100 px-5 py-3">
-              <h2 className="font-semibold text-gray-800 text-sm">Stock critique</h2>
+          <div className="rounded-xl border border-stone-200 bg-white shadow-sm">
+            <div className="flex items-center justify-between border-b border-stone-100 px-5 py-3">
+              <h2 className="font-semibold text-slate-700 text-sm">Stock critique</h2>
               <Link href="/stock/alerts" className="text-xs text-indigo-600 hover:underline">
                 Voir tout
               </Link>
             </div>
             <div className="divide-y divide-gray-50 px-4 py-2">
               {topLowStock.length === 0 && (
-                <p className="py-8 text-center text-sm text-gray-400">
+                <p className="py-8 text-center text-sm text-slate-400">
                   Aucune alerte de stock
                 </p>
               )}
@@ -206,20 +206,20 @@ export default function StockDashboardPage() {
                 return (
                   <div key={`${alert.productId}-${alert.warehouseId}`} className="py-3">
                     <div className="flex items-center justify-between mb-1">
-                      <span className="text-sm font-medium text-gray-800 truncate max-w-[140px]">
+                      <span className="text-sm font-medium text-slate-700 truncate max-w-[140px]">
                         {alert.product?.name ?? '—'}
                       </span>
                       <span className={`text-xs font-bold ${isOut ? 'text-red-600' : 'text-amber-600'}`}>
                         {qty} / {min}
                       </span>
                     </div>
-                    <div className="h-1.5 w-full rounded-full bg-gray-100">
+                    <div className="h-1.5 w-full rounded-full bg-stone-100">
                       <div
                         className={`h-1.5 rounded-full ${isOut ? 'bg-red-500' : 'bg-amber-400'}`}
                         style={{ width: `${pct}%` }}
                       />
                     </div>
-                    <p className="mt-0.5 text-xs text-gray-400">{alert.warehouse?.name}</p>
+                    <p className="mt-0.5 text-xs text-slate-400">{alert.warehouse?.name}</p>
                   </div>
                 );
               })}

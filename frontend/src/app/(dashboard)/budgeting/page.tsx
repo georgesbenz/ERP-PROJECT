@@ -80,10 +80,10 @@ export default function BudgetingPage() {
                 </tr>
               </Thead>
               <Tbody>
-                {data?.data?.length === 0 && <tr><Td className="text-gray-400">No budget plans yet</Td></tr>}
+                {data?.data?.length === 0 && <tr><Td className="text-slate-400">No budget plans yet</Td></tr>}
                 {data?.data?.map((p) => (
                   <Tr key={p.id}>
-                    <Td className="font-medium text-gray-900">{p.name}</Td>
+                    <Td className="font-medium text-slate-800">{p.name}</Td>
                     <Td>{p.fiscalYear}</Td>
                     <Td>{formatDate(p.startDate)} – {formatDate(p.endDate)}</Td>
                     <Td className="font-semibold">{formatCurrency(Number(p.totalAmount))}</Td>

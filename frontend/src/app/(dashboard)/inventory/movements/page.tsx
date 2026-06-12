@@ -95,15 +95,15 @@ export default function StockMovementsPage() {
       <div className="p-6 space-y-4">
 
         {/* ── Filters bar ── */}
-        <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+        <div className="rounded-xl border border-stone-200 bg-white p-4 shadow-sm">
           <div className="flex flex-wrap items-end gap-3">
             {/* Product filter */}
             <div className="min-w-[180px]">
-              <label className="mb-1 block text-xs font-medium text-gray-500">Product</label>
+              <label className="mb-1 block text-xs font-medium text-slate-500">Product</label>
               <select
                 value={productId}
                 onChange={(e) => { setProductId(e.target.value); setPage(1); }}
-                className="w-full rounded-lg border border-gray-300 px-3 py-1.5 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                className="w-full rounded-lg border border-stone-200 bg-white text-slate-800 px-3 py-1.5 text-sm focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-300"
               >
                 <option value="">All products</option>
                 {products.map((p) => (
@@ -114,11 +114,11 @@ export default function StockMovementsPage() {
 
             {/* Warehouse filter */}
             <div className="min-w-[160px]">
-              <label className="mb-1 block text-xs font-medium text-gray-500">Warehouse</label>
+              <label className="mb-1 block text-xs font-medium text-slate-500">Warehouse</label>
               <select
                 value={warehouseId}
                 onChange={(e) => { setWarehouseId(e.target.value); setPage(1); }}
-                className="w-full rounded-lg border border-gray-300 px-3 py-1.5 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                className="w-full rounded-lg border border-stone-200 bg-white text-slate-800 px-3 py-1.5 text-sm focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-300"
               >
                 <option value="">All warehouses</option>
                 {warehouses.map((w) => (
@@ -129,11 +129,11 @@ export default function StockMovementsPage() {
 
             {/* Type filter */}
             <div className="min-w-[160px]">
-              <label className="mb-1 block text-xs font-medium text-gray-500">Movement Type</label>
+              <label className="mb-1 block text-xs font-medium text-slate-500">Movement Type</label>
               <select
                 value={typeFilter}
                 onChange={(e) => { setTypeFilter(e.target.value); setPage(1); }}
-                className="w-full rounded-lg border border-gray-300 px-3 py-1.5 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                className="w-full rounded-lg border border-stone-200 bg-white text-slate-800 px-3 py-1.5 text-sm focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-300"
               >
                 <option value="">All types</option>
                 {MOVEMENT_TYPES.map((t) => (
@@ -144,21 +144,21 @@ export default function StockMovementsPage() {
 
             {/* Date range */}
             <div>
-              <label className="mb-1 block text-xs font-medium text-gray-500">From</label>
+              <label className="mb-1 block text-xs font-medium text-slate-500">From</label>
               <input
                 type="date"
                 value={dateFrom}
                 onChange={(e) => { setDateFrom(e.target.value); setPage(1); }}
-                className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                className="rounded-lg border border-stone-200 px-3 py-1.5 text-sm focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-300"
               />
             </div>
             <div>
-              <label className="mb-1 block text-xs font-medium text-gray-500">To</label>
+              <label className="mb-1 block text-xs font-medium text-slate-500">To</label>
               <input
                 type="date"
                 value={dateTo}
                 onChange={(e) => { setDateTo(e.target.value); setPage(1); }}
-                className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                className="rounded-lg border border-stone-200 px-3 py-1.5 text-sm focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-300"
               />
             </div>
 
@@ -166,7 +166,7 @@ export default function StockMovementsPage() {
               {hasFilters && (
                 <button
                   onClick={resetFilters}
-                  className="flex items-center gap-1.5 rounded-lg border border-gray-200 px-3 py-1.5 text-sm text-gray-500 hover:bg-gray-50"
+                  className="flex items-center gap-1.5 rounded-lg border border-stone-200 px-3 py-1.5 text-sm text-slate-500 hover:bg-stone-50"
                 >
                   <RotateCcw size={13} /> Reset
                 </button>
@@ -180,8 +180,8 @@ export default function StockMovementsPage() {
           {/* Active filter summary */}
           {hasFilters && (
             <div className="mt-3 flex flex-wrap items-center gap-2">
-              <Filter size={12} className="text-gray-400" />
-              <span className="text-xs text-gray-400">Filtering by:</span>
+              <Filter size={12} className="text-slate-400" />
+              <span className="text-xs text-slate-400">Filtering by:</span>
               {productId && <FilterChip label={`Product: ${products.find((p) => p.id === productId)?.name ?? productId}`} onRemove={() => setProductId('')} />}
               {warehouseId && <FilterChip label={`Warehouse: ${warehouses.find((w) => w.id === warehouseId)?.name ?? warehouseId}`} onRemove={() => setWarehouseId('')} />}
               {typeFilter && <FilterChip label={`Type: ${TYPE_CONFIG[typeFilter as MovementType]?.label ?? typeFilter}`} onRemove={() => setTypeFilter('')} />}
@@ -193,7 +193,7 @@ export default function StockMovementsPage() {
 
         {/* ── Results summary ── */}
         {!isLoading && data?.meta && (
-          <p className="text-xs text-gray-500">
+          <p className="text-xs text-slate-500">
             {data.meta.total} movement{data.meta.total !== 1 ? 's' : ''} found
             {hasFilters ? ' (filtered)' : ''}
           </p>
@@ -202,7 +202,7 @@ export default function StockMovementsPage() {
         {/* ── Table ── */}
         {isLoading ? <PageLoader /> : (
           <>
-            <div className="overflow-hidden rounded-xl border border-gray-200 shadow-sm">
+            <div className="overflow-hidden rounded-xl border border-stone-200 shadow-sm">
               <Table>
                 <Thead>
                   <tr>
@@ -221,7 +221,7 @@ export default function StockMovementsPage() {
                 <Tbody>
                   {data?.data?.length === 0 && (
                     <tr>
-                      <td colSpan={10} className="py-10 text-center text-gray-400 text-sm">
+                      <td colSpan={10} className="py-10 text-center text-slate-400 text-sm">
                         No stock movements found
                         {hasFilters && ' — try adjusting your filters'}
                       </td>
@@ -232,12 +232,12 @@ export default function StockMovementsPage() {
                     const isPositive = ['IN', 'RETURN'].includes(m.type);
                     return (
                       <Tr key={m.id}>
-                        <Td className="whitespace-nowrap text-xs text-gray-500">
+                        <Td className="whitespace-nowrap text-xs text-slate-500">
                           {new Date(m.createdAt).toLocaleString()}
                         </Td>
-                        <Td className="font-medium text-gray-900">{m.product?.name ?? '—'}</Td>
-                        <Td className="font-mono text-xs text-gray-500">{m.product?.sku ?? '—'}</Td>
-                        <Td className="text-gray-600">{m.warehouse?.name ?? '—'}</Td>
+                        <Td className="font-medium text-slate-800">{m.product?.name ?? '—'}</Td>
+                        <Td className="font-mono text-xs text-slate-500">{m.product?.sku ?? '—'}</Td>
+                        <Td className="text-slate-600">{m.warehouse?.name ?? '—'}</Td>
                         <Td>
                           <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold ${cfg.color}`}>
                             {cfg.label}
@@ -248,12 +248,12 @@ export default function StockMovementsPage() {
                             {cfg.sign}{Number(m.quantity).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 3 })}
                           </span>
                         </Td>
-                        <Td className="text-right text-gray-600">
+                        <Td className="text-right text-slate-600">
                           {m.unitCost != null ? Number(m.unitCost).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '—'}
                         </Td>
-                        <Td className="font-mono text-xs text-gray-500">{m.reference ?? '—'}</Td>
-                        <Td className="text-xs text-gray-500"><span title={m.notes ?? undefined} className="block max-w-[160px] truncate">{m.notes ?? '—'}</span></Td>
-                        <Td className="text-xs text-gray-400">{m.createdBy ? m.createdBy.slice(0, 8) + '…' : '—'}</Td>
+                        <Td className="font-mono text-xs text-slate-500">{m.reference ?? '—'}</Td>
+                        <Td className="text-xs text-slate-500"><span title={m.notes ?? undefined} className="block max-w-[160px] truncate">{m.notes ?? '—'}</span></Td>
+                        <Td className="text-xs text-slate-400">{m.createdBy ? m.createdBy.slice(0, 8) + '…' : '—'}</Td>
                       </Tr>
                     );
                   })}
@@ -325,7 +325,7 @@ function RecordMovementModal({
 
         {/* Type selector — big buttons */}
         <div>
-          <label className="mb-2 block text-sm font-medium text-gray-700">Movement Type</label>
+          <label className="mb-2 block text-sm font-medium text-slate-700">Movement Type</label>
           <div className="grid grid-cols-5 gap-2">
             {MOVEMENT_TYPES.map((t) => {
               const c = TYPE_CONFIG[t];
@@ -336,28 +336,28 @@ function RecordMovementModal({
                   className={`flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 py-3 text-center transition-all ${
                     isSelected
                       ? 'border-indigo-500 bg-indigo-50'
-                      : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                      : 'border-stone-200 hover:border-stone-200 hover:bg-stone-50'
                   }`}
                 >
                   <input type="radio" value={t} {...register('type')} className="sr-only" />
                   <span className={`mb-1 inline-flex items-center justify-center rounded-full px-2 py-0.5 text-xs font-bold ${c.color}`}>
                     {c.sign}
                   </span>
-                  <span className="text-[11px] font-semibold text-gray-700 leading-tight text-center">{t}</span>
+                  <span className="text-[11px] font-semibold text-slate-700 leading-tight text-center">{t}</span>
                 </label>
               );
             })}
           </div>
-          <p className="mt-1 text-xs text-gray-400">{cfg.label}</p>
+          <p className="mt-1 text-xs text-slate-400">{cfg.label}</p>
         </div>
 
         <div className="grid grid-cols-2 gap-4">
           {/* Product */}
           <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700">Product <span className="text-red-500">*</span></label>
+            <label className="mb-1 block text-sm font-medium text-slate-700">Product <span className="text-red-500">*</span></label>
             <select
               {...register('productId')}
-              className={`w-full rounded-lg border px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 ${errors.productId ? 'border-red-400' : 'border-gray-300'}`}
+              className={`w-full rounded-lg border px-3 py-2 text-sm focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-300 ${errors.productId ? 'border-red-400' : 'border-stone-200'}`}
             >
               <option value="">Select product…</option>
               {products.filter((p) => !p.isService).map((p) => (
@@ -369,10 +369,10 @@ function RecordMovementModal({
 
           {/* Warehouse */}
           <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700">Warehouse <span className="text-red-500">*</span></label>
+            <label className="mb-1 block text-sm font-medium text-slate-700">Warehouse <span className="text-red-500">*</span></label>
             <select
               {...register('warehouseId')}
-              className={`w-full rounded-lg border px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 ${errors.warehouseId ? 'border-red-400' : 'border-gray-300'}`}
+              className={`w-full rounded-lg border px-3 py-2 text-sm focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-300 ${errors.warehouseId ? 'border-red-400' : 'border-stone-200'}`}
             >
               <option value="">Select warehouse…</option>
               {warehouses.map((w) => (

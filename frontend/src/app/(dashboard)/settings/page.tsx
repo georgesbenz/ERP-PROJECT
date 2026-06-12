@@ -99,7 +99,7 @@ export default function SettingsPage() {
     <>
       <Header title="Settings / Paramètres" />
       <div className="flex min-h-[calc(100vh-3.5rem)]">
-        <nav className="w-56 shrink-0 border-r border-gray-200 bg-white p-4 space-y-1">
+        <nav className="w-56 shrink-0 border-r border-stone-200 bg-white p-4 space-y-1">
           {TABS.map(({ key, label, icon: Icon }) => (
             <button
               key={key}
@@ -107,7 +107,7 @@ export default function SettingsPage() {
               className={`flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
                 tab === key
                   ? 'bg-indigo-50 text-indigo-700'
-                  : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                  : 'text-slate-600 hover:bg-stone-50 hover:text-slate-800'
               }`}
             >
               <Icon size={16} />
@@ -141,8 +141,8 @@ function ProfileTab({ user }: { user: AuthUser | null }) {
               {user?.firstName?.[0]}{user?.lastName?.[0]}
             </div>
             <div>
-              <p className="font-semibold text-gray-900">{user?.firstName} {user?.lastName}</p>
-              <p className="text-sm text-gray-500">{user?.email}</p>
+              <p className="font-semibold text-slate-800">{user?.firstName} {user?.lastName}</p>
+              <p className="text-sm text-slate-500">{user?.email}</p>
               <div className="mt-1 flex flex-wrap gap-1">
                 {user?.roles.map((r: string) => (
                   <Badge key={r} variant="info">{r}</Badge>
@@ -155,8 +155,8 @@ function ProfileTab({ user }: { user: AuthUser | null }) {
       <Card>
         <CardHeader><CardTitle>Tenant Info</CardTitle></CardHeader>
         <CardContent>
-          <p className="text-xs text-gray-500 mb-1">Tenant ID</p>
-          <p className="font-mono text-sm text-gray-900 select-all">{user?.tenantId}</p>
+          <p className="text-xs text-slate-500 mb-1">Tenant ID</p>
+          <p className="font-mono text-sm text-slate-800 select-all">{user?.tenantId}</p>
         </CardContent>
       </Card>
     </div>
@@ -244,7 +244,7 @@ function BranchesTab() {
   return (
     <>
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-gray-900">Branches</h2>
+        <h2 className="text-lg font-semibold text-slate-800">Branches</h2>
         <Button onClick={openCreate} size="sm"><Plus size={14} /> Add Branch</Button>
       </div>
       <Card>
@@ -277,7 +277,7 @@ function BranchesTab() {
               </Tr>
             ))}
             {branches.length === 0 && (
-              <tr><Td className="text-gray-400">No branches found</Td></tr>
+              <tr><Td className="text-slate-400">No branches found</Td></tr>
             )}
           </Tbody>
         </Table>
@@ -442,7 +442,7 @@ function RolesTab({ isAdmin }: { isAdmin: boolean }) {
       {/* ── Left panel: role list ── */}
       <div className="w-64 shrink-0">
         <div className="mb-3 flex items-center justify-between">
-          <h2 className="font-semibold text-gray-900">Roles</h2>
+          <h2 className="font-semibold text-slate-800">Roles</h2>
           {isAdmin && (
             <Button size="sm" variant="outline" onClick={openCreate}>
               <Plus size={13} /> New
@@ -461,7 +461,7 @@ function RolesTab({ isAdmin }: { isAdmin: boolean }) {
                 className={`group w-full rounded-xl border px-3 py-2.5 text-left transition-all ${
                   isActive
                     ? 'border-indigo-400 bg-indigo-50 shadow-sm'
-                    : 'border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50'
+                    : 'border-stone-200 bg-white hover:border-stone-200 hover:bg-stone-50'
                 }`}
               >
                 <div className="flex items-center justify-between gap-2">
@@ -470,11 +470,11 @@ function RolesTab({ isAdmin }: { isAdmin: boolean }) {
                       ? <Shield size={14} className="shrink-0 text-indigo-600" />
                       : role.isSystem
                         ? <Lock size={13} className="shrink-0 text-amber-500" />
-                        : <Users size={13} className="shrink-0 text-gray-400" />
+                        : <Users size={13} className="shrink-0 text-slate-400" />
                     }
-                    <span className="truncate text-sm font-medium text-gray-900">{role.name}</span>
+                    <span className="truncate text-sm font-medium text-slate-800">{role.name}</span>
                   </div>
-                  <ChevronRight size={13} className={`shrink-0 transition-transform ${isActive ? 'text-indigo-500 rotate-90' : 'text-gray-300'}`} />
+                  <ChevronRight size={13} className={`shrink-0 transition-transform ${isActive ? 'text-indigo-500 rotate-90' : 'text-slate-300'}`} />
                 </div>
 
                 <div className="mt-1 flex flex-wrap items-center gap-1">
@@ -489,17 +489,17 @@ function RolesTab({ isAdmin }: { isAdmin: boolean }) {
                     </span>
                   )}
                   {!role.isActive && (
-                    <span className="inline-flex items-center rounded-full bg-gray-100 px-1.5 py-0.5 text-[10px] font-medium text-gray-500">
+                    <span className="inline-flex items-center rounded-full bg-stone-100 px-1.5 py-0.5 text-[10px] font-medium text-slate-500">
                       Disabled
                     </span>
                   )}
-                  <span className="text-[10px] text-gray-400">
+                  <span className="text-[10px] text-slate-400">
                     {role._count.users} user{role._count.users !== 1 ? 's' : ''} · {role.permissions.length} perms
                   </span>
                 </div>
 
                 {role.description && (
-                  <p className="mt-0.5 text-[11px] text-gray-400 leading-snug line-clamp-2">{role.description}</p>
+                  <p className="mt-0.5 text-[11px] text-slate-400 leading-snug line-clamp-2">{role.description}</p>
                 )}
 
                 {/* Action buttons */}
@@ -507,7 +507,7 @@ function RolesTab({ isAdmin }: { isAdmin: boolean }) {
                   <div className="mt-2 flex flex-wrap gap-1.5" onClick={(e) => e.stopPropagation()}>
                     {!isSuperAdmin && (
                       <button
-                        className="flex items-center gap-1 rounded-md border border-gray-200 px-2 py-0.5 text-[11px] text-gray-500 hover:border-gray-300 hover:text-gray-700"
+                        className="flex items-center gap-1 rounded-md border border-stone-200 px-2 py-0.5 text-[11px] text-slate-500 hover:border-stone-200 hover:text-slate-700"
                         onClick={() => openEdit(role)}
                       >
                         <Pencil size={10} /> Edit
@@ -553,7 +553,7 @@ function RolesTab({ isAdmin }: { isAdmin: boolean }) {
       {/* ── Right panel: permission matrix ── */}
       <div className="flex-1 min-w-0">
         {!selectedRole ? (
-          <div className="flex h-64 items-center justify-center rounded-xl border-2 border-dashed border-gray-200 text-sm text-gray-400">
+          <div className="flex h-64 items-center justify-center rounded-xl border-2 border-dashed border-stone-200 text-sm text-slate-400">
             Select a role to view or edit its permissions
           </div>
         ) : (
@@ -566,15 +566,15 @@ function RolesTab({ isAdmin }: { isAdmin: boolean }) {
                     ? <Shield size={18} className="text-indigo-600" />
                     : selectedRole.isSystem
                       ? <Lock size={16} className="text-amber-500" />
-                      : <Users size={16} className="text-gray-500" />
+                      : <Users size={16} className="text-slate-500" />
                   }
-                  <h2 className="text-lg font-semibold text-gray-900">{selectedRole.name}</h2>
+                  <h2 className="text-lg font-semibold text-slate-800">{selectedRole.name}</h2>
                   {!selectedRole.isActive && (
-                    <span className="rounded-full bg-gray-200 px-2 py-0.5 text-xs font-medium text-gray-500">Disabled</span>
+                    <span className="rounded-full bg-stone-200 px-2 py-0.5 text-xs font-medium text-slate-500">Disabled</span>
                   )}
                 </div>
                 {selectedRole.description && (
-                  <p className="mt-0.5 text-sm text-gray-500">{selectedRole.description}</p>
+                  <p className="mt-0.5 text-sm text-slate-500">{selectedRole.description}</p>
                 )}
               </div>
 
@@ -603,17 +603,17 @@ function RolesTab({ isAdmin }: { isAdmin: boolean }) {
                   {action}
                 </span>
               ))}
-              <span className="ml-2 text-xs text-gray-400 self-center">— click a cell to toggle · click module name to toggle all</span>
+              <span className="ml-2 text-xs text-slate-400 self-center">— click a cell to toggle · click module name to toggle all</span>
             </div>
 
             {/* Matrix */}
-            <div className="overflow-x-auto rounded-xl border border-gray-200">
+            <div className="overflow-x-auto rounded-xl border border-stone-200">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="border-b border-gray-100 bg-gray-50">
-                    <th className="px-4 py-2.5 text-left text-xs font-semibold text-gray-600 w-36">Module</th>
+                  <tr className="border-b border-stone-100 bg-stone-50">
+                    <th className="px-4 py-2.5 text-left text-xs font-semibold text-slate-600 w-36">Module</th>
                     {ALL_ACTIONS.map((action) => (
-                      <th key={action} className="px-3 py-2.5 text-center text-xs font-semibold text-gray-600 w-24">
+                      <th key={action} className="px-3 py-2.5 text-center text-xs font-semibold text-slate-600 w-24">
                         {action}
                       </th>
                     ))}
@@ -628,7 +628,7 @@ function RolesTab({ isAdmin }: { isAdmin: boolean }) {
                     return (
                       <tr
                         key={mod}
-                        className={`border-b border-gray-100 transition-colors ${idx % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'}`}
+                        className={`border-b border-stone-100 transition-colors ${idx % 2 === 0 ? 'bg-white' : 'bg-stone-50/50'}`}
                       >
                         {/* Module name — click to toggle all actions for this module */}
                         <td className="px-4 py-2.5">
@@ -637,10 +637,10 @@ function RolesTab({ isAdmin }: { isAdmin: boolean }) {
                             onClick={() => toggleModule(modulePerms)}
                             className={`flex items-center gap-1.5 text-left font-medium transition-colors ${
                               editable ? 'cursor-pointer hover:text-indigo-600' : 'cursor-default'
-                            } ${allChecked ? 'text-indigo-700' : someChecked ? 'text-gray-700' : 'text-gray-400'}`}
+                            } ${allChecked ? 'text-indigo-700' : someChecked ? 'text-slate-700' : 'text-slate-400'}`}
                             title={editable ? `Toggle all ${MODULE_LABELS[mod] ?? mod} permissions` : undefined}
                           >
-                            <span className={`inline-block h-2 w-2 rounded-full ${allChecked ? 'bg-indigo-500' : someChecked ? 'bg-amber-400' : 'bg-gray-200'}`} />
+                            <span className={`inline-block h-2 w-2 rounded-full ${allChecked ? 'bg-indigo-500' : someChecked ? 'bg-amber-400' : 'bg-stone-200'}`} />
                             {MODULE_LABELS[mod] ?? mod}
                           </button>
                         </td>
@@ -696,7 +696,7 @@ function RolesTab({ isAdmin }: { isAdmin: boolean }) {
         <form onSubmit={handleSubmit((d) => saveMutation.mutate(d))} className="space-y-4">
           <Input label="Role Name *" {...register('name')} error={errors.name?.message} />
           <Input label="Description" {...register('description')} />
-          <p className="text-xs text-gray-500">
+          <p className="text-xs text-slate-500">
             After creating the role, select it to assign permissions using the matrix.
           </p>
           <div className="flex justify-end gap-3">
@@ -781,17 +781,17 @@ function TaxesTab() {
     <>
       <div className="mb-4 flex items-center justify-between">
         <div>
-          <h2 className="text-lg font-semibold text-gray-900">Tax Codes</h2>
-          <p className="text-sm text-gray-500">Define VAT rates and tax categories. Assign them to products.</p>
+          <h2 className="text-lg font-semibold text-slate-800">Tax Codes</h2>
+          <p className="text-sm text-slate-500">Define VAT rates and tax categories. Assign them to products.</p>
         </div>
         <Button size="sm" onClick={openCreate}><Plus size={14} /> Add Tax Code</Button>
       </div>
 
       {taxes.length === 0 ? (
-        <div className="rounded-xl border-2 border-dashed border-gray-200 py-12 text-center">
-          <Percent size={32} className="mx-auto mb-3 text-gray-300" />
-          <p className="text-sm font-medium text-gray-500">No tax codes yet</p>
-          <p className="mt-1 text-xs text-gray-400">Create tax codes like VAT 0%, VAT 19.25%, or use a preset.</p>
+        <div className="rounded-xl border-2 border-dashed border-stone-200 py-12 text-center">
+          <Percent size={32} className="mx-auto mb-3 text-slate-300" />
+          <p className="text-sm font-medium text-slate-500">No tax codes yet</p>
+          <p className="mt-1 text-xs text-slate-400">Create tax codes like VAT 0%, VAT 19.25%, or use a preset.</p>
           <Button size="sm" variant="outline" className="mt-4" onClick={openCreate}>
             <Plus size={13} /> Create first tax code
           </Button>
@@ -805,10 +805,10 @@ function TaxesTab() {
             <Tbody>
               {taxes.map((t) => (
                 <Tr key={t.id}>
-                  <Td className="font-semibold text-gray-900">{t.name}</Td>
-                  <Td><span className="rounded-md bg-gray-100 px-2 py-0.5 font-mono text-xs">{t.code}</span></Td>
+                  <Td className="font-semibold text-slate-800">{t.name}</Td>
+                  <Td><span className="rounded-md bg-stone-100 px-2 py-0.5 font-mono text-xs">{t.code}</span></Td>
                   <Td className="text-right font-bold text-indigo-700">{Number(t.rate).toFixed(2)}%</Td>
-                  <Td className="text-gray-500 text-sm">{t.description ?? '—'}</Td>
+                  <Td className="text-slate-500 text-sm">{t.description ?? '—'}</Td>
                   <Td>
                     <Badge variant={t.isActive ? 'success' : 'default'}>
                       {t.isActive ? 'Active' : 'Inactive'}
@@ -845,7 +845,7 @@ function TaxesTab() {
         <form onSubmit={handleSubmit((d) => saveMutation.mutate(d))} className="space-y-4">
           {!editing && (
             <div>
-              <p className="mb-2 text-xs font-medium text-gray-500">Quick presets:</p>
+              <p className="mb-2 text-xs font-medium text-slate-500">Quick presets:</p>
               <div className="flex flex-wrap gap-1.5">
                 {TAX_PRESETS.map((p) => (
                   <button

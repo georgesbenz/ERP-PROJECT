@@ -33,9 +33,9 @@ function KpiCard({ label, value, sub, color, icon: Icon }: {
           <Icon className="w-5 h-5 text-white" />
         </div>
         <div className="min-w-0">
-          <p className="text-sm text-gray-500 truncate">{label}</p>
-          <p className="text-xl font-bold text-gray-900 truncate">{value}</p>
-          {sub && <p className="text-xs text-gray-400 mt-0.5">{sub}</p>}
+          <p className="text-sm text-slate-500 truncate">{label}</p>
+          <p className="text-xl font-bold text-slate-800 truncate">{value}</p>
+          {sub && <p className="text-xs text-slate-400 mt-0.5">{sub}</p>}
         </div>
       </CardContent>
     </Card>
@@ -46,8 +46,8 @@ function KpiCard({ label, value, sub, color, icon: Icon }: {
 function CurrencyTooltip({ active, payload, label }: any) {
   if (!active || !payload?.length) return null;
   return (
-    <div className="bg-white border border-gray-200 rounded-lg shadow-lg p-3 text-sm">
-      <p className="font-semibold text-gray-700 mb-2">{label}</p>
+    <div className="bg-white border border-stone-200 rounded-lg shadow-lg p-3 text-sm">
+      <p className="font-semibold text-slate-700 mb-2">{label}</p>
       {payload.map((p: any) => (
         <p key={p.dataKey} style={{ color: p.color }} className="flex items-center gap-2">
           <span className="w-2 h-2 rounded-full inline-block" style={{ background: p.color }} />
@@ -61,7 +61,7 @@ function CurrencyTooltip({ active, payload, label }: any) {
 // ── Empty chart placeholder ───────────────────────────────────────────────────
 function EmptyChart({ label }: { label: string }) {
   return (
-    <div className="h-64 flex flex-col items-center justify-center text-gray-400 gap-2">
+    <div className="h-64 flex flex-col items-center justify-center text-slate-400 gap-2">
       <AlertTriangle className="w-8 h-8 opacity-30" />
       <p className="text-sm">{label}</p>
     </div>
@@ -147,7 +147,7 @@ export default function AnalyticsPage() {
         <Card>
           <CardHeader>
             <CardTitle>Évolution du Chiffre d'Affaires</CardTitle>
-            <p className="text-xs text-gray-400 mt-0.5">
+            <p className="text-xs text-slate-400 mt-0.5">
               Dernières {revRows.length} périodes · source : RevenueAnalytic
             </p>
           </CardHeader>
@@ -187,7 +187,7 @@ export default function AnalyticsPage() {
         <Card>
           <CardHeader>
             <CardTitle>Compte de Résultat — Revenus / Charges / Bénéfice</CardTitle>
-            <p className="text-xs text-gray-400 mt-0.5">
+            <p className="text-xs text-slate-400 mt-0.5">
               Dernières {finRows.length} périodes · source : FinancialAnalytic
             </p>
           </CardHeader>
@@ -218,7 +218,7 @@ export default function AnalyticsPage() {
         <Card>
           <CardHeader>
             <CardTitle>Flux de Trésorerie — Entrées / Sorties / Solde</CardTitle>
-            <p className="text-xs text-gray-400 mt-0.5">
+            <p className="text-xs text-slate-400 mt-0.5">
               {cfRows.length} périodes · source : CashFlowForecast
             </p>
           </CardHeader>
@@ -253,7 +253,7 @@ export default function AnalyticsPage() {
             <CardHeader><CardTitle>KPI Trackers</CardTitle></CardHeader>
             <CardContent>
               {(!kpis || kpis.length === 0)
-                ? <p className="text-sm text-gray-400">Aucun KPI configuré.</p>
+                ? <p className="text-sm text-slate-400">Aucun KPI configuré.</p>
                 : (
                 <div className="space-y-3">
                   {kpis.slice(0, 8).map((k: any) => {
@@ -264,12 +264,12 @@ export default function AnalyticsPage() {
                     return (
                       <div key={k.id}>
                         <div className="flex items-center justify-between mb-1">
-                          <span className="text-sm text-gray-700 truncate max-w-[60%]">{k.name}</span>
+                          <span className="text-sm text-slate-700 truncate max-w-[60%]">{k.name}</span>
                           <span className={`text-xs font-semibold ${achieved ? 'text-emerald-600' : 'text-amber-600'}`}>
                             {fmtM(actual)} / {fmtM(target)} {k.unit ?? ''}
                           </span>
                         </div>
-                        <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                        <div className="h-2 bg-stone-100 rounded-full overflow-hidden">
                           <div
                             className={`h-full rounded-full transition-all ${achieved ? 'bg-emerald-500' : 'bg-indigo-400'}`}
                             style={{ width: `${progress}%` }}
@@ -289,14 +289,14 @@ export default function AnalyticsPage() {
             <CardContent>
               <div className="flex gap-6 mb-4">
                 <div className="text-center">
-                  <p className="text-3xl font-bold text-gray-900">{totalProducts}</p>
-                  <p className="text-xs text-gray-500 mt-0.5">Produits actifs</p>
+                  <p className="text-3xl font-bold text-slate-800">{totalProducts}</p>
+                  <p className="text-xs text-slate-500 mt-0.5">Produits actifs</p>
                 </div>
                 <div className="text-center">
                   <p className={`text-3xl font-bold ${lowStockCount > 0 ? 'text-red-600' : 'text-emerald-600'}`}>
                     {lowStockCount}
                   </p>
-                  <p className="text-xs text-gray-500 mt-0.5">Stock faible</p>
+                  <p className="text-xs text-slate-500 mt-0.5">Stock faible</p>
                 </div>
               </div>
               {lowStockCount === 0
@@ -306,12 +306,12 @@ export default function AnalyticsPage() {
                   {inventory.lowStockItems.map((i: any) => (
                     <div key={i.id} className="flex items-center justify-between text-sm py-1.5 border-b border-gray-50">
                       <div className="min-w-0">
-                        <p className="font-medium text-gray-800 truncate">{i.product?.name}</p>
-                        <p className="text-xs text-gray-400">{i.warehouse?.name}</p>
+                        <p className="font-medium text-slate-700 truncate">{i.product?.name}</p>
+                        <p className="text-xs text-slate-400">{i.warehouse?.name}</p>
                       </div>
                       <div className="text-right flex-shrink-0 ml-3">
                         <span className="text-red-600 font-semibold">{Number(i.quantity).toFixed(0)}</span>
-                        <span className="text-gray-400"> / min {Number(i.product?.minStock).toFixed(0)}</span>
+                        <span className="text-slate-400"> / min {Number(i.product?.minStock).toFixed(0)}</span>
                       </div>
                     </div>
                   ))}

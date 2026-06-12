@@ -82,10 +82,10 @@ export default function PurchasesPage() {
 
         <div className="flex items-center justify-between">
           <div className="relative w-72">
-            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
             <input
               placeholder="Search purchases…"
-              className="w-full rounded-lg border border-gray-300 py-2 pl-9 pr-3 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              className="w-full rounded-lg border border-stone-200 bg-white text-slate-800 py-2 pl-9 pr-3 text-sm focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-300"
             />
           </div>
           <div className="flex gap-2">
@@ -115,7 +115,7 @@ export default function PurchasesPage() {
               </Thead>
               <Tbody>
                 {data?.data?.length === 0 && (
-                  <tr><Td className="text-gray-400">No purchase orders yet</Td></tr>
+                  <tr><Td className="text-slate-400">No purchase orders yet</Td></tr>
                 )}
                 {data?.data?.map((p) => (
                   <Tr key={p.id}>
@@ -123,7 +123,7 @@ export default function PurchasesPage() {
                     <Td>{p.supplier?.name ?? '—'}</Td>
                     <Td>{formatDate(p.orderDate)}</Td>
                     <Td>{p.expectedDate ? formatDate(p.expectedDate) : '—'}</Td>
-                    <Td className="text-gray-500">{p.lines?.length ?? 0} items</Td>
+                    <Td className="text-slate-500">{p.lines?.length ?? 0} items</Td>
                     <Td className="font-semibold">{formatCurrency(Number(p.total))}</Td>
                     <Td><Badge variant={statusVariant(p.status)}>{p.status}</Badge></Td>
                     <Td>
@@ -229,10 +229,10 @@ function CreatePoModal({ onClose, onCreated }: { onClose: () => void; onCreated:
         {/* Header fields */}
         <div className="grid grid-cols-3 gap-4">
           <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700">Supplier</label>
+            <label className="mb-1 block text-sm font-medium text-slate-700">Supplier</label>
             <select
               {...register('supplierId')}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              className="w-full rounded-lg border border-stone-200 bg-white text-slate-800 px-3 py-2 text-sm focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-300"
             >
               <option value="">— No supplier —</option>
               {suppliers.filter((s) => s.isActive).map((s) => (
@@ -247,7 +247,7 @@ function CreatePoModal({ onClose, onCreated }: { onClose: () => void; onCreated:
         {/* Line items */}
         <div>
           <div className="mb-2 flex items-center justify-between">
-            <h3 className="text-sm font-semibold text-gray-900">Order Lines</h3>
+            <h3 className="text-sm font-semibold text-slate-800">Order Lines</h3>
             <button
               type="button"
               onClick={() => append({ productId: '', quantity: 1, unitCost: 0, discount: 0, taxRate: 0 })}
@@ -257,10 +257,10 @@ function CreatePoModal({ onClose, onCreated }: { onClose: () => void; onCreated:
             </button>
           </div>
 
-          <div className="overflow-x-auto rounded-lg border border-gray-200">
+          <div className="overflow-x-auto rounded-lg border border-stone-200">
             <table className="w-full text-sm">
               <thead>
-                <tr className="bg-gray-50 text-xs font-semibold text-gray-500">
+                <tr className="bg-stone-50 text-xs font-semibold text-slate-500">
                   <th className="px-3 py-2 text-left w-48">Product</th>
                   <th className="px-3 py-2 text-right w-24">Qty</th>
                   <th className="px-3 py-2 text-right w-28">Unit Cost</th>
@@ -281,11 +281,11 @@ function CreatePoModal({ onClose, onCreated }: { onClose: () => void; onCreated:
                   const err  = (errors.lines as any)?.[idx];
 
                   return (
-                    <tr key={field.id} className="border-t border-gray-100">
+                    <tr key={field.id} className="border-t border-stone-100">
                       <td className="px-3 py-2">
                         <select
                           {...register(`lines.${idx}.productId`)}
-                          className={`w-full rounded border px-2 py-1.5 text-sm focus:border-indigo-500 focus:outline-none ${err?.productId ? 'border-red-400' : 'border-gray-200'}`}
+                          className={`w-full rounded border px-2 py-1.5 text-sm focus:border-blue-400 focus:outline-none ${err?.productId ? 'border-red-400' : 'border-stone-200'}`}
                         >
                           <option value="">Select…</option>
                           {products.filter((p) => p.isActive && !p.isService).map((p) => (
@@ -297,36 +297,36 @@ function CreatePoModal({ onClose, onCreated }: { onClose: () => void; onCreated:
                         <input
                           type="number" step="0.001" min="0.001"
                           {...register(`lines.${idx}.quantity`)}
-                          className={`w-full rounded border px-2 py-1.5 text-right text-sm focus:border-indigo-500 focus:outline-none ${err?.quantity ? 'border-red-400' : 'border-gray-200'}`}
+                          className={`w-full rounded border px-2 py-1.5 text-right text-sm focus:border-blue-400 focus:outline-none ${err?.quantity ? 'border-red-400' : 'border-stone-200'}`}
                         />
                       </td>
                       <td className="px-3 py-2">
                         <input
                           type="number" step="0.01" min="0"
                           {...register(`lines.${idx}.unitCost`)}
-                          className="w-full rounded border border-gray-200 px-2 py-1.5 text-right text-sm focus:border-indigo-500 focus:outline-none"
+                          className="w-full rounded border border-stone-200 px-2 py-1.5 text-right text-sm focus:border-blue-400 focus:outline-none"
                         />
                       </td>
                       <td className="px-3 py-2">
                         <input
                           type="number" step="0.01" min="0" max="100"
                           {...register(`lines.${idx}.discount`)}
-                          className="w-full rounded border border-gray-200 px-2 py-1.5 text-right text-sm focus:border-indigo-500 focus:outline-none"
+                          className="w-full rounded border border-stone-200 px-2 py-1.5 text-right text-sm focus:border-blue-400 focus:outline-none"
                         />
                       </td>
                       <td className="px-3 py-2">
                         <input
                           type="number" step="0.01" min="0" max="100"
                           {...register(`lines.${idx}.taxRate`)}
-                          className="w-full rounded border border-gray-200 px-2 py-1.5 text-right text-sm focus:border-indigo-500 focus:outline-none"
+                          className="w-full rounded border border-stone-200 px-2 py-1.5 text-right text-sm focus:border-blue-400 focus:outline-none"
                         />
                       </td>
-                      <td className="px-3 py-2 text-right font-semibold text-gray-900">
+                      <td className="px-3 py-2 text-right font-semibold text-slate-800">
                         {formatCurrency(lt)}
                       </td>
                       <td className="px-3 py-2 text-center">
                         {fields.length > 1 && (
-                          <button type="button" onClick={() => remove(idx)} className="text-gray-300 hover:text-red-500">
+                          <button type="button" onClick={() => remove(idx)} className="text-slate-300 hover:text-red-500">
                             <Trash2 size={14} />
                           </button>
                         )}
@@ -344,16 +344,16 @@ function CreatePoModal({ onClose, onCreated }: { onClose: () => void; onCreated:
 
         {/* Totals */}
         <div className="flex justify-end">
-          <div className="w-64 space-y-1.5 rounded-lg border border-gray-100 bg-gray-50 p-4 text-sm">
-            <div className="flex justify-between text-gray-500">
+          <div className="w-64 space-y-1.5 rounded-lg border border-stone-100 bg-stone-50 p-4 text-sm">
+            <div className="flex justify-between text-slate-500">
               <span>Subtotal</span>
               <span>{formatCurrency(subtotal)}</span>
             </div>
-            <div className="flex justify-between text-gray-500">
+            <div className="flex justify-between text-slate-500">
               <span>Tax</span>
               <span>{formatCurrency(taxTotal)}</span>
             </div>
-            <div className="flex justify-between border-t border-gray-200 pt-2 text-base font-bold text-gray-900">
+            <div className="flex justify-between border-t border-stone-200 pt-2 text-base font-bold text-slate-800">
               <span>Total</span>
               <span>{formatCurrency(total)}</span>
             </div>

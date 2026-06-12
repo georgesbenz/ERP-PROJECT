@@ -57,12 +57,12 @@ export default function SuppliersPage() {
       <div className="p-6 space-y-4">
         <div className="flex items-center justify-between gap-4">
           <div className="relative w-72">
-            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
             <input
               value={search}
               onChange={(e) => { setSearch(e.target.value); setPage(1); }}
               placeholder="Search suppliers…"
-              className="w-full rounded-lg border border-gray-300 py-2 pl-9 pr-3 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              className="w-full rounded-lg border border-stone-200 bg-white text-slate-800 py-2 pl-9 pr-3 text-sm focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-300"
             />
           </div>
           <Button onClick={() => setShowCreate(true)}><Plus size={16} /> New Supplier</Button>
@@ -84,16 +84,16 @@ export default function SuppliersPage() {
               <Tbody>
                 {data?.data?.map((s) => (
                   <Tr key={s.id}>
-                    <Td className="font-medium text-gray-900">{s.name}</Td>
+                    <Td className="font-medium text-slate-800">{s.name}</Td>
                     <Td className="font-mono text-xs">{s.code}</Td>
-                    <Td className="text-gray-500">{s.email ?? '—'}</Td>
-                    <Td className="text-gray-500">{s.phone ?? '—'}</Td>
+                    <Td className="text-slate-500">{s.email ?? '—'}</Td>
+                    <Td className="text-slate-500">{s.phone ?? '—'}</Td>
                     <Td><Badge variant={s.isActive ? 'success' : 'default'}>{s.isActive ? 'Active' : 'Inactive'}</Badge></Td>
-                    <Td className="text-gray-500">{formatDate(s.createdAt)}</Td>
+                    <Td className="text-slate-500">{formatDate(s.createdAt)}</Td>
                   </Tr>
                 ))}
                 {data?.data?.length === 0 && (
-                  <tr><Td className="text-gray-400">No suppliers found</Td></tr>
+                  <tr><Td className="text-slate-400">No suppliers found</Td></tr>
                 )}
               </Tbody>
             </Table>

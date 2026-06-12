@@ -65,26 +65,26 @@ export default function StockLevelsPage() {
       <div className="p-6 space-y-4">
 
         {/* Filters */}
-        <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+        <div className="rounded-xl border border-stone-200 bg-white p-4 shadow-sm">
           <div className="flex flex-wrap items-end gap-3">
             {/* Search */}
             <div className="relative min-w-[220px]">
-              <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+              <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
               <input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Rechercher produit ou SKU…"
-                className="w-full rounded-lg border border-gray-300 py-1.5 pl-9 pr-3 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                className="w-full rounded-lg border border-stone-200 bg-white text-slate-800 py-1.5 pl-9 pr-3 text-sm focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-300"
               />
             </div>
 
             {/* Warehouse */}
             <div className="min-w-[180px]">
-              <label className="mb-1 block text-xs font-medium text-gray-500">Entrepôt</label>
+              <label className="mb-1 block text-xs font-medium text-slate-500">Entrepôt</label>
               <select
                 value={warehouseId}
                 onChange={(e) => setWarehouseId(e.target.value)}
-                className="w-full rounded-lg border border-gray-300 px-3 py-1.5 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                className="w-full rounded-lg border border-stone-200 bg-white text-slate-800 px-3 py-1.5 text-sm focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-300"
               >
                 <option value="">Tous les entrepôts</option>
                 {(warehouses as any[]).map((w: any) => (
@@ -94,12 +94,12 @@ export default function StockLevelsPage() {
             </div>
 
             {/* Low stock toggle */}
-            <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
+            <label className="flex items-center gap-2 text-sm text-slate-700 cursor-pointer">
               <input
                 type="checkbox"
                 checked={lowStockOnly}
                 onChange={(e) => setLowStockOnly(e.target.checked)}
-                className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                className="rounded border-stone-200 text-indigo-600 focus:ring-blue-300"
               />
               Stock faible uniquement
             </label>
@@ -107,7 +107,7 @@ export default function StockLevelsPage() {
             {hasFilters && (
               <button
                 onClick={reset}
-                className="ml-auto flex items-center gap-1.5 rounded-lg border border-gray-200 px-3 py-1.5 text-sm text-gray-500 hover:bg-gray-50"
+                className="ml-auto flex items-center gap-1.5 rounded-lg border border-stone-200 px-3 py-1.5 text-sm text-slate-500 hover:bg-stone-50"
               >
                 <RotateCcw size={13} /> Réinitialiser
               </button>
@@ -117,7 +117,7 @@ export default function StockLevelsPage() {
 
         {/* Summary */}
         {!isLoading && (
-          <p className="text-xs text-gray-500">
+          <p className="text-xs text-slate-500">
             {(levels as any[]).length} entrée{(levels as any[]).length !== 1 ? 's' : ''} trouvée{(levels as any[]).length !== 1 ? 's' : ''}
             {hasFilters ? ' (filtré)' : ''}
           </p>
@@ -127,7 +127,7 @@ export default function StockLevelsPage() {
         {isLoading ? (
           <PageLoader />
         ) : (
-          <div className="overflow-hidden rounded-xl border border-gray-200 shadow-sm">
+          <div className="overflow-hidden rounded-xl border border-stone-200 shadow-sm">
             <Table>
               <Thead>
                 <tr>
@@ -146,36 +146,36 @@ export default function StockLevelsPage() {
               <Tbody>
                 {(levels as any[]).length === 0 && (
                   <tr>
-                    <td colSpan={10} className="py-10 text-center text-sm text-gray-400">
+                    <td colSpan={10} className="py-10 text-center text-sm text-slate-400">
                       Aucun stock trouvé
                     </td>
                   </tr>
                 )}
                 {(levels as any[]).map((item: any) => (
                   <Tr key={item.id}>
-                    <Td className="font-medium text-gray-900 max-w-[160px] truncate">
+                    <Td className="font-medium text-slate-800 max-w-[160px] truncate">
                       {item.product?.name ?? '—'}
                     </Td>
-                    <Td className="font-mono text-xs text-gray-500">{item.product?.sku ?? '—'}</Td>
-                    <Td className="text-gray-600">{item.warehouse?.name ?? '—'}</Td>
+                    <Td className="font-mono text-xs text-slate-500">{item.product?.sku ?? '—'}</Td>
+                    <Td className="text-slate-600">{item.warehouse?.name ?? '—'}</Td>
                     <Td className="text-right">
-                      <span className={`font-semibold tabular-nums ${item.isOutOfStock ? 'text-red-600' : item.isLowStock ? 'text-amber-600' : 'text-gray-900'}`}>
+                      <span className={`font-semibold tabular-nums ${item.isOutOfStock ? 'text-red-600' : item.isLowStock ? 'text-amber-600' : 'text-slate-800'}`}>
                         {Number(item.available).toLocaleString()}
                       </span>
                     </Td>
-                    <Td className="text-right tabular-nums text-gray-600">
+                    <Td className="text-right tabular-nums text-slate-600">
                       {Number(item.reserved).toLocaleString()}
                     </Td>
-                    <Td className="text-right tabular-nums text-gray-600">
+                    <Td className="text-right tabular-nums text-slate-600">
                       {Number(item.damaged).toLocaleString()}
                     </Td>
-                    <Td className="text-right tabular-nums text-gray-500">
+                    <Td className="text-right tabular-nums text-slate-500">
                       {Number(item.inTransit).toLocaleString()}
                     </Td>
-                    <Td className="text-right tabular-nums font-medium text-gray-700">
+                    <Td className="text-right tabular-nums font-medium text-slate-700">
                       {Number(item.physical).toLocaleString()}
                     </Td>
-                    <Td className="text-right tabular-nums text-gray-500">
+                    <Td className="text-right tabular-nums text-slate-500">
                       {Number(item.product?.minStock ?? 0).toLocaleString()}
                     </Td>
                     <Td>

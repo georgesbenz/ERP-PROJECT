@@ -59,12 +59,12 @@ export default function CrmPage() {
       <div className="p-6 space-y-4">
         <div className="flex items-center justify-between gap-4">
           <div className="relative w-72">
-            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
             <input
               value={search}
               onChange={(e) => { setSearch(e.target.value); setPage(1); }}
               placeholder="Search leads…"
-              className="w-full rounded-lg border border-gray-300 py-2 pl-9 pr-3 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              className="w-full rounded-lg border border-stone-200 bg-white text-slate-800 py-2 pl-9 pr-3 text-sm focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-300"
             />
           </div>
           <Button onClick={() => setShowCreate(true)}><Plus size={16} /> New Lead</Button>
@@ -85,11 +85,11 @@ export default function CrmPage() {
               </Thead>
               <Tbody>
                 {data?.data?.length === 0 && (
-                  <tr><Td className="text-gray-400">No leads yet</Td></tr>
+                  <tr><Td className="text-slate-400">No leads yet</Td></tr>
                 )}
                 {data?.data?.map((l) => (
                   <Tr key={l.id}>
-                    <Td className="font-medium text-gray-900">{l.firstName} {l.lastName}</Td>
+                    <Td className="font-medium text-slate-800">{l.firstName} {l.lastName}</Td>
                     <Td>{l.email ?? '—'}</Td>
                     <Td>{l.company ?? '—'}</Td>
                     <Td><Badge variant={statusVariant(l.status)}>{l.status}</Badge></Td>

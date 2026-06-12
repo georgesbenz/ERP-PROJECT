@@ -12,18 +12,24 @@ export interface AuthUser {
 
 interface AuthState {
   user: AuthUser | null;
+  permissions: string[];          // flat list: ["sales:READ", "pos:CREATE", ...]
+  permissionsLoaded: boolean;
   accessToken: string | null;
   refreshToken: string | null;
   isAuthenticated: boolean;
   setTokens: (accessToken: string, refreshToken: string) => void;
   setUser: (user: AuthUser) => void;
+  setPermissions: (permissions: string[]) => void;
+  hasPermission: (permission: string) => boolean;
   logout: () => void;
 }
 
 export const useAuthStore = create<AuthState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       user: null,
+      permissions: [],
+      permissionsLoaded: false,
       accessToken: null,
       refreshToken: null,
       isAuthenticated: false,
@@ -38,12 +44,27 @@ export const useAuthStore = create<AuthState>()(
 
       setUser: (user) => set({ user }),
 
+      setPermissions: (permissions) =>
+        set({ permissions, permissionsLoaded: true }),
+
+      hasPermission: (permission: string) => {
+        const { permissions } = get();
+        return permissions.includes(permission);
+      },
+
       logout: () => {
         if (typeof window !== 'undefined') {
           localStorage.removeItem('accessToken');
           localStorage.removeItem('refreshToken');
         }
-        set({ user: null, accessToken: null, refreshToken: null, isAuthenticated: false });
+        set({
+          user: null,
+          accessToken: null,
+          refreshToken: null,
+          isAuthenticated: false,
+          permissions: [],
+          permissionsLoaded: false,
+        });
       },
     }),
     {
@@ -53,6 +74,7 @@ export const useAuthStore = create<AuthState>()(
         accessToken: state.accessToken,
         refreshToken: state.refreshToken,
         isAuthenticated: state.isAuthenticated,
+        // permissions are NOT persisted — always re-fetched from server on boot
       }),
     },
   ),

@@ -41,14 +41,14 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 p-4">
+    <div className="flex min-h-screen items-center justify-center bg-stone-50 p-4">
       <div className="w-full max-w-sm">
         <div className="mb-8 flex flex-col items-center gap-2">
           <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-600">
             <Building2 size={24} className="text-white" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">Sign in</h1>
-          <p className="text-sm text-gray-500">Welcome back to your ERP platform</p>
+          <h1 className="text-2xl font-bold text-slate-800">Sign in</h1>
+          <p className="text-sm text-slate-500">Welcome back to your ERP platform</p>
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -76,7 +76,7 @@ export default function LoginPage() {
           </Button>
         </form>
 
-        <p className="mt-6 text-center text-sm text-gray-500">
+        <p className="mt-6 text-center text-sm text-slate-500">
           No account?{' '}
           <Link href="/register" className="font-medium text-indigo-600 hover:text-indigo-700">
             Create one

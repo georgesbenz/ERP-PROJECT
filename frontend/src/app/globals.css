@@ -2,10 +2,34 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Force light color-scheme so native form controls (select, input, scrollbars)
+   always render in light mode regardless of the OS preference.
+   Prevents the "black dropdown / grey box" issue on dark-mode systems. */
 :root {
-  color-scheme: light dark;
+  color-scheme: light;
 }
 
 body {
-  @apply bg-neutral-50 text-neutral-900 antialiased;
+  @apply bg-stone-50 text-slate-800 antialiased;
+}
+
+/* Ensure all native form controls inherit light-mode styling */
+input, select, textarea, button {
+  color-scheme: light;
+}
+
+/* Calm scrollbar for long work sessions */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #f5f4f2;
+}
+::-webkit-scrollbar-thumb {
+  background: #d1cdc7;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #b8b3ac;
 }
