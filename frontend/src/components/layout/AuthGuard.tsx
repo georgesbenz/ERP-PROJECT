@@ -4,6 +4,8 @@ import { useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/auth.store';
 import { authService } from '@/services/auth.service';
+import { settingsService } from '@/services/settings.service';
+import { setAppCurrency } from '@/lib/utils';
 import { PageLoader } from '@/components/ui/Spinner';
 
 // Flatten the nested roles→permissions structure from /auth/me into ["module:ACTION", ...]
@@ -29,14 +31,13 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
       return;
     }
 
-    // Fetch full profile (with permissions) once per session mount
+    // Fetch full profile (with permissions) + company settings once per session mount
     if (!permissionsLoaded && !fetchedRef.current) {
       fetchedRef.current = true;
-      authService.me()
-        .then((profile) => {
+      Promise.all([authService.me(), settingsService.getCompany()])
+        .then(([profile, company]) => {
           const permissions = extractPermissions(profile);
           setPermissions(permissions);
-          // Also refresh user display name in case it changed
           if (profile) {
             setUser({
               id: profile.id,
@@ -47,6 +48,8 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
               roles: (profile.roles ?? []).map((ur: any) => ur?.role?.name).filter(Boolean),
             });
           }
+          // Apply tenant currency globally so all formatCurrency() calls use it
+          if (company?.currency) setAppCurrency(company.currency);
         })
         .catch(() => {
           // Token may be invalid — log out
