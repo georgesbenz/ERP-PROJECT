@@ -326,23 +326,91 @@ enum GoalStatus {
 // ─── TENANT / AUTH ────────────────────────────────────────────────────────────
 
 model Tenant {
-  id        String   @id @default(uuid())
-  name      String
-  slug      String   @unique
+  id          String   @id @default(uuid())
+  name        String
+  slug        String   @unique
+
+  // ── General Info ────────────────────────────────────────────────────────
+  tradingName         String?
+  slogan              String?
+  industry            String?
+  dateEstablished     DateTime?
+  businessDescription String?
+  website             String?
+  logoUrl             String?
+
+  // ── Contact ─────────────────────────────────────────────────────────────
   email     String?
+  email2    String?
   phone     String?
-  address   String?
-  city      String?
-  country   String?
-  currency  String   @default("USD")
-  locale    String   @default("en")
-  timezone  String   @default("UTC")
-  logoUrl   String?
+  phone2    String?
+  whatsapp  String?
+
+  // ── Address ─────────────────────────────────────────────────────────────
+  address         String?
+  physicalAddress String?
+  postalAddress   String?
+  city            String?
+  district        String?
+  subdivision     String?
+  division        String?
+  region          String?
+  country         String?
+  gpsCoordinates  String?
+
+  // ── Legal / Statutory ───────────────────────────────────────────────────
+  rccm              String?
+  niu               String?
+  taxId             String?
+  cnps              String?
+  patent            String?
+  statisticalNumber String?
+  shareCapital      Float?
+  legalForm         String?
+
+  // ── Tax Configuration ───────────────────────────────────────────────────
+  vatEnabled Boolean @default(true)
+  vatNumber  String?
+  taxRegime  String?
+  taxOffice  String?
+
+  // ── Accounting ──────────────────────────────────────────────────────────
+  ohadaEnabled     Boolean @default(false)
+  fiscalYearStart  Int     @default(1)
+  fiscalYearEnd    Int     @default(12)
+  accountingMethod String  @default("ACCRUAL")
+
+  // ── ERP / Locale Settings ───────────────────────────────────────────────
+  currency         String  @default("XAF")
+  locale           String  @default("fr")
+  timezone         String  @default("Africa/Douala")
+  language         String  @default("fr")
+  dateFormat       String  @default("DD/MM/YYYY")
+  timeFormat       String  @default("24h")
+  decimalPrecision Int     @default(2)
+  multiBranch      Boolean @default(false)
+  multiWarehouse   Boolean @default(false)
+  multiCurrency    Boolean @default(false)
+
+  // ── POS Settings ────────────────────────────────────────────────────────
+  receiptSize        String  @default("A4")
+  autoPrint          Boolean @default(false)
+  maxDiscountPct     Float   @default(100)
+  mandatoryCashOpen  Boolean @default(false)
+  mandatoryCashClose Boolean @default(false)
+  returnPolicyDays   Int     @default(7)
+
+  // ── Inventory Settings ──────────────────────────────────────────────────
+  lowStockThreshold      Int    @default(10)
+  criticalStockThreshold Int    @default(5)
+  defaultValuationMethod String @default("FIFO")
+
   isActive  Boolean  @default(true)
   plan      String   @default("starter")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  // ── Relations ───────────────────────────────────────────────────────────
   branches           Branch[]
   users              User[]
   roles              Role[]
@@ -398,6 +466,11 @@ model Tenant {
   expenses           Expense[]
   expenseCategories  ExpenseCategory[]
   cashSessions       CashSession[]
+  bankAccounts       CompanyBankAccount[]
+  representatives    CompanyRepresentative[]
+  documents          CompanyDocument[]
+  documentSequences  CompanyDocumentSequence[]
+  socialMedia        CompanySocialMedia[]
 
   @@map("tenants")
 }
@@ -2107,4 +2180,93 @@ model CashSession {
   @@index([tenantId])
   @@index([tenantId, status])
   @@map("cash_sessions")
+}
+
+// ─── COMPANY SETTINGS MODELS ──────────────────────────────────────────────────
+
+model CompanyBankAccount {
+  id            String   @id @default(uuid())
+  tenantId      String
+  bankName      String
+  accountName   String
+  accountNumber String
+  iban          String?
+  swift         String?
+  branch        String?
+  currency      String   @default("XAF")
+  isDefault     Boolean  @default(false)
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@map("company_bank_accounts")
+}
+
+model CompanyRepresentative {
+  id       String  @id @default(uuid())
+  tenantId String
+  name     String
+  title    String?
+  phone    String?
+  email    String?
+  role     String?
+  isActive Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@map("company_representatives")
+}
+
+model CompanyDocument {
+  id        String    @id @default(uuid())
+  tenantId  String
+  name      String
+  type      String
+  fileUrl   String?
+  expiresAt DateTime?
+  isActive  Boolean   @default(true)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@map("company_documents")
+}
+
+model CompanyDocumentSequence {
+  id         String   @id @default(uuid())
+  tenantId   String
+  docType    String
+  prefix     String
+  nextNumber Int      @default(1)
+  padding    Int      @default(5)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, docType])
+  @@map("company_document_sequences")
+}
+
+model CompanySocialMedia {
+  id        String   @id @default(uuid())
+  tenantId  String
+  platform  String
+  url       String
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, platform])
+  @@map("company_social_media")
 }

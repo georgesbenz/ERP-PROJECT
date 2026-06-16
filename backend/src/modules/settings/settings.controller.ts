@@ -7,6 +7,12 @@ import { UpdateCompanyDto } from './dto/update-company.dto';
 import { CreateBranchDto, UpdateBranchDto } from './dto/branch.dto';
 import { AssignPermissionsDto, CreateRoleDto, UpdateRoleDto } from './dto/role.dto';
 import { CreateTaxDto, UpdateTaxDto } from './dto/tax.dto';
+import {
+  CreateBankAccountDto, UpdateBankAccountDto,
+  CreateRepresentativeDto, UpdateRepresentativeDto,
+  CreateDocumentDto, UpdateDocumentDto,
+  UpsertDocumentSequenceDto, UpsertSocialMediaDto,
+} from './dto/company-entities.dto';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
 import { AuthenticatedUser } from '../../common/types/authenticated-request.type';
 
@@ -30,34 +36,153 @@ export class SettingsController {
     return this.settings.updateCompany(user.tenantId, dto);
   }
 
+  // ─── Bank Accounts ────────────────────────────────────────────────────────
+
+  @Get('bank-accounts')
+  @ApiOperation({ summary: 'List company bank accounts' })
+  listBankAccounts(@CurrentUser() user: AuthenticatedUser) {
+    return this.settings.listBankAccounts(user.tenantId);
+  }
+
+  @Post('bank-accounts')
+  @ApiOperation({ summary: 'Add a bank account' })
+  createBankAccount(@Body() dto: CreateBankAccountDto, @CurrentUser() user: AuthenticatedUser) {
+    return this.settings.createBankAccount(user.tenantId, dto);
+  }
+
+  @Patch('bank-accounts/:id')
+  @ApiOperation({ summary: 'Update a bank account' })
+  updateBankAccount(
+    @Param('id') id: string,
+    @Body() dto: UpdateBankAccountDto,
+    @CurrentUser() user: AuthenticatedUser,
+  ) {
+    return this.settings.updateBankAccount(id, user.tenantId, dto);
+  }
+
+  @Delete('bank-accounts/:id')
+  @ApiOperation({ summary: 'Delete a bank account' })
+  deleteBankAccount(@Param('id') id: string, @CurrentUser() user: AuthenticatedUser) {
+    return this.settings.deleteBankAccount(id, user.tenantId);
+  }
+
+  // ─── Representatives ──────────────────────────────────────────────────────
+
+  @Get('representatives')
+  @ApiOperation({ summary: 'List company representatives' })
+  listRepresentatives(@CurrentUser() user: AuthenticatedUser) {
+    return this.settings.listRepresentatives(user.tenantId);
+  }
+
+  @Post('representatives')
+  @ApiOperation({ summary: 'Add a representative' })
+  createRepresentative(@Body() dto: CreateRepresentativeDto, @CurrentUser() user: AuthenticatedUser) {
+    return this.settings.createRepresentative(user.tenantId, dto);
+  }
+
+  @Patch('representatives/:id')
+  @ApiOperation({ summary: 'Update a representative' })
+  updateRepresentative(
+    @Param('id') id: string,
+    @Body() dto: UpdateRepresentativeDto,
+    @CurrentUser() user: AuthenticatedUser,
+  ) {
+    return this.settings.updateRepresentative(id, user.tenantId, dto);
+  }
+
+  @Delete('representatives/:id')
+  @ApiOperation({ summary: 'Delete a representative' })
+  deleteRepresentative(@Param('id') id: string, @CurrentUser() user: AuthenticatedUser) {
+    return this.settings.deleteRepresentative(id, user.tenantId);
+  }
+
+  // ─── Documents ────────────────────────────────────────────────────────────
+
+  @Get('documents')
+  @ApiOperation({ summary: 'List company documents' })
+  listDocuments(@CurrentUser() user: AuthenticatedUser) {
+    return this.settings.listDocuments(user.tenantId);
+  }
+
+  @Post('documents')
+  @ApiOperation({ summary: 'Add a company document' })
+  createDocument(@Body() dto: CreateDocumentDto, @CurrentUser() user: AuthenticatedUser) {
+    return this.settings.createDocument(user.tenantId, dto);
+  }
+
+  @Patch('documents/:id')
+  @ApiOperation({ summary: 'Update a company document' })
+  updateDocument(
+    @Param('id') id: string,
+    @Body() dto: UpdateDocumentDto,
+    @CurrentUser() user: AuthenticatedUser,
+  ) {
+    return this.settings.updateDocument(id, user.tenantId, dto);
+  }
+
+  @Delete('documents/:id')
+  @ApiOperation({ summary: 'Delete a company document' })
+  deleteDocument(@Param('id') id: string, @CurrentUser() user: AuthenticatedUser) {
+    return this.settings.deleteDocument(id, user.tenantId);
+  }
+
+  // ─── Document Sequences ───────────────────────────────────────────────────
+
+  @Get('document-sequences')
+  @ApiOperation({ summary: 'List document numbering sequences' })
+  listDocumentSequences(@CurrentUser() user: AuthenticatedUser) {
+    return this.settings.listDocumentSequences(user.tenantId);
+  }
+
+  @Put('document-sequences')
+  @ApiOperation({ summary: 'Upsert a document numbering sequence' })
+  upsertDocumentSequence(@Body() dto: UpsertDocumentSequenceDto, @CurrentUser() user: AuthenticatedUser) {
+    return this.settings.upsertDocumentSequence(user.tenantId, dto);
+  }
+
+  // ─── Social Media ──────────────────────────────────────────────────────────
+
+  @Get('social-media')
+  @ApiOperation({ summary: 'List company social media links' })
+  listSocialMedia(@CurrentUser() user: AuthenticatedUser) {
+    return this.settings.listSocialMedia(user.tenantId);
+  }
+
+  @Put('social-media')
+  @ApiOperation({ summary: 'Upsert a social media link' })
+  upsertSocialMedia(@Body() dto: UpsertSocialMediaDto, @CurrentUser() user: AuthenticatedUser) {
+    return this.settings.upsertSocialMedia(user.tenantId, dto);
+  }
+
+  @Delete('social-media/:id')
+  @ApiOperation({ summary: 'Delete a social media link' })
+  deleteSocialMedia(@Param('id') id: string, @CurrentUser() user: AuthenticatedUser) {
+    return this.settings.deleteSocialMedia(id, user.tenantId);
+  }
+
   // ─── Branches ─────────────────────────────────────────────────────────────
 
   @Get('branches')
-  @ApiOperation({ summary: 'List all branches' })
   listBranches(@CurrentUser() user: AuthenticatedUser) {
     return this.settings.listBranches(user.tenantId);
   }
 
   @Get('branches/:id')
-  @ApiOperation({ summary: 'Get branch by ID' })
   getBranch(@Param('id') id: string, @CurrentUser() user: AuthenticatedUser) {
     return this.settings.getBranch(id, user.tenantId);
   }
 
   @Post('branches')
-  @ApiOperation({ summary: 'Create a new branch' })
   createBranch(@Body() dto: CreateBranchDto, @CurrentUser() user: AuthenticatedUser) {
     return this.settings.createBranch(user.tenantId, dto);
   }
 
   @Patch('branches/:id')
-  @ApiOperation({ summary: 'Update a branch' })
   updateBranch(@Param('id') id: string, @Body() dto: UpdateBranchDto, @CurrentUser() user: AuthenticatedUser) {
     return this.settings.updateBranch(id, user.tenantId, dto);
   }
 
   @Delete('branches/:id')
-  @ApiOperation({ summary: 'Deactivate a branch' })
   deleteBranch(@Param('id') id: string, @CurrentUser() user: AuthenticatedUser) {
     return this.settings.deleteBranch(id, user.tenantId);
   }
@@ -65,49 +190,41 @@ export class SettingsController {
   // ─── Roles ────────────────────────────────────────────────────────────────
 
   @Get('roles')
-  @ApiOperation({ summary: 'List all roles with permissions' })
   listRoles(@CurrentUser() user: AuthenticatedUser) {
     return this.settings.listRoles(user.tenantId);
   }
 
   @Get('roles/:id')
-  @ApiOperation({ summary: 'Get role by ID' })
   getRole(@Param('id') id: string, @CurrentUser() user: AuthenticatedUser) {
     return this.settings.getRole(id, user.tenantId);
   }
 
   @Post('roles')
-  @ApiOperation({ summary: 'Create a new role' })
   createRole(@Body() dto: CreateRoleDto, @CurrentUser() user: AuthenticatedUser) {
     return this.settings.createRole(user.tenantId, dto);
   }
 
   @Patch('roles/:id')
-  @ApiOperation({ summary: 'Update a role (system roles: Admin only)' })
   updateRole(@Param('id') id: string, @Body() dto: UpdateRoleDto, @CurrentUser() user: AuthenticatedUser) {
     return this.settings.updateRole(id, user.tenantId, dto, user.roles);
   }
 
   @Delete('roles/:id')
-  @ApiOperation({ summary: 'Delete a role (custom roles only)' })
   deleteRole(@Param('id') id: string, @CurrentUser() user: AuthenticatedUser) {
     return this.settings.deleteRole(id, user.tenantId);
   }
 
   @Post('roles/:id/clone')
-  @ApiOperation({ summary: 'Clone a role (creates a custom copy with same permissions)' })
   cloneRole(@Param('id') id: string, @CurrentUser() user: AuthenticatedUser) {
     return this.settings.cloneRole(id, user.tenantId);
   }
 
   @Patch('roles/:id/toggle')
-  @ApiOperation({ summary: 'Toggle a role active/inactive (system roles: Admin only)' })
   toggleRoleActive(@Param('id') id: string, @CurrentUser() user: AuthenticatedUser) {
     return this.settings.toggleRoleActive(id, user.tenantId, user.roles);
   }
 
   @Put('roles/:id/permissions')
-  @ApiOperation({ summary: 'Replace permissions on a role (system roles: Admin only)' })
   assignPermissions(
     @Param('id') id: string,
     @Body() dto: AssignPermissionsDto,
@@ -119,7 +236,6 @@ export class SettingsController {
   // ─── Permissions ──────────────────────────────────────────────────────────
 
   @Get('permissions')
-  @ApiOperation({ summary: 'List all available permissions' })
   listPermissions() {
     return this.settings.listPermissions();
   }
@@ -127,25 +243,21 @@ export class SettingsController {
   // ─── Tax Codes ────────────────────────────────────────────────────────────
 
   @Get('taxes')
-  @ApiOperation({ summary: 'List all tax codes' })
   listTaxes(@CurrentUser() user: AuthenticatedUser) {
     return this.settings.listTaxes(user.tenantId);
   }
 
   @Post('taxes')
-  @ApiOperation({ summary: 'Create a tax code' })
   createTax(@Body() dto: CreateTaxDto, @CurrentUser() user: AuthenticatedUser) {
     return this.settings.createTax(user.tenantId, dto);
   }
 
   @Patch('taxes/:id')
-  @ApiOperation({ summary: 'Update a tax code' })
   updateTax(@Param('id') id: string, @Body() dto: UpdateTaxDto, @CurrentUser() user: AuthenticatedUser) {
     return this.settings.updateTax(id, user.tenantId, dto);
   }
 
   @Delete('taxes/:id')
-  @ApiOperation({ summary: 'Delete a tax code (only if no products use it)' })
   deleteTax(@Param('id') id: string, @CurrentUser() user: AuthenticatedUser) {
     return this.settings.deleteTax(id, user.tenantId);
   }
