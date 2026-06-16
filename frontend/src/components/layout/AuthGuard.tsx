@@ -21,11 +21,16 @@ function extractPermissions(profile: any): string[] {
 }
 
 export function AuthGuard({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated, permissionsLoaded, setPermissions, setUser, logout } = useAuthStore();
+  const { isAuthenticated, permissionsLoaded, _hasHydrated, setPermissions, setUser, logout } = useAuthStore();
   const router = useRouter();
   const fetchedRef = useRef(false);
 
   useEffect(() => {
+    // Wait until zustand has rehydrated from localStorage before making any
+    // auth decision — without this guard a page refresh sees isAuthenticated=false
+    // for a brief moment and incorrectly redirects to /login.
+    if (!_hasHydrated) return;
+
     if (!isAuthenticated) {
       router.replace('/login');
       return;
@@ -57,7 +62,10 @@ export function AuthGuard({ children }: { children: React.ReactNode }) {
           router.replace('/login');
         });
     }
-  }, [isAuthenticated, permissionsLoaded, setPermissions, setUser, logout, router]);
+  }, [_hasHydrated, isAuthenticated, permissionsLoaded, setPermissions, setUser, logout, router]);
+
+  // Still reading from localStorage — show nothing yet
+  if (!_hasHydrated) return <PageLoader />;
 
   if (!isAuthenticated) return <PageLoader />;
 
