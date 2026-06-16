@@ -30,9 +30,9 @@ export function Th({ children, className }: { children?: ReactNode; className?: 
   );
 }
 
-export function Td({ children, className }: { children?: ReactNode; className?: string }) {
+export function Td({ children, className, colSpan }: { children?: ReactNode; className?: string; colSpan?: number }) {
   return (
-    <td className={cn('px-4 py-3 text-slate-700', className)}>{children}</td>
+    <td colSpan={colSpan} className={cn('px-4 py-3 text-slate-700', className)}>{children}</td>
   );
 }
 

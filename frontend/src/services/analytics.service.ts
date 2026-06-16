@@ -29,4 +29,21 @@ export const analyticsService = {
     const { data } = await api.get('/analytics/inventory-summary');
     return data.data;
   },
+  async getCrmAnalytics() {
+    const { data } = await api.get('/analytics/crm');
+    return data.data as {
+      leadFunnel: { stage: string; count: number }[];
+      opportunityFunnel: { stage: string; count: number }[];
+      kpis: { totalLeads: number; conversionRate: number; totalOpportunities: number; winRate: number; wonValue: number; avgDealSize: number };
+      sourceBreakdown: { source: string; count: number }[];
+      recentActivities: any[];
+    };
+  },
+  async getBudgetAnalytics() {
+    const { data } = await api.get('/analytics/budget');
+    return data.data as {
+      byPlan: any[];
+      summary: { totalPlans: number; activePlans: number; totalBudgeted: number; totalAllocated: number; totalActual: number; overallUtilization: number };
+    };
+  },
 };

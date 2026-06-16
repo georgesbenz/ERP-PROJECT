@@ -68,6 +68,66 @@ export class InventoryController {
     return this.inventoryService.deleteProduct(id, u.tenantId);
   }
 
+  // Product Families
+  @Get('families')
+  @RequirePermissions('inventory:READ')
+  @ApiOperation({ summary: 'List product families' })
+  listFamilies(@CurrentUser() u: AuthenticatedUser) {
+    return this.inventoryService.listFamilies(u.tenantId);
+  }
+
+  @Post('families')
+  @RequirePermissions('inventory:CREATE')
+  @ApiOperation({ summary: 'Create a product family' })
+  createFamily(@Body() dto: { name: string; code: string; description?: string }, @CurrentUser() u: AuthenticatedUser) {
+    return this.inventoryService.createFamily(u.tenantId, dto);
+  }
+
+  @Patch('families/:id')
+  @RequirePermissions('inventory:UPDATE')
+  @ApiOperation({ summary: 'Update a product family' })
+  updateFamily(@Param('id') id: string, @Body() dto: any, @CurrentUser() u: AuthenticatedUser) {
+    return this.inventoryService.updateFamily(id, u.tenantId, dto);
+  }
+
+  @Delete('families/:id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @RequirePermissions('inventory:DELETE')
+  @ApiOperation({ summary: 'Delete a product family' })
+  deleteFamily(@Param('id') id: string, @CurrentUser() u: AuthenticatedUser) {
+    return this.inventoryService.deleteFamily(id, u.tenantId);
+  }
+
+  // Price Categories
+  @Get('price-categories')
+  @RequirePermissions('inventory:READ')
+  @ApiOperation({ summary: 'List price categories' })
+  listPriceCategories(@CurrentUser() u: AuthenticatedUser) {
+    return this.inventoryService.listPriceCategories(u.tenantId);
+  }
+
+  @Post('price-categories')
+  @RequirePermissions('inventory:CREATE')
+  @ApiOperation({ summary: 'Create a price category' })
+  createPriceCategory(@Body() dto: { name: string; code: string; description?: string }, @CurrentUser() u: AuthenticatedUser) {
+    return this.inventoryService.createPriceCategory(u.tenantId, dto);
+  }
+
+  @Patch('price-categories/:id')
+  @RequirePermissions('inventory:UPDATE')
+  @ApiOperation({ summary: 'Update a price category' })
+  updatePriceCategory(@Param('id') id: string, @Body() dto: any, @CurrentUser() u: AuthenticatedUser) {
+    return this.inventoryService.updatePriceCategory(id, u.tenantId, dto);
+  }
+
+  @Delete('price-categories/:id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @RequirePermissions('inventory:DELETE')
+  @ApiOperation({ summary: 'Deactivate a price category' })
+  deletePriceCategory(@Param('id') id: string, @CurrentUser() u: AuthenticatedUser) {
+    return this.inventoryService.deletePriceCategory(id, u.tenantId);
+  }
+
   // Categories
   @Get('categories')
   @RequirePermissions('inventory:READ')

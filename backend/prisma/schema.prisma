@@ -376,6 +376,8 @@ model Tenant {
   priceLists         PriceList[]
   backorders         Backorder[]
   cycleCounts        CycleCount[]
+  productFamilies    ProductFamily[]
+  priceCategories    PriceCategory[]
 
   @@map("tenants")
 }
@@ -519,6 +521,41 @@ model UserRole {
 
 // ─── CATALOG ──────────────────────────────────────────────────────────────────
 
+model ProductFamily {
+  id          String    @id @default(uuid())
+  tenantId    String
+  name        String
+  code        String
+  description String?
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  tenant   Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  products Product[]
+
+  @@unique([tenantId, code])
+  @@index([tenantId])
+  @@map("product_families")
+}
+
+model PriceCategory {
+  id          String   @id @default(uuid())
+  tenantId    String
+  name        String
+  code        String
+  description String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, code])
+  @@index([tenantId])
+  @@map("price_categories")
+}
+
 model Category {
   id        String   @id @default(uuid())
   tenantId  String
@@ -561,6 +598,10 @@ model Product {
   updatedAt     DateTime  @updatedAt
   deletedAt     DateTime?
 
+  familyId        String?
+  packaging       String?
+  priceCategory   String?
+
   trackSerials    Boolean  @default(false)
   trackBatches    Boolean  @default(false)
   hasExpiry       Boolean  @default(false)
@@ -570,6 +611,7 @@ model Product {
   valuationMethod String   @default("WEIGHTED_AVG")
 
   tenant          Tenant              @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  family          ProductFamily?      @relation(fields: [familyId], references: [id])
   category        Category?           @relation(fields: [categoryId], references: [id])
   tax             Tax?                @relation(fields: [taxId], references: [id])
   inventories     Inventory[]

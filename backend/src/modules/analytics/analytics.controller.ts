@@ -82,4 +82,18 @@ export class AnalyticsController {
   getInventorySummary(@CurrentUser() u: AuthenticatedUser) {
     return this.svc.getInventorySummary(u.tenantId);
   }
+
+  @Get('crm')
+  @RequirePermissions('analytics:READ')
+  @ApiOperation({ summary: 'CRM analytics: lead funnel, opportunity win rate, source breakdown' })
+  getCrmAnalytics(@CurrentUser() u: AuthenticatedUser) {
+    return this.svc.getCrmAnalytics(u.tenantId);
+  }
+
+  @Get('budget')
+  @RequirePermissions('analytics:READ')
+  @ApiOperation({ summary: 'Budget analytics: utilization by plan/department' })
+  getBudgetAnalytics(@CurrentUser() u: AuthenticatedUser) {
+    return this.svc.getBudgetAnalytics(u.tenantId);
+  }
 }

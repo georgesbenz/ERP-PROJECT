@@ -1,11 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
-  IsBoolean,
-  IsNumber,
-  IsOptional,
-  IsPositive,
-  IsString,
-  Min,
+  IsBoolean, IsIn, IsNumber, IsOptional,
+  IsString, Min,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
@@ -27,6 +23,11 @@ export class CreateProductDto {
   @IsOptional()
   @IsString()
   categoryId?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  familyId?: string;
 
   @ApiPropertyOptional()
   @IsOptional()
@@ -61,13 +62,57 @@ export class CreateProductDto {
   @IsOptional()
   @Type(() => Number)
   @IsNumber()
-  @IsPositive()
+  @Min(0)
   maxStock?: number;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  @Min(0)
+  safetyStock?: number;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  @Min(0)
+  alertQty?: number;
+
+  @ApiPropertyOptional({ enum: ['WEIGHTED_AVG', 'FIFO', 'LIFO'] })
+  @IsOptional()
+  @IsIn(['WEIGHTED_AVG', 'FIFO', 'LIFO'])
+  valuationMethod?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  packaging?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  priceCategory?: string;
 
   @ApiPropertyOptional()
   @IsOptional()
   @IsBoolean()
   isService?: boolean;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsBoolean()
+  trackSerials?: boolean;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsBoolean()
+  trackBatches?: boolean;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsBoolean()
+  hasExpiry?: boolean;
 
   @ApiPropertyOptional()
   @IsOptional()

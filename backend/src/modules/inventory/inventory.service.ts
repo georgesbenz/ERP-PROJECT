@@ -33,7 +33,7 @@ export class InventoryService {
     const [products, total] = await Promise.all([
       this.prisma.product.findMany({
         where,
-        include: { category: true, tax: true },
+        include: { category: true, family: true, tax: true },
         skip: dto.skip,
         take: dto.limit,
         orderBy: { name: 'asc' },
@@ -49,6 +49,7 @@ export class InventoryService {
       where: { id, tenantId, deletedAt: null },
       include: {
         category: true,
+        family: true,
         tax: true,
         inventories: { include: { warehouse: true } },
       },
@@ -61,7 +62,7 @@ export class InventoryService {
     try {
       return await this.prisma.product.create({
         data: { tenantId, ...dto },
-        include: { category: true, tax: true },
+        include: { category: true, family: true, tax: true },
       });
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2002') {
@@ -76,7 +77,7 @@ export class InventoryService {
     return this.prisma.product.update({
       where: { id },
       data: dto,
-      include: { category: true, tax: true },
+      include: { category: true, family: true, tax: true },
     });
   }
 
@@ -87,6 +88,65 @@ export class InventoryService {
       data: { deletedAt: new Date() },
       select: { id: true },
     });
+  }
+
+  // ─── Product Families ─────────────────────────────────────────────────────
+
+  async listFamilies(tenantId: string) {
+    return this.prisma.productFamily.findMany({
+      where: { tenantId, isActive: true },
+      orderBy: { name: 'asc' },
+    });
+  }
+
+  async createFamily(tenantId: string, dto: { name: string; code: string; description?: string }) {
+    try {
+      return await this.prisma.productFamily.create({ data: { tenantId, ...dto } });
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2002') {
+        throw new ConflictException('Family code already exists');
+      }
+      throw e;
+    }
+  }
+
+  async updateFamily(id: string, tenantId: string, dto: Partial<{ name: string; code: string; description: string; isActive: boolean }>) {
+    return this.prisma.productFamily.update({
+      where: { id },
+      data: dto,
+    });
+  }
+
+  async deleteFamily(id: string, tenantId: string) {
+    return this.prisma.productFamily.update({ where: { id }, data: { isActive: false } });
+  }
+
+  // ─── Price Categories ─────────────────────────────────────────────────────
+
+  async listPriceCategories(tenantId: string) {
+    return this.prisma.priceCategory.findMany({
+      where: { tenantId, isActive: true },
+      orderBy: { name: 'asc' },
+    });
+  }
+
+  async createPriceCategory(tenantId: string, dto: { name: string; code: string; description?: string }) {
+    try {
+      return await this.prisma.priceCategory.create({ data: { tenantId, ...dto } });
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2002') {
+        throw new ConflictException('Price category code already exists');
+      }
+      throw e;
+    }
+  }
+
+  async updatePriceCategory(id: string, tenantId: string, dto: Partial<{ name: string; code: string; description: string; isActive: boolean }>) {
+    return this.prisma.priceCategory.update({ where: { id }, data: dto });
+  }
+
+  async deletePriceCategory(id: string, tenantId: string) {
+    return this.prisma.priceCategory.update({ where: { id }, data: { isActive: false } });
   }
 
   // ─── Categories ────────────────────────────────────────────────────────────

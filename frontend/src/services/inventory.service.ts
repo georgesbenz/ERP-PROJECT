@@ -21,6 +21,26 @@ export const inventoryService = {
   async deleteProduct(id: string) {
     await api.delete(`/inventory/products/${id}`);
   },
+  async listFamilies() {
+    const { data } = await api.get('/inventory/families');
+    return data.data as { id: string; name: string; code: string; description?: string }[];
+  },
+  async createFamily(payload: { name: string; code: string; description?: string }) {
+    const { data } = await api.post('/inventory/families', payload);
+    return data.data;
+  },
+  async listPriceCategories() {
+    const { data } = await api.get('/inventory/price-categories');
+    return data.data as { id: string; name: string; code: string; description?: string }[];
+  },
+  async createPriceCategory(payload: { name: string; code: string; description?: string }) {
+    const { data } = await api.post('/inventory/price-categories', payload);
+    return data.data;
+  },
+  async updatePriceCategory(id: string, payload: Partial<{ name: string; code: string; description: string; isActive: boolean }>) {
+    const { data } = await api.patch(`/inventory/price-categories/${id}`, payload);
+    return data.data;
+  },
   async listCategories() {
     const { data } = await api.get('/inventory/categories');
     return data.data as Category[];

@@ -10,9 +10,11 @@ interface ModalProps {
   title: string;
   children: ReactNode;
   className?: string;
+  /** Increase for modals stacked on top of another modal (e.g. 60, 70) */
+  zIndex?: number;
 }
 
-export function Modal({ open, onClose, title, children, className }: ModalProps) {
+export function Modal({ open, onClose, title, children, className, zIndex = 50 }: ModalProps) {
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
     if (open) document.addEventListener('keydown', handleKey);
@@ -22,7 +24,7 @@ export function Modal({ open, onClose, title, children, className }: ModalProps)
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 flex items-center justify-center p-4" style={{ zIndex }}>
       <div className="absolute inset-0 bg-slate-900/30 backdrop-blur-[2px]" onClick={onClose} />
       <div
         className={cn(

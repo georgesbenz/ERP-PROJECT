@@ -10,7 +10,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { PageLoader } from '@/components/ui/Spinner';
 import { analyticsService } from '@/services/analytics.service';
 import { formatCurrency } from '@/lib/utils';
-import { TrendingUp, TrendingDown, Target, AlertTriangle, Package, DollarSign } from 'lucide-react';
+import { TrendingUp, TrendingDown, Target, AlertTriangle, Package, DollarSign, Users, Briefcase } from 'lucide-react';
 
 // ── helpers ──────────────────────────────────────────────────────────────────
 const fmtM = (v: number) => {
@@ -93,6 +93,14 @@ export default function AnalyticsPage() {
   const { data: kpis } = useQuery({
     queryKey: ['analytics-kpis'],
     queryFn: analyticsService.getKpis,
+  });
+  const { data: crmAnalytics } = useQuery({
+    queryKey: ['analytics-crm'],
+    queryFn: analyticsService.getCrmAnalytics,
+  });
+  const { data: budgetAnalytics } = useQuery({
+    queryKey: ['analytics-budget'],
+    queryFn: analyticsService.getBudgetAnalytics,
   });
 
   if (ls) return <><Header title="Analytics" /><PageLoader /></>;
@@ -244,6 +252,139 @@ export default function AnalyticsPage() {
             )}
           </CardContent>
         </Card>
+
+        {/* ── CRM Analytics ───────────────────────────────────────────────── */}
+        {crmAnalytics && (
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+
+            {/* Lead funnel */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2"><Users className="w-4 h-4 text-blue-500" /> Entonnoir CRM — Leads</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="grid grid-cols-3 gap-3 text-center mb-4">
+                  <div>
+                    <p className="text-xs text-slate-500">Total leads</p>
+                    <p className="text-xl font-bold text-slate-800">{crmAnalytics.kpis.totalLeads}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-slate-500">Taux conversion</p>
+                    <p className="text-xl font-bold text-blue-600">{crmAnalytics.kpis.conversionRate}%</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-slate-500">Taux gain opp.</p>
+                    <p className="text-xl font-bold text-emerald-600">{crmAnalytics.kpis.winRate}%</p>
+                  </div>
+                </div>
+                {crmAnalytics.leadFunnel.map((item) => {
+                  const maxCount = Math.max(...crmAnalytics.leadFunnel.map((f) => f.count), 1);
+                  return (
+                    <div key={item.stage} className="space-y-1">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-slate-600">{item.stage}</span>
+                        <span className="font-semibold text-slate-800">{item.count}</span>
+                      </div>
+                      <div className="h-2 rounded-full bg-stone-100 overflow-hidden">
+                        <div className="h-full rounded-full bg-blue-400" style={{ width: `${Math.round((item.count / maxCount) * 100)}%` }} />
+                      </div>
+                    </div>
+                  );
+                })}
+              </CardContent>
+            </Card>
+
+            {/* Opportunity funnel + source breakdown */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2"><Briefcase className="w-4 h-4 text-emerald-500" /> Opportunités & Sources</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex gap-4 mb-4">
+                  {crmAnalytics.opportunityFunnel.map((item) => {
+                    const colors: Record<string, string> = { 'Ouverts': 'text-amber-600', 'Gagnés': 'text-emerald-600', 'Perdus': 'text-red-500' };
+                    return (
+                      <div key={item.stage} className="text-center flex-1">
+                        <p className="text-xs text-slate-500">{item.stage}</p>
+                        <p className={`text-2xl font-bold mt-1 ${colors[item.stage] ?? 'text-slate-700'}`}>{item.count}</p>
+                      </div>
+                    );
+                  })}
+                </div>
+                <div className="mb-3">
+                  <p className="text-xs text-slate-500">Valeur gagnée</p>
+                  <p className="text-lg font-bold text-emerald-600">{fmtXAF(crmAnalytics.kpis.wonValue)}</p>
+                </div>
+                {crmAnalytics.sourceBreakdown.length > 0 && (
+                  <>
+                    <p className="text-xs font-medium text-slate-500 mb-2 uppercase tracking-wide">Sources</p>
+                    <div className="space-y-1">
+                      {crmAnalytics.sourceBreakdown.slice(0, 5).map((s) => {
+                        const maxSrc = Math.max(...crmAnalytics.sourceBreakdown.map((x) => x.count), 1);
+                        return (
+                          <div key={s.source} className="flex items-center gap-2 text-sm">
+                            <span className="text-slate-600 w-28 truncate">{s.source}</span>
+                            <div className="flex-1 h-1.5 rounded-full bg-stone-100 overflow-hidden">
+                              <div className="h-full rounded-full bg-indigo-400" style={{ width: `${Math.round((s.count / maxSrc) * 100)}%` }} />
+                            </div>
+                            <span className="text-xs font-semibold text-slate-700 w-6 text-right">{s.count}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </>
+                )}
+              </CardContent>
+            </Card>
+
+          </div>
+        )}
+
+        {/* ── Budget Analytics ─────────────────────────────────────────────── */}
+        {budgetAnalytics && budgetAnalytics.byPlan.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Utilisation Budgétaire par Plan</CardTitle>
+              <p className="text-xs text-slate-400 mt-0.5">
+                {budgetAnalytics.summary.activePlans} plan(s) actif(s) · Utilisation globale : {budgetAnalytics.summary.overallUtilization}%
+              </p>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-3 gap-4 text-center mb-6">
+                {[
+                  { label: 'Budget total', value: fmtXAF(budgetAnalytics.summary.totalBudgeted) },
+                  { label: 'Alloué', value: fmtXAF(budgetAnalytics.summary.totalAllocated) },
+                  { label: 'Réel consommé', value: fmtXAF(budgetAnalytics.summary.totalActual) },
+                ].map(({ label, value }) => (
+                  <div key={label}>
+                    <p className="text-xs text-slate-500">{label}</p>
+                    <p className="text-lg font-bold text-slate-800">{value}</p>
+                  </div>
+                ))}
+              </div>
+              <div className="space-y-4">
+                {budgetAnalytics.byPlan.slice(0, 6).map((plan: any) => (
+                  <div key={plan.planId} className="space-y-1">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-slate-700 font-medium truncate max-w-[60%]">{plan.name}</span>
+                      <span className="text-xs text-slate-500">{plan.department} · {plan.utilizationPct}%</span>
+                    </div>
+                    <div className="h-2 rounded-full bg-stone-100 overflow-hidden">
+                      <div
+                        className={`h-full rounded-full ${plan.utilizationPct > 100 ? 'bg-red-500' : plan.utilizationPct > 80 ? 'bg-amber-400' : 'bg-emerald-400'}`}
+                        style={{ width: `${Math.min(plan.utilizationPct, 100)}%` }}
+                      />
+                    </div>
+                    <div className="flex justify-between text-xs text-slate-400">
+                      <span>Alloué : {fmtXAF(plan.allocated)}</span>
+                      <span>Réel : {fmtXAF(plan.actual)}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* ── Bottom row: KPI trackers + low stock ────────────────────────── */}
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
