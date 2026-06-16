@@ -1,11 +1,16 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { Decimal } from '@prisma/client/runtime/library';
 import { PrismaService } from '../../prisma/prisma.service';
+import { NotificationsGateway } from '../notifications/notifications.gateway';
 import { PosCheckoutDto, PosItemDto } from './dto/pos-checkout.dto';
+import { CloseCashSessionDto, OpenCashSessionDto } from './dto/cash-session.dto';
 
 @Injectable()
 export class PosService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private gateway: NotificationsGateway,
+  ) {}
 
   async checkout(tenantId: string, dto: PosCheckoutDto, userId: string) {
     // 1. Validate every item
@@ -166,14 +171,84 @@ export class PosService {
   async getSession(tenantId: string) {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    const [sales, revenue] = await Promise.all([
+    const [sales, revenue, openSession] = await Promise.all([
       this.prisma.sale.count({ where: { tenantId, reference: { startsWith: 'POS-' }, saleDate: { gte: today } } }),
       this.prisma.sale.aggregate({
         where: { tenantId, reference: { startsWith: 'POS-' }, saleDate: { gte: today }, status: 'CONFIRMED' },
         _sum: { total: true },
       }),
+      this.prisma.cashSession.findFirst({ where: { tenantId, status: 'OPEN' }, orderBy: { openedAt: 'desc' } }),
     ]);
-    return { salesToday: sales, revenueToday: revenue._sum.total ?? 0 };
+    return { salesToday: sales, revenueToday: revenue._sum.total ?? 0, openSession };
+  }
+
+  // ─── Cash Sessions ──────────────────────────────────────────────────────────
+
+  async openCashSession(tenantId: string, userId: string, dto: OpenCashSessionDto) {
+    const existing = await this.prisma.cashSession.findFirst({ where: { tenantId, status: 'OPEN' } });
+    if (existing) throw new BadRequestException('A cash session is already open');
+
+    const session = await this.prisma.cashSession.create({
+      data: {
+        tenantId,
+        branchId: dto.branchId,
+        openedBy: userId,
+        openingBalance: new Decimal(dto.openingBalance.toFixed(2)),
+        status: 'OPEN',
+        notes: dto.notes,
+      },
+    });
+    this.gateway.emitToTenant(tenantId, 'cash:session-opened', { id: session.id, openingBalance: dto.openingBalance });
+    return session;
+  }
+
+  async closeCashSession(id: string, tenantId: string, userId: string, dto: CloseCashSessionDto) {
+    const session = await this.prisma.cashSession.findFirst({ where: { id, tenantId, status: 'OPEN' } });
+    if (!session) throw new NotFoundException('Open cash session not found');
+
+    // Compute cashIn from POS sales since session opened
+    const salesAgg = await this.prisma.sale.aggregate({
+      where: { tenantId, reference: { startsWith: 'POS-' }, status: 'CONFIRMED', saleDate: { gte: session.openedAt } },
+      _sum: { total: true },
+    });
+    const cashIn = Number(salesAgg._sum.total ?? 0);
+    const expectedBalance = Number(session.openingBalance) + cashIn;
+    const difference = dto.closingBalance - expectedBalance;
+
+    const updated = await this.prisma.cashSession.update({
+      where: { id },
+      data: {
+        closedBy: userId,
+        closingBalance: new Decimal(dto.closingBalance.toFixed(2)),
+        expectedBalance: new Decimal(expectedBalance.toFixed(2)),
+        difference: new Decimal(difference.toFixed(2)),
+        cashIn: new Decimal(cashIn.toFixed(2)),
+        status: 'CLOSED',
+        closedAt: new Date(),
+        notes: dto.notes ?? session.notes,
+      },
+    });
+    this.gateway.emitToTenant(tenantId, 'cash:session-closed', { id, difference });
+    return updated;
+  }
+
+  async reconcileCashSession(id: string, tenantId: string) {
+    const session = await this.prisma.cashSession.findFirst({ where: { id, tenantId, status: 'CLOSED' } });
+    if (!session) throw new NotFoundException('Closed cash session not found');
+    return this.prisma.cashSession.update({ where: { id }, data: { status: 'RECONCILED' } });
+  }
+
+  async listCashSessions(tenantId: string) {
+    return this.prisma.cashSession.findMany({
+      where: { tenantId },
+      orderBy: { openedAt: 'desc' },
+      take: 50,
+      include: {
+        openedByUser: { select: { id: true, firstName: true, lastName: true } },
+        closedByUser: { select: { id: true, firstName: true, lastName: true } },
+        branch: { select: { id: true, name: true } },
+      },
+    });
   }
 
   private calcTotals(items: PosItemDto[]) {

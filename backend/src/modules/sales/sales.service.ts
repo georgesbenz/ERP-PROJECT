@@ -129,6 +129,34 @@ export class SalesService {
     });
   }
 
+  async getCustomerHistory(customerId: string, tenantId: string) {
+    const customer = await this.getCustomer(customerId, tenantId);
+    const sales = await this.prisma.sale.findMany({
+      where: { tenantId, customerId, deletedAt: null, status: 'CONFIRMED' },
+      include: {
+        lines: {
+          include: { product: { select: { id: true, name: true, sku: true } } },
+        },
+        payments: { select: { id: true, method: true, amount: true, status: true } },
+      },
+      orderBy: { saleDate: 'desc' },
+      take: 50,
+    });
+
+    const totals = await this.prisma.sale.aggregate({
+      where: { tenantId, customerId, status: 'CONFIRMED' },
+      _sum: { total: true },
+      _count: true,
+    });
+
+    return {
+      customer,
+      totalOrders: totals._count,
+      totalSpent: totals._sum.total ?? 0,
+      sales,
+    };
+  }
+
   private calcTotals(lines: SaleLineDto[]) {
     let subtotal = 0;
     let taxAmount = 0;

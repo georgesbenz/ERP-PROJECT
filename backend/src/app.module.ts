@@ -31,6 +31,7 @@ import { PosModule } from './modules/pos/pos.module';
 import { ReportsModule } from './modules/reports/reports.module';
 import { SettingsModule } from './modules/settings/settings.module';
 import { StockModule } from './modules/stock/stock.module';
+import { ExpensesModule } from './modules/expenses/expenses.module';
 
 @Module({
   imports: [
@@ -55,6 +56,7 @@ import { StockModule } from './modules/stock/stock.module';
     ReportsModule,
     SettingsModule,
     StockModule,
+    ExpensesModule,
   ],
   controllers: [HealthController],
   providers: [

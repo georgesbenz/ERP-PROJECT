@@ -36,4 +36,13 @@ export const salesService = {
     const { data } = await api.post(`/sales/${id}/cancel`);
     return data.data as Sale;
   },
+  async getCustomerHistory(customerId: string) {
+    const { data } = await api.get(`/sales/customers/${customerId}/history`);
+    return data.data as {
+      customer: Customer;
+      totalOrders: number;
+      totalSpent: number;
+      sales: (Sale & { lines: { product: { name: string; sku: string } }[] })[];
+    };
+  },
 };

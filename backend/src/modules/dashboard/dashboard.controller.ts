@@ -27,4 +27,16 @@ export class DashboardController {
   getAuditLog(@CurrentUser() u: AuthenticatedUser) {
     return this.svc.getAuditLog(u.tenantId);
   }
+
+  @Get('top-products')
+  @ApiOperation({ summary: 'Top 10 selling products this month' })
+  getTopProducts(@CurrentUser() u: AuthenticatedUser) {
+    return this.svc.getTopProducts(u.tenantId);
+  }
+
+  @Get('cash-summary')
+  @ApiOperation({ summary: 'Cash session status + today cashIn/cashOut + recent sessions' })
+  getCashSummary(@CurrentUser() u: AuthenticatedUser) {
+    return this.svc.getCashSummary(u.tenantId);
+  }
 }

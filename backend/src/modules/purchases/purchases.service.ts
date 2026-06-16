@@ -44,6 +44,45 @@ export class PurchasesService {
     return this.prisma.supplier.update({ where: { id }, data: { deletedAt: new Date() }, select: { id: true } });
   }
 
+  async getSupplierBalance(id: string, tenantId: string) {
+    const supplier = await this.getSupplier(id, tenantId);
+
+    const [purchaseAgg, paidAgg, pendingPurchases] = await Promise.all([
+      this.prisma.purchase.aggregate({
+        where: { tenantId, supplierId: id, deletedAt: null, status: { in: ['ORDERED', 'PARTIALLY_RECEIVED', 'RECEIVED'] } },
+        _sum: { total: true },
+        _count: true,
+      }),
+      this.prisma.payment.aggregate({
+        where: { tenantId, purchase: { supplierId: id } },
+        _sum: { amount: true },
+      }),
+      this.prisma.purchase.findMany({
+        where: { tenantId, supplierId: id, deletedAt: null, status: { in: ['ORDERED', 'PARTIALLY_RECEIVED', 'RECEIVED'] } },
+        select: {
+          id: true, reference: true, status: true, total: true, orderDate: true,
+        },
+        orderBy: { orderDate: 'asc' },
+        take: 30,
+      }),
+    ]);
+
+    const totalOwed = Number(purchaseAgg._sum.total ?? 0);
+    const totalPaid = Number(paidAgg._sum.amount ?? 0);
+    const balance = totalOwed - totalPaid;
+    const supplierPaymentTerms = supplier.paymentTerms ?? 30;
+
+    const aged = pendingPurchases.map((p) => {
+      const daysPastDue = Math.max(
+        0,
+        Math.floor((Date.now() - new Date(p.orderDate).getTime()) / 86400000) - supplierPaymentTerms,
+      );
+      return { ...p, daysPastDue, amount: Number(p.total) };
+    });
+
+    return { supplier, totalOwed, totalPaid, balance, pendingOrders: purchaseAgg._count, aging: aged };
+  }
+
   // ─── Purchase Orders ───────────────────────────────────────────────────────
 
   async listPurchases(tenantId: string, dto: PaginationDto) {

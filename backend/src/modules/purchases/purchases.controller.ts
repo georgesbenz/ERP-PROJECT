@@ -53,6 +53,13 @@ export class PurchasesController {
     return this.svc.deleteSupplier(id, u.tenantId);
   }
 
+  @Get('suppliers/:id/balance')
+  @RequirePermissions('purchases:READ')
+  @ApiOperation({ summary: 'Supplier balance: total owed, paid, outstanding + aging by order' })
+  getSupplierBalance(@Param('id') id: string, @CurrentUser() u: AuthenticatedUser) {
+    return this.svc.getSupplierBalance(id, u.tenantId);
+  }
+
   @Get()
   @RequirePermissions('purchases:READ')
   @ApiOperation({ summary: 'List purchase orders' })

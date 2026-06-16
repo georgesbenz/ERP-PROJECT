@@ -32,4 +32,15 @@ export const purchasesService = {
     const { data } = await api.post(`/purchases/${id}/receive`);
     return data.data as Purchase;
   },
+  async getSupplierBalance(id: string) {
+    const { data } = await api.get(`/purchases/suppliers/${id}/balance`);
+    return data.data as {
+      supplier: Supplier;
+      totalOwed: number;
+      totalPaid: number;
+      balance: number;
+      pendingOrders: number;
+      aging: { id: string; reference: string; status: string; amount: number; orderDate: string; daysPastDue: number }[];
+    };
+  },
 };

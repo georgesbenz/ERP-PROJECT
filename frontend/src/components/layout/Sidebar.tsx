@@ -28,6 +28,7 @@ import {
   AlertTriangle,
   ChevronDown,
   ChevronRight,
+  Receipt,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/store/auth.store';
@@ -77,6 +78,7 @@ const NAV_ITEMS: NavItem[] = [
   { href: '/customers',   label: 'Clients',                 icon: UsersRound,      permission: 'sales:READ' },
   { href: '/purchases',   label: 'Achats',                  icon: Truck,           permission: 'purchases:READ' },
   { href: '/suppliers',   label: 'Fournisseurs',            icon: Factory,         permission: 'purchases:READ' },
+  { href: '/expenses',    label: 'Dépenses',                icon: Receipt,         permission: 'expenses:READ' },
   { href: '/finance',     label: 'Finance',                 icon: CreditCard,      permission: 'finance:READ' },
   { href: '/crm',         label: 'CRM',                     icon: Users,           permission: 'crm:READ' },
   { href: '/budgeting',   label: 'Budget',                  icon: PiggyBank,       permission: 'budgeting:READ' },

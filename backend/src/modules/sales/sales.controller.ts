@@ -66,6 +66,13 @@ export class SalesController {
     return this.salesService.deleteCustomer(id, u.tenantId);
   }
 
+  @Get('customers/:id/history')
+  @RequirePermissions('sales:READ')
+  @ApiOperation({ summary: 'Get customer purchase history (last 50 confirmed sales)' })
+  getCustomerHistory(@Param('id') id: string, @CurrentUser() u: AuthenticatedUser) {
+    return this.salesService.getCustomerHistory(id, u.tenantId);
+  }
+
   // Sales
   @Get()
   @RequirePermissions('sales:READ')

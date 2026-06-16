@@ -48,6 +48,23 @@ enum PaymentMethod {
   @@map("payment_method")
 }
 
+enum ExpenseStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  PAID
+
+  @@map("expense_status")
+}
+
+enum CashSessionStatus {
+  OPEN
+  CLOSED
+  RECONCILED
+
+  @@map("cash_session_status")
+}
+
 enum PaymentStatus {
   PENDING
   COMPLETED
@@ -378,6 +395,9 @@ model Tenant {
   cycleCounts        CycleCount[]
   productFamilies    ProductFamily[]
   priceCategories    PriceCategory[]
+  expenses           Expense[]
+  expenseCategories  ExpenseCategory[]
+  cashSessions       CashSession[]
 
   @@map("tenants")
 }
@@ -397,11 +417,13 @@ model Branch {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  tenant     Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  userRoles  UserRole[]
-  sales      Sale[]
-  purchases  Purchase[]
-  warehouses Warehouse[]
+  tenant       Tenant       @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  userRoles    UserRole[]
+  sales        Sale[]
+  purchases    Purchase[]
+  warehouses   Warehouse[]
+  expenses     Expense[]
+  cashSessions CashSession[]
 
   @@unique([tenantId, code])
   @@index([tenantId])
@@ -438,9 +460,13 @@ model User {
   meetingsCreated Meeting[]
   callsCreated    Call[]
   notes           Note[]
-  crmActivities   CrmActivity[]
-  budgetApprovals BudgetApproval[]
-  approvalSteps   ApprovalStep[]
+  crmActivities        CrmActivity[]
+  budgetApprovals      BudgetApproval[]
+  approvalSteps        ApprovalStep[]
+  expensesCreated      Expense[]       @relation("ExpenseCreatedBy")
+  expensesApproved     Expense[]       @relation("ExpenseApprovedBy")
+  cashSessionsOpened   CashSession[]   @relation("SessionOpenedBy")
+  cashSessionsClosed   CashSession[]   @relation("SessionClosedBy")
 
   @@unique([tenantId, email])
   @@index([tenantId])
@@ -656,6 +682,7 @@ model Supplier {
 
   tenant    Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   purchases Purchase[]
+  expenses  Expense[]
 
   @@unique([tenantId, code])
   @@index([tenantId])
@@ -1996,4 +2023,88 @@ model CycleCountLine {
 
   @@index([cycleCountId])
   @@map("cycle_count_lines")
+}
+
+// ─── EXPENSE MANAGEMENT ───────────────────────────────────────────────────────
+
+model ExpenseCategory {
+  id          String   @id @default(uuid())
+  tenantId    String
+  name        String
+  code        String
+  description String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  tenant   Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  expenses Expense[]
+
+  @@unique([tenantId, code])
+  @@index([tenantId])
+  @@map("expense_categories")
+}
+
+model Expense {
+  id            String        @id @default(uuid())
+  tenantId      String
+  categoryId    String
+  branchId      String?
+  supplierId    String?
+  reference     String
+  description   String
+  amount        Decimal       @db.Decimal(15, 2)
+  taxAmount     Decimal       @default(0) @db.Decimal(15, 2)
+  totalAmount   Decimal       @db.Decimal(15, 2)
+  expenseDate   DateTime
+  paymentMethod PaymentMethod @default(CASH)
+  status        ExpenseStatus @default(PENDING)
+  createdBy     String
+  approvedBy    String?
+  approvedAt    DateTime?
+  notes         String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  tenant   Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  category ExpenseCategory @relation(fields: [categoryId], references: [id])
+  branch   Branch?         @relation(fields: [branchId], references: [id])
+  supplier Supplier?       @relation(fields: [supplierId], references: [id])
+  creator  User            @relation("ExpenseCreatedBy", fields: [createdBy], references: [id])
+  approver User?           @relation("ExpenseApprovedBy", fields: [approvedBy], references: [id])
+
+  @@unique([tenantId, reference])
+  @@index([tenantId])
+  @@index([tenantId, status])
+  @@index([tenantId, categoryId])
+  @@map("expenses")
+}
+
+// ─── CASH MANAGEMENT ──────────────────────────────────────────────────────────
+
+model CashSession {
+  id               String            @id @default(uuid())
+  tenantId         String
+  branchId         String?
+  openedBy         String
+  closedBy         String?
+  openingBalance   Decimal           @db.Decimal(15, 2)
+  closingBalance   Decimal?          @db.Decimal(15, 2)
+  expectedBalance  Decimal?          @db.Decimal(15, 2)
+  difference       Decimal?          @db.Decimal(15, 2)
+  cashIn           Decimal           @default(0) @db.Decimal(15, 2)
+  cashOut          Decimal           @default(0) @db.Decimal(15, 2)
+  status           CashSessionStatus @default(OPEN)
+  openedAt         DateTime          @default(now())
+  closedAt         DateTime?
+  notes            String?
+
+  tenant       Tenant  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  branch       Branch? @relation(fields: [branchId], references: [id])
+  openedByUser User    @relation("SessionOpenedBy", fields: [openedBy], references: [id])
+  closedByUser User?   @relation("SessionClosedBy", fields: [closedBy], references: [id])
+
+  @@index([tenantId])
+  @@index([tenantId, status])
+  @@map("cash_sessions")
 }

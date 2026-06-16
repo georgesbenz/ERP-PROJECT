@@ -62,6 +62,74 @@ export class DashboardService {
     };
   }
 
+  async getTopProducts(tenantId: string, limit = 10) {
+    const today = new Date();
+    const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+
+    const lines = await this.prisma.saleLine.groupBy({
+      by: ['productId'],
+      where: { sale: { tenantId, status: 'CONFIRMED', saleDate: { gte: startOfMonth } } },
+      _sum: { quantity: true, total: true },
+      _count: true,
+      orderBy: { _sum: { total: 'desc' } },
+      take: limit,
+    });
+
+    const productIds = lines.map((l) => l.productId);
+    const products = await this.prisma.product.findMany({
+      where: { id: { in: productIds } },
+      select: { id: true, name: true, sku: true },
+    });
+    const productMap = new Map(products.map((p) => [p.id, p]));
+
+    return lines.map((l) => ({
+      product: productMap.get(l.productId) ?? { id: l.productId, name: 'Unknown', sku: '' },
+      quantity: Number(l._sum.quantity ?? 0),
+      revenue: Number(l._sum.total ?? 0),
+      transactions: l._count,
+    }));
+  }
+
+  async getCashSummary(tenantId: string) {
+    const openSession = await this.prisma.cashSession.findFirst({
+      where: { tenantId, status: 'OPEN' },
+      orderBy: { openedAt: 'desc' },
+      include: { openedByUser: { select: { firstName: true, lastName: true } }, branch: { select: { name: true } } },
+    });
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const [posSalesToday, expensesToday, sessionsThisWeek] = await Promise.all([
+      this.prisma.sale.aggregate({
+        where: { tenantId, reference: { startsWith: 'POS-' }, status: 'CONFIRMED', saleDate: { gte: today } },
+        _sum: { total: true },
+      }),
+      this.prisma.expense.aggregate({
+        where: { tenantId, status: { in: ['APPROVED', 'PAID'] }, expenseDate: { gte: today } },
+        _sum: { totalAmount: true },
+      }),
+      this.prisma.cashSession.findMany({
+        where: { tenantId, openedAt: { gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) } },
+        orderBy: { openedAt: 'desc' },
+        take: 10,
+        select: {
+          id: true, status: true, openingBalance: true, closingBalance: true,
+          difference: true, cashIn: true, openedAt: true, closedAt: true,
+        },
+      }),
+    ]);
+
+    return {
+      openSession,
+      today: {
+        cashIn: Number(posSalesToday._sum.total ?? 0),
+        cashOut: Number(expensesToday._sum.totalAmount ?? 0),
+        net: Number(posSalesToday._sum.total ?? 0) - Number(expensesToday._sum.totalAmount ?? 0),
+      },
+      recentSessions: sessionsThisWeek,
+    };
+  }
+
   async getRecentActivity(tenantId: string) {
     const [recentSales, recentPurchases, recentLeads] = await Promise.all([
       this.prisma.sale.findMany({

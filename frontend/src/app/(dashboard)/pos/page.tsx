@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useCallback, useRef, useEffect } from 'react';
-import { useQuery, useMutation } from '@tanstack/react-query';
-import { Search, Plus, Minus, Trash2, ShoppingCart, Printer, RefreshCw, Hash } from 'lucide-react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { Search, Plus, Minus, Trash2, ShoppingCart, Printer, RefreshCw, Hash, Wallet, LockOpen, Lock } from 'lucide-react';
 import { Header } from '@/components/layout/Header';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
@@ -11,6 +11,7 @@ import { Modal } from '@/components/ui/Modal';
 import { Select } from '@/components/ui/Select';
 import { inventoryService } from '@/services/inventory.service';
 import { posService, type PosReceipt } from '@/services/pos.service';
+import { cashSessionService } from '@/services/expenses.service';
 import { formatCurrency } from '@/lib/utils';
 import type { Product } from '@/types/models';
 
@@ -154,6 +155,7 @@ const PAYMENT_METHODS = [
 ];
 
 export default function PosPage() {
+  const qc = useQueryClient();
   const [search, setSearch] = useState('');
   const [cart, setCart] = useState<CartItem[]>([]);
   const [paymentMethod, setPaymentMethod] = useState<'CASH' | 'CARD' | 'MOBILE_MONEY' | 'BANK_TRANSFER'>('CASH');
@@ -161,6 +163,10 @@ export default function PosPage() {
   const [receipt, setReceipt] = useState<PosReceipt | null>(null);
   const [showReceipt, setShowReceipt] = useState(false);
   const [qtyPopup, setQtyPopup] = useState<QtyPopupState | null>(null);
+  const [showOpenSession, setShowOpenSession] = useState(false);
+  const [showCloseSession, setShowCloseSession] = useState(false);
+  const [openingBalance, setOpeningBalance] = useState('');
+  const [closingBalance, setClosingBalance] = useState('');
 
   const { data: products, isLoading } = useQuery({
     queryKey: ['pos-products', search],
@@ -171,6 +177,16 @@ export default function PosPage() {
   const { data: session, refetch: refetchSession } = useQuery({
     queryKey: ['pos-session'],
     queryFn: posService.getSession,
+  });
+
+  const openSessionM = useMutation({
+    mutationFn: () => cashSessionService.openSession({ openingBalance: Number(openingBalance) }),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['pos-session'] }); setShowOpenSession(false); setOpeningBalance(''); },
+  });
+
+  const closeSessionM = useMutation({
+    mutationFn: () => cashSessionService.closeSession((session as any)?.openSession?.id, { closingBalance: Number(closingBalance) }),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['pos-session'] }); setShowCloseSession(false); setClosingBalance(''); },
   });
 
   const checkoutMutation = useMutation({
@@ -241,13 +257,38 @@ export default function PosPage() {
         <div className="flex w-3/5 flex-col border-r border-stone-200 bg-stone-50">
           {/* Session bar */}
           <div className="flex items-center justify-between border-b border-stone-200 bg-white px-4 py-2">
-            <span className="text-xs text-slate-500">
-              Today: <strong>{session?.salesToday ?? 0}</strong> sales ·{' '}
-              <strong>{formatCurrency(Number(session?.revenueToday ?? 0))}</strong> revenue
-            </span>
-            <button onClick={() => refetchSession()} className="text-slate-400 hover:text-indigo-600">
-              <RefreshCw size={14} />
-            </button>
+            <div className="flex items-center gap-4">
+              <span className="text-xs text-slate-500">
+                Aujourd&apos;hui: <strong>{session?.salesToday ?? 0}</strong> ventes ·{' '}
+                <strong>{formatCurrency(Number(session?.revenueToday ?? 0))}</strong>
+              </span>
+              <div className="flex items-center gap-1.5">
+                <Wallet size={13} className={(session as any)?.openSession ? 'text-green-500' : 'text-red-400'} />
+                <span className="text-xs text-slate-600">
+                  {(session as any)?.openSession ? (
+                    <span className="text-green-600 font-medium">Caisse ouverte</span>
+                  ) : (
+                    <span className="text-red-500 font-medium">Caisse fermée</span>
+                  )}
+                </span>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              {!(session as any)?.openSession ? (
+                <button onClick={() => setShowOpenSession(true)}
+                  className="flex items-center gap-1 text-xs text-green-600 hover:text-green-800 font-medium">
+                  <LockOpen size={12} /> Ouvrir caisse
+                </button>
+              ) : (
+                <button onClick={() => setShowCloseSession(true)}
+                  className="flex items-center gap-1 text-xs text-amber-600 hover:text-amber-800 font-medium">
+                  <Lock size={12} /> Fermer caisse
+                </button>
+              )}
+              <button onClick={() => refetchSession()} className="text-slate-400 hover:text-indigo-600">
+                <RefreshCw size={14} />
+              </button>
+            </div>
           </div>
 
           {/* Search */}
@@ -452,6 +493,63 @@ export default function PosPage() {
             </Button>
           </div>
         )}
+      </Modal>
+
+      {/* ── Open Cash Session Modal ──────────────────────────────────────────── */}
+      <Modal open={showOpenSession} onClose={() => setShowOpenSession(false)} title="Ouvrir la caisse">
+        <div className="space-y-4">
+          <p className="text-sm text-slate-600">Saisissez le solde d&apos;ouverture (espèces en caisse au démarrage).</p>
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Solde d&apos;ouverture (FCFA) *</label>
+            <input
+              type="number"
+              min="0"
+              step="100"
+              value={openingBalance}
+              onChange={(e) => setOpeningBalance(e.target.value)}
+              className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="0"
+            />
+          </div>
+          <div className="flex gap-2 justify-end">
+            <Button variant="outline" onClick={() => setShowOpenSession(false)}>Annuler</Button>
+            <Button
+              onClick={() => openSessionM.mutate()}
+              disabled={!openingBalance || openSessionM.isPending}
+            >
+              {openSessionM.isPending ? 'Ouverture…' : 'Ouvrir la caisse'}
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* ── Close Cash Session Modal ─────────────────────────────────────────── */}
+      <Modal open={showCloseSession} onClose={() => setShowCloseSession(false)} title="Fermer la caisse">
+        <div className="space-y-4">
+          <p className="text-sm text-slate-600">Comptez les espèces et saisissez le montant réel en caisse.</p>
+          <div>
+            <label className="block text-sm font-medium text-slate-700 mb-1">Solde de fermeture (FCFA) *</label>
+            <input
+              type="number"
+              min="0"
+              step="100"
+              value={closingBalance}
+              onChange={(e) => setClosingBalance(e.target.value)}
+              className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="0"
+            />
+          </div>
+          <div className="flex gap-2 justify-end">
+            <Button variant="outline" onClick={() => setShowCloseSession(false)}>Annuler</Button>
+            <Button
+              onClick={() => closeSessionM.mutate()}
+              disabled={!closingBalance || closeSessionM.isPending}
+              variant="outline"
+            >
+              {closeSessionM.isPending ? 'Fermeture…' : 'Fermer la caisse'}
+            </Button>
+          </div>
+        </div>
       </Modal>
     </>
   );

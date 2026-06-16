@@ -4,9 +4,11 @@ import { useQuery } from '@tanstack/react-query';
 import {
   Users, Package, ShoppingCart, DollarSign,
   Truck, UserCheck, TrendingUp, Bell, AlertTriangle, PiggyBank,
+  Trophy, Wallet, CheckCircle2, XCircle,
 } from 'lucide-react';
 import { Header } from '@/components/layout/Header';
 import { Card, CardContent } from '@/components/ui/Card';
+import { Badge } from '@/components/ui/Badge';
 import { PageLoader } from '@/components/ui/Spinner';
 import { dashboardService } from '@/services/dashboard.service';
 import { formatCurrency, formatDateTime } from '@/lib/utils';
@@ -40,6 +42,16 @@ export default function DashboardPage() {
     queryFn: dashboardService.getRecentActivity,
   });
 
+  const { data: topProducts } = useQuery({
+    queryKey: ['dashboard-top-products'],
+    queryFn: dashboardService.getTopProducts,
+  });
+
+  const { data: cashSummary } = useQuery({
+    queryKey: ['dashboard-cash-summary'],
+    queryFn: dashboardService.getCashSummary,
+  });
+
   if (loadingOverview) return <><Header title="Dashboard" /><PageLoader /></>;
 
   return (
@@ -62,6 +74,72 @@ export default function DashboardPage() {
           <KpiCard label="Notifications" value={overview?.unreadNotifications ?? 0} icon={Bell} color="bg-sky-500" />
           <KpiCard label="Low Stock" value={overview?.lowStockCount ?? 0} icon={AlertTriangle} color="bg-red-500" />
           <KpiCard label="Active Budgets" value={overview?.activeBudgets ?? 0} icon={PiggyBank} color="bg-teal-500" />
+        </div>
+
+        {/* Top Products + Cash Summary */}
+        <div className="grid gap-6 lg:grid-cols-2">
+          {/* Top Products */}
+          <Card>
+            <div className="flex items-center gap-2 border-b border-stone-100 px-5 py-3">
+              <Trophy size={14} className="text-amber-500" />
+              <span className="text-sm font-semibold text-slate-700">Top Produits ce mois</span>
+            </div>
+            <ul className="divide-y divide-slate-50">
+              {(topProducts ?? []).slice(0, 5).map((p, i) => (
+                <li key={p.product.id} className="flex items-center gap-3 px-5 py-2.5">
+                  <span className="text-xs font-bold text-slate-400 w-4">{i + 1}</span>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-slate-800 truncate">{p.product.name}</p>
+                    <p className="text-xs text-slate-400">{p.quantity} unités · {p.transactions} ventes</p>
+                  </div>
+                  <span className="text-sm font-semibold text-slate-700 whitespace-nowrap">{formatCurrency(p.revenue)}</span>
+                </li>
+              ))}
+              {(!topProducts || topProducts.length === 0) && (
+                <li className="px-5 py-4 text-sm text-slate-400 text-center">Aucune vente ce mois</li>
+              )}
+            </ul>
+          </Card>
+
+          {/* Cash Summary */}
+          <Card>
+            <div className="flex items-center gap-2 border-b border-stone-100 px-5 py-3">
+              <Wallet size={14} className="text-green-600" />
+              <span className="text-sm font-semibold text-slate-700">Caisse — Résumé du jour</span>
+            </div>
+            <div className="px-5 py-4 space-y-3">
+              {/* Session status */}
+              <div className="flex items-center gap-2">
+                {cashSummary?.openSession ? (
+                  <>
+                    <CheckCircle2 size={14} className="text-green-500" />
+                    <span className="text-sm text-green-700 font-medium">Session ouverte</span>
+                    <span className="text-xs text-slate-400 ml-auto">
+                      depuis {cashSummary.openSession.openedAt ? new Date(cashSummary.openSession.openedAt).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) : '—'}
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <XCircle size={14} className="text-red-400" />
+                    <span className="text-sm text-red-600 font-medium">Aucune session ouverte</span>
+                  </>
+                )}
+              </div>
+              {/* Today totals */}
+              <div className="grid grid-cols-3 gap-3 pt-2">
+                {[
+                  { label: 'Entrées', value: cashSummary?.today.cashIn ?? 0, color: 'text-green-600' },
+                  { label: 'Sorties', value: cashSummary?.today.cashOut ?? 0, color: 'text-red-500' },
+                  { label: 'Net', value: cashSummary?.today.net ?? 0, color: 'text-slate-800' },
+                ].map((k) => (
+                  <div key={k.label} className="bg-slate-50 rounded-lg p-2 text-center">
+                    <p className="text-xs text-slate-500">{k.label}</p>
+                    <p className={`text-sm font-bold ${k.color}`}>{formatCurrency(k.value)}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </Card>
         </div>
 
         {/* Recent Activity */}
