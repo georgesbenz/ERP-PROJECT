@@ -12,6 +12,7 @@ import { Badge } from '@/components/ui/Badge';
 import { PageLoader } from '@/components/ui/Spinner';
 import { dashboardService } from '@/services/dashboard.service';
 import { formatCurrency, formatDateTime } from '@/lib/utils';
+import { useT } from '@/hooks/useT';
 
 function KpiCard({
   label, value, icon: Icon, color,
@@ -32,6 +33,8 @@ function KpiCard({
 }
 
 export default function DashboardPage() {
+  const { t } = useT();
+
   const { data: overview, isLoading: loadingOverview } = useQuery({
     queryKey: ['dashboard-overview'],
     queryFn: dashboardService.getOverview,
@@ -52,28 +55,28 @@ export default function DashboardPage() {
     queryFn: dashboardService.getCashSummary,
   });
 
-  if (loadingOverview) return <><Header title="Dashboard" /><PageLoader /></>;
+  if (loadingOverview) return <><Header title={t('dashboard.title')} /><PageLoader /></>;
 
   return (
     <>
-      <Header title="Dashboard" />
-      <div className="p-6 space-y-6">
+      <Header title={t('dashboard.title')} />
+      <div className="p-4 space-y-4 md:p-6 md:space-y-6">
 
         {/* KPI Grid */}
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
-          <KpiCard label="Customers" value={overview?.totalCustomers ?? 0} icon={Users} color="bg-indigo-500" />
-          <KpiCard label="Products" value={overview?.totalProducts ?? 0} icon={Package} color="bg-cyan-500" />
-          <KpiCard label="Sales this month" value={overview?.salesThisMonth ?? 0} icon={ShoppingCart} color="bg-emerald-500" />
-          <KpiCard label="Revenue MTD" value={formatCurrency(Number(overview?.revenueThisMonth ?? 0))} icon={DollarSign} color="bg-green-600" />
-          <KpiCard label="Pending POs" value={overview?.pendingPurchases ?? 0} icon={Truck} color="bg-amber-500" />
+          <KpiCard label={t('nav.customers')} value={overview?.totalCustomers ?? 0} icon={Users} color="bg-indigo-500" />
+          <KpiCard label={t('nav.products')} value={overview?.totalProducts ?? 0} icon={Package} color="bg-cyan-500" />
+          <KpiCard label={t('dashboard.totalSales')} value={overview?.salesThisMonth ?? 0} icon={ShoppingCart} color="bg-emerald-500" />
+          <KpiCard label={t('dashboard.totalRevenue')} value={formatCurrency(Number(overview?.revenueThisMonth ?? 0))} icon={DollarSign} color="bg-green-600" />
+          <KpiCard label={t('dashboard.pendingPurchases')} value={overview?.pendingPurchases ?? 0} icon={Truck} color="bg-amber-500" />
         </div>
 
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
-          <KpiCard label="Open Leads" value={overview?.openLeads ?? 0} icon={UserCheck} color="bg-purple-500" />
-          <KpiCard label="Opportunities" value={overview?.openOpportunities ?? 0} icon={TrendingUp} color="bg-pink-500" />
+          <KpiCard label={t('dashboard.activeLeads')} value={overview?.openLeads ?? 0} icon={UserCheck} color="bg-purple-500" />
+          <KpiCard label={t('crm.tabs.opportunities')} value={overview?.openOpportunities ?? 0} icon={TrendingUp} color="bg-pink-500" />
           <KpiCard label="Notifications" value={overview?.unreadNotifications ?? 0} icon={Bell} color="bg-sky-500" />
-          <KpiCard label="Low Stock" value={overview?.lowStockCount ?? 0} icon={AlertTriangle} color="bg-red-500" />
-          <KpiCard label="Active Budgets" value={overview?.activeBudgets ?? 0} icon={PiggyBank} color="bg-teal-500" />
+          <KpiCard label={t('dashboard.lowStock')} value={overview?.lowStockCount ?? 0} icon={AlertTriangle} color="bg-red-500" />
+          <KpiCard label={t('nav.budgeting')} value={overview?.activeBudgets ?? 0} icon={PiggyBank} color="bg-teal-500" />
         </div>
 
         {/* Top Products + Cash Summary */}
@@ -82,7 +85,7 @@ export default function DashboardPage() {
           <Card>
             <div className="flex items-center gap-2 border-b border-stone-100 px-5 py-3">
               <Trophy size={14} className="text-amber-500" />
-              <span className="text-sm font-semibold text-slate-700">Top Produits ce mois</span>
+              <span className="text-sm font-semibold text-slate-700">{t('dashboard.topProducts')}</span>
             </div>
             <ul className="divide-y divide-slate-50">
               {(topProducts ?? []).slice(0, 5).map((p, i) => (
@@ -90,13 +93,13 @@ export default function DashboardPage() {
                   <span className="text-xs font-bold text-slate-400 w-4">{i + 1}</span>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-slate-800 truncate">{p.product.name}</p>
-                    <p className="text-xs text-slate-400">{p.quantity} unités · {p.transactions} ventes</p>
+                    <p className="text-xs text-slate-400">{p.quantity} · {p.transactions}</p>
                   </div>
                   <span className="text-sm font-semibold text-slate-700 whitespace-nowrap">{formatCurrency(p.revenue)}</span>
                 </li>
               ))}
               {(!topProducts || topProducts.length === 0) && (
-                <li className="px-5 py-4 text-sm text-slate-400 text-center">Aucune vente ce mois</li>
+                <li className="px-5 py-4 text-sm text-slate-400 text-center">{t('sales.noSales')}</li>
               )}
             </ul>
           </Card>
@@ -105,31 +108,29 @@ export default function DashboardPage() {
           <Card>
             <div className="flex items-center gap-2 border-b border-stone-100 px-5 py-3">
               <Wallet size={14} className="text-green-600" />
-              <span className="text-sm font-semibold text-slate-700">Caisse — Résumé du jour</span>
+              <span className="text-sm font-semibold text-slate-700">{t('pos.sessionSummary')}</span>
             </div>
             <div className="px-5 py-4 space-y-3">
-              {/* Session status */}
               <div className="flex items-center gap-2">
                 {cashSummary?.openSession ? (
                   <>
                     <CheckCircle2 size={14} className="text-green-500" />
-                    <span className="text-sm text-green-700 font-medium">Session ouverte</span>
+                    <span className="text-sm text-green-700 font-medium">{t('pos.openSession')}</span>
                     <span className="text-xs text-slate-400 ml-auto">
-                      depuis {cashSummary.openSession.openedAt ? new Date(cashSummary.openSession.openedAt).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) : '—'}
+                      {cashSummary.openSession.openedAt ? new Date(cashSummary.openSession.openedAt).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) : '—'}
                     </span>
                   </>
                 ) : (
                   <>
                     <XCircle size={14} className="text-red-400" />
-                    <span className="text-sm text-red-600 font-medium">Aucune session ouverte</span>
+                    <span className="text-sm text-red-600 font-medium">{t('pos.openSessionFirst')}</span>
                   </>
                 )}
               </div>
-              {/* Today totals */}
               <div className="grid grid-cols-3 gap-3 pt-2">
                 {[
-                  { label: 'Entrées', value: cashSummary?.today.cashIn ?? 0, color: 'text-green-600' },
-                  { label: 'Sorties', value: cashSummary?.today.cashOut ?? 0, color: 'text-red-500' },
+                  { label: t('finance.income'), value: cashSummary?.today.cashIn ?? 0, color: 'text-green-600' },
+                  { label: t('finance.expense'), value: cashSummary?.today.cashOut ?? 0, color: 'text-red-500' },
                   { label: 'Net', value: cashSummary?.today.net ?? 0, color: 'text-slate-800' },
                 ].map((k) => (
                   <div key={k.label} className="bg-slate-50 rounded-lg p-2 text-center">
@@ -147,17 +148,17 @@ export default function DashboardPage() {
           <div className="grid gap-6 lg:grid-cols-3">
             <Card>
               <div className="border-b border-stone-100 px-5 py-3 text-sm font-semibold text-slate-700">
-                Recent Sales
+                {t('dashboard.recentSales')}
               </div>
               <ul className="divide-y divide-gray-50">
                 {activity.recentSales?.length === 0 && (
-                  <li className="px-5 py-3 text-sm text-slate-400">No sales yet</li>
+                  <li className="px-5 py-3 text-sm text-slate-400">{t('sales.noSales')}</li>
                 )}
                 {activity.recentSales?.map((s: { id: string; reference: string; customer?: { name: string }; total: number; createdAt: string }) => (
                   <li key={s.id} className="flex items-center justify-between px-5 py-3">
                     <div>
                       <p className="text-sm font-medium text-slate-800">{s.reference}</p>
-                      <p className="text-xs text-slate-400">{s.customer?.name ?? 'Walk-in'}</p>
+                      <p className="text-xs text-slate-400">{s.customer?.name ?? t('sales.walkIn')}</p>
                     </div>
                     <div className="text-right">
                       <p className="text-sm font-semibold text-slate-800">{formatCurrency(Number(s.total))}</p>
@@ -170,11 +171,11 @@ export default function DashboardPage() {
 
             <Card>
               <div className="border-b border-stone-100 px-5 py-3 text-sm font-semibold text-slate-700">
-                Recent Purchases
+                {t('purchases.title')}
               </div>
               <ul className="divide-y divide-gray-50">
                 {activity.recentPurchases?.length === 0 && (
-                  <li className="px-5 py-3 text-sm text-slate-400">No purchases yet</li>
+                  <li className="px-5 py-3 text-sm text-slate-400">{t('purchases.noPurchases')}</li>
                 )}
                 {activity.recentPurchases?.map((p: { id: string; reference: string; supplier?: { name: string }; total: number; createdAt: string }) => (
                   <li key={p.id} className="flex items-center justify-between px-5 py-3">
@@ -193,11 +194,11 @@ export default function DashboardPage() {
 
             <Card>
               <div className="border-b border-stone-100 px-5 py-3 text-sm font-semibold text-slate-700">
-                Recent Leads
+                {t('crm.tabs.leads')}
               </div>
               <ul className="divide-y divide-gray-50">
                 {activity.recentLeads?.length === 0 && (
-                  <li className="px-5 py-3 text-sm text-slate-400">No leads yet</li>
+                  <li className="px-5 py-3 text-sm text-slate-400">{t('crm.noLeads')}</li>
                 )}
                 {activity.recentLeads?.map((l: { id: string; firstName: string; lastName: string; status: string; createdAt: string }) => (
                   <li key={l.id} className="flex items-center justify-between px-5 py-3">

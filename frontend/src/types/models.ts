@@ -94,6 +94,9 @@ export interface Customer {
   phone?: string;
   address?: string;
   isActive: boolean;
+  loyaltyPoints?: number;
+  creditLimit?: number;
+  creditBalance?: number;
   createdAt: string;
 }
 

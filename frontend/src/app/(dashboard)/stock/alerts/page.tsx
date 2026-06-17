@@ -7,6 +7,7 @@ import { Header } from '@/components/layout/Header';
 import { PageLoader } from '@/components/ui/Spinner';
 import { Table, Thead, Tbody, Th, Td, Tr } from '@/components/ui/Table';
 import { stockService } from '@/services/stock.service';
+import { useT } from '@/hooks/useT';
 
 // ── Status badge ──────────────────────────────────────────────────────────────
 function StockAlertBadge({ status }: { status: string }) {
@@ -41,6 +42,7 @@ function ExpiryBadge({ daysLeft }: { daysLeft: number }) {
 
 // ── Page ──────────────────────────────────────────────────────────────────────
 export default function StockAlertsPage() {
+  const { t } = useT();
   const [daysAhead, setDaysAhead] = useState(30);
 
   const { data: lowStockAlerts = [], isLoading: loadingLow } = useQuery({
@@ -57,7 +59,7 @@ export default function StockAlertsPage() {
 
   return (
     <>
-      <Header title="Alertes de Stock" />
+      <Header title={t('stock.alerts.title')} />
       <div className="p-6 space-y-8">
 
         {/* Low Stock Section */}

@@ -10,9 +10,11 @@ import { PageLoader } from '@/components/ui/Spinner';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { financeService } from '@/services/finance.service';
 import { formatCurrency, formatDate } from '@/lib/utils';
+import { useT } from '@/hooks/useT';
 import type { PaginationMeta } from '@/lib/api';
 
 export default function FinancePage() {
+  const { t } = useT();
   const [invoicePage, setInvoicePage] = useState(1);
   const [paymentPage, setPaymentPage] = useState(1);
 
@@ -33,8 +35,8 @@ export default function FinancePage() {
 
   return (
     <>
-      <Header title="Finance" />
-      <div className="p-6 space-y-6">
+      <Header title={t('finance.title')} />
+      <div className="p-4 space-y-4 md:p-6 md:space-y-6">
 
         {/* Chart of Accounts Summary */}
         <Card>

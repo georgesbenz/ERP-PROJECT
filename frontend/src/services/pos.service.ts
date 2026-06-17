@@ -9,17 +9,26 @@ export interface PosItem {
   description?: string;
 }
 
+export interface PosPayment {
+  method: 'CASH' | 'CARD' | 'BANK_TRANSFER' | 'MOBILE_MONEY' | 'CHEQUE' | 'CREDIT';
+  amount: number;
+}
+
 export interface PosCheckoutPayload {
   items: PosItem[];
-  paymentMethod: 'CASH' | 'CARD' | 'BANK_TRANSFER' | 'MOBILE_MONEY' | 'CHEQUE' | 'CREDIT';
-  paymentAmount: number;
+  payments: PosPayment[];
   customerId?: string;
   branchId?: string;
   warehouseId?: string;
   notes?: string;
+  loyaltyPointsRedeem?: number;
 }
 
 export const posService = {
+  async getProducts(search?: string) {
+    const { data } = await api.get('/pos/products', { params: { search } });
+    return data as { data: import('@/types/models').Product[] };
+  },
   async checkout(payload: PosCheckoutPayload) {
     const { data } = await api.post('/pos/checkout', payload);
     return data.data as { sale: unknown; receipt: PosReceipt };
@@ -40,5 +49,8 @@ export interface PosReceipt {
   paid: number;
   change: number;
   paymentMethod: string;
+  payments?: { method: string; amount: number }[];
   customer: string;
+  loyaltyDiscount?: number;
+  loyaltyPointsEarned?: number;
 }

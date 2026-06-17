@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Search, ShieldPlus, X, ChevronRight, UserPlus } from 'lucide-react';
+import { Printer, Search, ShieldPlus, X, ChevronRight, UserPlus } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -16,6 +16,8 @@ import { Modal } from '@/components/ui/Modal';
 import { Input } from '@/components/ui/Input';
 import { api } from '@/lib/api';
 import { formatDate } from '@/lib/utils';
+import { printTable } from '@/lib/print-utils';
+import { useT } from '@/hooks/useT';
 import { settingsService, type Permission, type UserPermission, type Role } from '@/services/settings.service';
 import { useAuthStore } from '@/store/auth.store';
 import type { User } from '@/types/models';
@@ -32,6 +34,7 @@ const createUserSchema = z.object({
 type CreateUserForm = z.infer<typeof createUserSchema>;
 
 export default function UsersPage() {
+  const { t } = useT();
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const [showCreate, setShowCreate] = useState(false);
@@ -72,23 +75,38 @@ export default function UsersPage() {
 
   return (
     <>
-      <Header title="Users / Utilisateurs" />
+      <Header title={t('users.title')} />
       <div className="p-6 space-y-4">
-        <div className="flex items-center justify-between gap-4">
+        <div className="no-print flex items-center justify-between gap-4">
           <div className="relative w-72">
             <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
             <input
               value={search}
               onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-              placeholder="Search users…"
+              placeholder={t('users.searchPlaceholder')}
               className="w-full rounded-lg border border-stone-200 bg-white text-slate-800 py-2 pl-9 pr-3 text-sm focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-300"
             />
           </div>
-          {canManageUsers && (
-            <Button size="sm" onClick={() => { reset(); setShowCreate(true); }}>
-              <UserPlus size={14} /> Add User
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" onClick={() => printTable({
+              title: t('users.title'),
+              rows: data?.data ?? [],
+              columns: [
+                { header: t('common.name'), value: (u) => `${u.firstName} ${u.lastName}` },
+                { header: t('common.email'), value: (u) => u.email },
+                { header: t('users.roles'), value: (u) => u.roles.map((r: any) => r.role?.name ?? r).join(', ') || '—' },
+                { header: t('common.status'), value: (u: any) => u.isActive ? t('common.active') : t('common.inactive') },
+                { header: t('users.joined'), value: (u) => formatDate(u.createdAt) },
+              ],
+            })}>
+              <Printer size={13} /> {t('common.print')}
             </Button>
-          )}
+            {canManageUsers && (
+              <Button size="sm" onClick={() => { reset(); setShowCreate(true); }}>
+                <UserPlus size={14} /> {t('users.addUser')}
+              </Button>
+            )}
+          </div>
         </div>
 
         {isLoading ? <PageLoader /> : (
@@ -96,17 +114,17 @@ export default function UsersPage() {
             <Table>
               <Thead>
                 <tr>
-                  <Th>Name</Th>
-                  <Th>Email</Th>
-                  <Th>Roles</Th>
-                  <Th>Status</Th>
-                  <Th>Last Login</Th>
-                  <Th>Joined</Th>
+                  <Th>{t('common.name')}</Th>
+                  <Th>{t('common.email')}</Th>
+                  <Th>{t('users.roles')}</Th>
+                  <Th>{t('common.status')}</Th>
+                  <Th>{t('users.lastLogin')}</Th>
+                  <Th>{t('users.joined')}</Th>
                   {canManageUsers && <Th />}
                 </tr>
               </Thead>
               <Tbody>
-                {data?.data?.length === 0 && <tr><Td className="text-slate-400">No users</Td></tr>}
+                {data?.data?.length === 0 && <tr><Td className="text-slate-400">{t('users.noUsers')}</Td></tr>}
                 {data?.data?.map((u) => (
                   <Tr key={u.id}>
                     <Td className="font-medium text-slate-800">{u.firstName} {u.lastName}</Td>

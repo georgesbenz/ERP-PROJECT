@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus, Trash2, CheckCircle, XCircle, PlayCircle } from 'lucide-react';
+import { Plus, Printer, Trash2, CheckCircle, XCircle, PlayCircle } from 'lucide-react';
 import { Header } from '@/components/layout/Header';
 import { PageLoader } from '@/components/ui/Spinner';
 import { Table, Thead, Tbody, Th, Td, Tr } from '@/components/ui/Table';
@@ -10,6 +10,8 @@ import { Button } from '@/components/ui/Button';
 import { Modal } from '@/components/ui/Modal';
 import { stockService } from '@/services/stock.service';
 import { inventoryService } from '@/services/inventory.service';
+import { printTable } from '@/lib/print-utils';
+import { useT } from '@/hooks/useT';
 
 // ── Status badge ──────────────────────────────────────────────────────────────
 const STATUS_CONFIG: Record<string, { label: string; color: string }> = {
@@ -271,6 +273,7 @@ function NewAdjustmentForm({
 
 // ── Page ──────────────────────────────────────────────────────────────────────
 export default function AdjustmentsPage() {
+  const { t } = useT();
   const qc = useQueryClient();
   const [activeTab, setActiveTab] = useState<'list' | 'new'>('list');
   const [statusFilter, setStatusFilter] = useState('');
@@ -305,7 +308,7 @@ export default function AdjustmentsPage() {
 
   return (
     <>
-      <Header title="Ajustements de Stock" />
+      <Header title={t('stock.adjustments.title')} />
       <div className="p-6 space-y-4">
 
         {/* Tabs */}
@@ -345,8 +348,8 @@ export default function AdjustmentsPage() {
           </div>
         ) : (
           <>
-            {/* Filter */}
-            <div className="flex items-center gap-3">
+            {/* Filter + print */}
+            <div className="no-print flex items-center gap-3 justify-between">
               <label className="text-xs font-medium text-slate-500">Statut :</label>
               <select
                 value={statusFilter}
@@ -358,6 +361,23 @@ export default function AdjustmentsPage() {
                   <option key={k} value={k}>{v.label}</option>
                 ))}
               </select>
+              <button
+                onClick={() => printTable({
+                  title: 'Ajustements de Stock',
+                  rows: adjustments,
+                  columns: [
+                    { header: 'Date', value: (a) => new Date(a.createdAt).toLocaleDateString('fr-FR') },
+                    { header: 'Référence', value: (a) => a.reference },
+                    { header: 'Entrepôt', value: (a) => a.warehouse?.name ?? '—' },
+                    { header: 'Raison', value: (a) => a.reason },
+                    { header: 'Lignes', value: (a) => a.totalLines },
+                    { header: 'Statut', value: (a) => a.status },
+                  ],
+                })}
+                className="flex items-center gap-1.5 rounded-lg border border-stone-200 px-3 py-1.5 text-sm text-slate-500 hover:bg-stone-50 transition-colors"
+              >
+                <Printer size={13} /> Imprimer
+              </button>
             </div>
 
             {isLoading ? (

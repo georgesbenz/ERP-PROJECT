@@ -12,6 +12,25 @@ export class PosService {
     private gateway: NotificationsGateway,
   ) {}
 
+  async getProductsForPos(tenantId: string, search?: string) {
+    return this.prisma.product.findMany({
+      where: {
+        tenantId,
+        isActive: true,
+        deletedAt: null,
+        ...(search ? {
+          OR: [
+            { name: { contains: search, mode: 'insensitive' } },
+            { sku:  { contains: search, mode: 'insensitive' } },
+          ],
+        } : {}),
+      },
+      include: { tax: true },
+      orderBy: { name: 'asc' },
+      take: 50,
+    });
+  }
+
   async checkout(tenantId: string, dto: PosCheckoutDto, userId: string) {
     // 1. Validate every item
     const productIds = dto.items.map((i) => i.productId);
@@ -65,9 +84,16 @@ export class PosService {
     // 4. Calculate totals
     const { subtotal, taxAmount, total, lines } = this.calcTotals(enrichedItems);
 
-    // 4. All-in-one transaction
+    // 4a. Loyalty discount
+    const loyaltyDiscount = Math.min(dto.loyaltyPointsRedeem ?? 0, Number(total));
+    const finalTotal = new Decimal((Number(total) - loyaltyDiscount).toFixed(2));
+    const totalPaid = dto.payments.reduce((s, p) => s + p.amount, 0);
+    if (totalPaid < Number(finalTotal) - 0.01) {
+      throw new BadRequestException(`Payment total ${totalPaid} is less than order total ${finalTotal}`);
+    }
+
+    // 4b. All-in-one transaction
     return this.prisma.$transaction(async (tx) => {
-      // Reference
       const count = await tx.sale.count({ where: { tenantId } });
       const reference = `POS-${String(count + 1).padStart(6, '0')}`;
 
@@ -82,9 +108,9 @@ export class PosService {
           notes: dto.notes,
           subtotal,
           taxAmount,
-          discountAmount: 0,
-          total,
-          paidAmount: new Decimal(dto.paymentAmount.toFixed(2)),
+          discountAmount: new Decimal(loyaltyDiscount.toFixed(2)),
+          total: finalTotal,
+          paidAmount: new Decimal(totalPaid.toFixed(2)),
           createdBy: userId,
           lines: {
             create: lines.map((l, i) => ({
@@ -101,23 +127,39 @@ export class PosService {
         },
         include: {
           lines: { include: { product: { select: { id: true, name: true, sku: true } } } },
-          customer: { select: { id: true, name: true } },
+          customer: { select: { id: true, name: true, loyaltyPoints: true } },
         },
       });
 
-      // Create payment
-      const payRef = `PAY-${String((await tx.payment.count({ where: { tenantId } })) + 1).padStart(6, '0')}`;
-      await tx.payment.create({
-        data: {
-          tenantId,
-          reference: payRef,
-          method: dto.paymentMethod,
-          amount: new Decimal(dto.paymentAmount.toFixed(2)),
-          status: 'COMPLETED',
-          saleId: sale.id,
-          paidAt: new Date(),
-        },
-      });
+      // Create one Payment record per payment split
+      await Promise.all(
+        dto.payments.map(async (p, idx) => {
+          const payRef = `PAY-${String((await tx.payment.count({ where: { tenantId } })) + idx + 1).padStart(6, '0')}`;
+          return tx.payment.create({
+            data: {
+              tenantId,
+              reference: payRef,
+              method: p.method,
+              amount: new Decimal(p.amount.toFixed(2)),
+              status: 'COMPLETED',
+              saleId: sale.id,
+              paidAt: new Date(),
+            },
+          });
+        }),
+      );
+
+      // Loyalty: deduct redeemed points and award new points (1 per 100 FCFA)
+      if (dto.customerId) {
+        const pointsEarned = Math.floor(Number(finalTotal) / 100);
+        const pointsDeducted = dto.loyaltyPointsRedeem ?? 0;
+        if (pointsEarned !== 0 || pointsDeducted !== 0) {
+          await tx.customer.update({
+            where: { id: dto.customerId },
+            data: { loyaltyPoints: { increment: pointsEarned - pointsDeducted } },
+          });
+        }
+      }
 
       // Decrement stock for physical products
       if (dto.warehouseId) {
@@ -143,6 +185,7 @@ export class PosService {
         }
       }
 
+      const cashPayment = dto.payments.find((p) => p.method === 'CASH');
       return {
         sale,
         receipt: {
@@ -158,11 +201,12 @@ export class PosService {
           })),
           subtotal: Number(sale.subtotal),
           taxAmount: Number(sale.taxAmount),
-          total: Number(sale.total),
-          paid: dto.paymentAmount,
-          change: Math.max(0, dto.paymentAmount - Number(sale.total)),
-          paymentMethod: dto.paymentMethod,
+          loyaltyDiscount,
+          total: Number(finalTotal),
+          payments: dto.payments,
+          change: cashPayment ? Math.max(0, cashPayment.amount - Number(finalTotal)) : 0,
           customer: sale.customer?.name ?? 'Walk-in',
+          loyaltyPointsEarned: dto.customerId ? Math.floor(Number(finalTotal) / 100) : 0,
         },
       };
     });

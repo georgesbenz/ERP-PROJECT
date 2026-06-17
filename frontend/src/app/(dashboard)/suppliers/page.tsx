@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus, Search, Scale, X, AlertTriangle } from 'lucide-react';
+import { Plus, Printer, Search, Scale, X, AlertTriangle, MessageCircle } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -16,6 +16,8 @@ import { Pagination } from '@/components/ui/Pagination';
 import { PageLoader } from '@/components/ui/Spinner';
 import { purchasesService } from '@/services/purchases.service';
 import { formatCurrency, formatDate } from '@/lib/utils';
+import { printTable } from '@/lib/print-utils';
+import { useT } from '@/hooks/useT';
 import type { PaginationMeta } from '@/lib/api';
 import type { Supplier } from '@/types/models';
 
@@ -29,6 +31,7 @@ const schema = z.object({
 type FormData = z.infer<typeof schema>;
 
 export default function SuppliersPage() {
+  const { t } = useT();
   const qc = useQueryClient();
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
@@ -61,19 +64,35 @@ export default function SuppliersPage() {
 
   return (
     <>
-      <Header title="Suppliers / Fournisseurs" />
+      <Header title={t('suppliers.title')} />
       <div className="p-6 space-y-4">
-        <div className="flex items-center justify-between gap-4">
+        <div className="no-print flex items-center justify-between gap-4">
           <div className="relative w-72">
             <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
             <input
               value={search}
               onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-              placeholder="Rechercher fournisseurs…"
+              placeholder={t('suppliers.searchPlaceholder')}
               className="w-full rounded-lg border border-stone-200 bg-white text-slate-800 py-2 pl-9 pr-3 text-sm focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-300"
             />
           </div>
-          <Button onClick={() => setShowCreate(true)}><Plus size={16} /> Nouveau fournisseur</Button>
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" onClick={() => printTable({
+              title: t('suppliers.title'),
+              rows: data?.data ?? [],
+              columns: [
+                { header: t('common.name'), value: (s) => s.name },
+                { header: t('suppliers.code'), value: (s) => s.code },
+                { header: t('common.email'), value: (s) => s.email ?? '—' },
+                { header: t('common.phone'), value: (s) => s.phone ?? '—' },
+                { header: t('common.status'), value: (s) => s.isActive ? t('common.active') : t('common.inactive') },
+                { header: t('common.since'), value: (s) => formatDate(s.createdAt) },
+              ],
+            })}>
+              <Printer size={13} /> {t('common.print')}
+            </Button>
+            <Button onClick={() => setShowCreate(true)}><Plus size={16} /> {t('suppliers.newSupplier')}</Button>
+          </div>
         </div>
 
         {isLoading ? <PageLoader /> : (
@@ -82,8 +101,8 @@ export default function SuppliersPage() {
               <Table>
                 <Thead>
                   <Tr>
-                    <Th>Nom</Th><Th>Code</Th><Th>Email</Th><Th>Téléphone</Th>
-                    <Th>Statut</Th><Th>Depuis</Th><Th>Solde</Th>
+                    <Th>{t('common.name')}</Th><Th>{t('suppliers.code')}</Th><Th>{t('common.email')}</Th><Th>{t('common.phone')}</Th>
+                    <Th>{t('common.status')}</Th><Th>{t('common.since')}</Th><Th>{t('suppliers.balance')}</Th>
                   </Tr>
                 </Thead>
                 <Tbody>
@@ -93,20 +112,33 @@ export default function SuppliersPage() {
                       <Td className="font-mono text-xs">{s.code}</Td>
                       <Td className="text-slate-500">{s.email ?? '—'}</Td>
                       <Td className="text-slate-500">{s.phone ?? '—'}</Td>
-                      <Td><Badge variant={s.isActive ? 'success' : 'default'}>{s.isActive ? 'Actif' : 'Inactif'}</Badge></Td>
+                      <Td><Badge variant={s.isActive ? 'success' : 'default'}>{s.isActive ? t('common.active') : t('common.inactive')}</Badge></Td>
                       <Td className="text-slate-500">{formatDate(s.createdAt)}</Td>
                       <Td>
-                        <button
-                          onClick={() => setBalanceSupplier(s)}
-                          className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 transition-colors"
-                        >
-                          <Scale size={13} /> Solde
-                        </button>
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => setBalanceSupplier(s)}
+                            className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 transition-colors"
+                          >
+                            <Scale size={13} /> {t('suppliers.balance')}
+                          </button>
+                          {s.phone && (
+                            <a
+                              href={`https://wa.me/${s.phone.replace(/\D/g, '')}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-center gap-1 text-xs text-green-600 hover:text-green-800 transition-colors"
+                              title="WhatsApp"
+                            >
+                              <MessageCircle size={13} />
+                            </a>
+                          )}
+                        </div>
                       </Td>
                     </Tr>
                   ))}
                   {data?.data?.length === 0 && (
-                    <Tr><Td colSpan={7} className="text-center text-slate-400 py-8">Aucun fournisseur</Td></Tr>
+                    <Tr><Td colSpan={7} className="text-center text-slate-400 py-8">{t('suppliers.noSuppliers')}</Td></Tr>
                   )}
                 </Tbody>
               </Table>
@@ -152,7 +184,7 @@ export default function SuppliersPage() {
             ) : balanceData && (
               <div className="overflow-y-auto flex-1 p-6 space-y-6">
                 {/* KPI summary */}
-                <div className="grid grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                   {[
                     { label: 'Total dû', value: formatCurrency(Number(balanceData.totalOwed)), color: 'text-slate-800' },
                     { label: 'Déjà payé', value: formatCurrency(Number(balanceData.totalPaid)), color: 'text-green-600' },

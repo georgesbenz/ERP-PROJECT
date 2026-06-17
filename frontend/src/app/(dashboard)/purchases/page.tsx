@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus, Search, Trash2, PackageCheck, Download } from 'lucide-react';
+import { Plus, Printer, Search, Trash2, PackageCheck, Download } from 'lucide-react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -17,6 +17,8 @@ import { PageLoader } from '@/components/ui/Spinner';
 import { purchasesService } from '@/services/purchases.service';
 import { inventoryService } from '@/services/inventory.service';
 import { formatCurrency, formatDate } from '@/lib/utils';
+import { printTable } from '@/lib/print-utils';
+import { useT } from '@/hooks/useT';
 import type { PaginationMeta } from '@/lib/api';
 import type { Supplier, Product, Purchase } from '@/types/models';
 
@@ -49,6 +51,7 @@ function lineTotal(qty: number, cost: number, disc = 0, tax = 0) {
 // ── Page ───────────────────────────────────────────────────────────────────────
 
 export default function PurchasesPage() {
+  const { t } = useT();
   const qc = useQueryClient();
   const [page, setPage]         = useState(1);
   const [showCreate, setShowCreate] = useState(false);
@@ -77,23 +80,38 @@ export default function PurchasesPage() {
 
   return (
     <>
-      <Header title="Purchases / Achats" />
+      <Header title={t('purchases.title')} />
       <div className="p-6 space-y-4">
 
-        <div className="flex items-center justify-between">
+        <div className="no-print flex items-center justify-between">
           <div className="relative w-72">
             <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
             <input
-              placeholder="Search purchases…"
+              placeholder={t('purchases.searchPlaceholder')}
               className="w-full rounded-lg border border-stone-200 bg-white text-slate-800 py-2 pl-9 pr-3 text-sm focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-300"
             />
           </div>
           <div className="flex gap-2">
             <Button variant="outline" size="sm" onClick={handleExport} loading={exporting}>
-              <Download size={13} /> Export
+              <Download size={13} /> {t('common.export')}
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => printTable({
+              title: t('purchases.title'),
+              rows: data?.data ?? [],
+              columns: [
+                { header: t('common.reference'), value: (p) => p.reference },
+                { header: t('purchases.supplier'), value: (p) => p.supplier?.name ?? '—' },
+                { header: t('purchases.orderDate'), value: (p) => formatDate(p.orderDate) },
+                { header: t('purchases.expectedDate'), value: (p) => p.expectedDate ? formatDate(p.expectedDate) : '—' },
+                { header: t('common.lines'), value: (p) => p.lines?.length ?? 0 },
+                { header: t('common.total'), value: (p) => formatCurrency(Number(p.total)) },
+                { header: t('common.status'), value: (p) => p.status },
+              ],
+            })}>
+              <Printer size={13} /> {t('common.print')}
             </Button>
             <Button onClick={() => setShowCreate(true)}>
-              <Plus size={16} /> New Purchase Order
+              <Plus size={16} /> {t('purchases.newPurchase')}
             </Button>
           </div>
         </div>
@@ -103,19 +121,19 @@ export default function PurchasesPage() {
             <Table>
               <Thead>
                 <tr>
-                  <Th>Reference</Th>
-                  <Th>Supplier</Th>
-                  <Th>Order Date</Th>
-                  <Th>Expected</Th>
-                  <Th>Lines</Th>
-                  <Th>Total</Th>
-                  <Th>Status</Th>
+                  <Th>{t('common.reference')}</Th>
+                  <Th>{t('purchases.supplier')}</Th>
+                  <Th>{t('purchases.orderDate')}</Th>
+                  <Th>{t('purchases.expectedDate')}</Th>
+                  <Th>{t('common.lines')}</Th>
+                  <Th>{t('common.total')}</Th>
+                  <Th>{t('common.status')}</Th>
                   <Th />
                 </tr>
               </Thead>
               <Tbody>
                 {data?.data?.length === 0 && (
-                  <tr><Td className="text-slate-400">No purchase orders yet</Td></tr>
+                  <tr><Td className="text-slate-400">{t('purchases.noPurchases')}</Td></tr>
                 )}
                 {data?.data?.map((p) => (
                   <Tr key={p.id}>
@@ -123,7 +141,7 @@ export default function PurchasesPage() {
                     <Td>{p.supplier?.name ?? '—'}</Td>
                     <Td>{formatDate(p.orderDate)}</Td>
                     <Td>{p.expectedDate ? formatDate(p.expectedDate) : '—'}</Td>
-                    <Td className="text-slate-500">{p.lines?.length ?? 0} items</Td>
+                    <Td className="text-slate-500">{p.lines?.length ?? 0}</Td>
                     <Td className="font-semibold">{formatCurrency(Number(p.total))}</Td>
                     <Td><Badge variant={statusVariant(p.status)}>{p.status}</Badge></Td>
                     <Td>
@@ -133,9 +151,9 @@ export default function PurchasesPage() {
                           variant="outline"
                           loading={receiveMutation.isPending}
                           onClick={() => receiveMutation.mutate(p.id)}
-                          title="Mark goods as received"
+                          title={t('purchases.receive')}
                         >
-                          <PackageCheck size={13} /> Receive
+                          <PackageCheck size={13} /> {t('purchases.receive')}
                         </Button>
                       )}
                     </Td>

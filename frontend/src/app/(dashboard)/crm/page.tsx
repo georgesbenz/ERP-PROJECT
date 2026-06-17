@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
-  Plus, Search, ArrowRight, Phone, Mail, Calendar, FileText, CheckCircle,
+  Plus, Printer, Search, ArrowRight, Phone, Mail, Calendar, FileText, CheckCircle,
   Target, TrendingUp, Activity, Megaphone, BarChart2, Users, Trash2,
 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
@@ -20,6 +20,8 @@ import { PageLoader } from '@/components/ui/Spinner';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { crmService } from '@/services/crm.service';
 import { formatDate, formatCurrency, cn } from '@/lib/utils';
+import { printTable } from '@/lib/print-utils';
+import { useT } from '@/hooks/useT';
 import type { PaginationMeta } from '@/lib/api';
 
 // ── Tab definitions ───────────────────────────────────────────────────────────
@@ -110,6 +112,7 @@ function FunnelBar({ label, count, max, color }: { label: string; count: number;
 // ─────────────────────────────────────────────────────────────────────────────
 
 export default function CrmPage() {
+  const { t } = useT();
   const qc = useQueryClient();
   const [tab, setTab] = useState<TabId>('leads');
   const [leadPage, setLeadPage] = useState(1);
@@ -195,7 +198,7 @@ export default function CrmPage() {
 
   return (
     <>
-      <Header title="CRM" />
+      <Header title={t('crm.title')} />
       <div className="p-6 space-y-4">
 
         {/* Tab bar */}
@@ -219,24 +222,40 @@ export default function CrmPage() {
         {/* ── LEADS ─────────────────────────────────────────────────────── */}
         {tab === 'leads' && (
           <>
-            <div className="flex items-center justify-between gap-4">
+            <div className="no-print flex items-center justify-between gap-4">
               <div className="relative w-72">
                 <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                 <input
                   value={search}
                   onChange={(e) => { setSearch(e.target.value); setLeadPage(1); }}
-                  placeholder="Rechercher un lead…"
+                  placeholder={t('crm.searchPlaceholder')}
                   className="w-full rounded-lg border border-stone-200 bg-white text-slate-800 py-2 pl-9 pr-3 text-sm focus:border-blue-400 focus:outline-none"
                 />
               </div>
-              <Button onClick={() => setShowCreateLead(true)}><Plus size={15} /> Nouveau lead</Button>
+              <div className="flex gap-2">
+                <Button variant="outline" size="sm" onClick={() => printTable({
+                  title: `${t('crm.title')} — ${t('crm.tabs.leads')}`,
+                  rows: leadsQ.data?.data ?? [],
+                  columns: [
+                    { header: t('common.name'), value: (l) => `${l.firstName} ${l.lastName}` },
+                    { header: t('common.email'), value: (l) => l.email ?? '—' },
+                    { header: t('crm.company'), value: (l) => l.company ?? '—' },
+                    { header: t('crm.source'), value: (l) => l.source ?? '—' },
+                    { header: t('common.status'), value: (l) => l.status },
+                    { header: t('common.date'), value: (l) => formatDate(l.createdAt) },
+                  ],
+                })}>
+                  <Printer size={13} /> {t('common.print')}
+                </Button>
+                <Button onClick={() => setShowCreateLead(true)}><Plus size={15} /> {t('crm.newLead')}</Button>
+              </div>
             </div>
 
             {leadsQ.isLoading ? <PageLoader /> : (
               <>
                 <Table>
                   <Thead>
-                    <tr><Th>Nom</Th><Th>Email</Th><Th>Société</Th><Th>Source</Th><Th>Statut</Th><Th>Date</Th><Th></Th></tr>
+                    <tr><Th>{t('common.name')}</Th><Th>{t('common.email')}</Th><Th>{t('crm.company')}</Th><Th>{t('crm.source')}</Th><Th>{t('common.status')}</Th><Th>{t('common.date')}</Th><Th></Th></tr>
                   </Thead>
                   <Tbody>
                     {(leadsQ.data?.data ?? []).map((lead: any) => (
@@ -250,7 +269,7 @@ export default function CrmPage() {
                         <Td>
                           {lead.status !== 'CONVERTED' && (
                             <button onClick={() => convertLeadM.mutate(lead.id)} className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800">
-                              <ArrowRight size={13} /> Convertir
+                              <ArrowRight size={13} /> {t('crm.convert')}
                             </button>
                           )}
                         </Td>

@@ -43,4 +43,19 @@ export const purchasesService = {
       aging: { id: string; reference: string; status: string; amount: number; orderDate: string; daysPastDue: number }[];
     };
   },
+  downloadPdf(id: string, reference: string) {
+    const token = typeof window !== 'undefined' ? localStorage.getItem('erp_auth') : null;
+    const auth = token ? JSON.parse(token) : null;
+    const base = process.env.NEXT_PUBLIC_API_URL ?? '/api/v1';
+    fetch(`${base}/purchases/${id}/pdf`, { headers: { Authorization: `Bearer ${auth?.state?.accessToken ?? ''}` } })
+      .then((r) => r.blob())
+      .then((blob) => {
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `BON-COMMANDE-${reference}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      });
+  },
 };

@@ -2,13 +2,15 @@
 
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { RotateCcw } from 'lucide-react';
+import { Printer, RotateCcw } from 'lucide-react';
 import { Header } from '@/components/layout/Header';
 import { PageLoader } from '@/components/ui/Spinner';
 import { Table, Thead, Tbody, Th, Td, Tr } from '@/components/ui/Table';
 import { Pagination } from '@/components/ui/Pagination';
 import { stockService } from '@/services/stock.service';
 import { inventoryService } from '@/services/inventory.service';
+import { printTable } from '@/lib/print-utils';
+import { useT } from '@/hooks/useT';
 import type { PaginationMeta } from '@/lib/api';
 
 // ── Type config ───────────────────────────────────────────────────────────────
@@ -51,6 +53,7 @@ const POSITIVE_TYPES = new Set([
 
 // ── Page ──────────────────────────────────────────────────────────────────────
 export default function StockMovementsPage() {
+  const { t } = useT();
   const [page, setPage] = useState(1);
   const [warehouseId, setWarehouseId] = useState('');
   const [productId, setProductId] = useState('');
@@ -94,11 +97,11 @@ export default function StockMovementsPage() {
 
   return (
     <>
-      <Header title="Mouvements de Stock" />
+      <Header title={t('stock.movements.title')} />
       <div className="p-6 space-y-4">
 
         {/* Filters */}
-        <div className="rounded-xl border border-stone-200 bg-white p-4 shadow-sm">
+        <div className="no-print rounded-xl border border-stone-200 bg-white p-4 shadow-sm">
           <div className="flex flex-wrap items-end gap-3">
             <div className="min-w-[180px]">
               <label className="mb-1 block text-xs font-medium text-slate-500">Produit</label>
@@ -173,10 +176,31 @@ export default function StockMovementsPage() {
         </div>
 
         {!isLoading && meta && (
-          <p className="text-xs text-slate-500">
-            {meta.total} mouvement{meta.total !== 1 ? 's' : ''} trouvé{meta.total !== 1 ? 's' : ''}
-            {hasFilters ? ' (filtré)' : ''}
-          </p>
+          <div className="flex items-center justify-between">
+            <p className="text-xs text-slate-500">
+              {meta.total} mouvement{meta.total !== 1 ? 's' : ''} trouvé{meta.total !== 1 ? 's' : ''}
+              {hasFilters ? ' (filtré)' : ''}
+            </p>
+            <button
+              onClick={() => printTable({
+                title: 'Mouvements de Stock',
+                rows: movements,
+                columns: [
+                  { header: 'Date', value: (m) => new Date(m.createdAt).toLocaleString('fr-FR') },
+                  { header: 'Produit', value: (m) => m.product?.name ?? '—' },
+                  { header: 'SKU', value: (m) => m.product?.sku ?? '—' },
+                  { header: 'Entrepôt', value: (m) => m.warehouse?.name ?? '—' },
+                  { header: 'Type', value: (m) => TYPE_CONFIG[m.type]?.label ?? m.type },
+                  { header: 'Quantité', value: (m) => Number(m.quantity).toLocaleString() },
+                  { header: 'Référence', value: (m) => m.reference ?? '—' },
+                  { header: 'Par', value: (m) => m.createdBy?.firstName ? `${m.createdBy.firstName} ${m.createdBy.lastName}` : '—' },
+                ],
+              })}
+              className="flex items-center gap-1.5 rounded-lg border border-stone-200 px-3 py-1.5 text-sm text-slate-500 hover:bg-stone-50 transition-colors"
+            >
+              <Printer size={13} /> Imprimer
+            </button>
+          </div>
         )}
 
         {isLoading ? (
@@ -187,23 +211,23 @@ export default function StockMovementsPage() {
               <Table>
                 <Thead>
                   <tr>
-                    <Th>Date/Heure</Th>
-                    <Th>Produit</Th>
-                    <Th>SKU</Th>
-                    <Th>Entrepôt</Th>
-                    <Th>Type</Th>
-                    <Th className="text-right">Quantité</Th>
-                    <Th className="text-right">Coût unit.</Th>
-                    <Th>Référence</Th>
-                    <Th>Raison</Th>
-                    <Th>Par</Th>
+                    <Th>{t('stock.movements.dateTime')}</Th>
+                    <Th>{t('stock.movements.product')}</Th>
+                    <Th>{t('stock.movements.sku')}</Th>
+                    <Th>{t('stock.movements.warehouse')}</Th>
+                    <Th>{t('common.type')}</Th>
+                    <Th className="text-right">{t('stock.movements.quantity')}</Th>
+                    <Th className="text-right">{t('stock.movements.unitCost')}</Th>
+                    <Th>{t('stock.movements.reference')}</Th>
+                    <Th>{t('stock.movements.reason')}</Th>
+                    <Th>{t('stock.movements.by')}</Th>
                   </tr>
                 </Thead>
                 <Tbody>
                   {movements.length === 0 && (
                     <tr>
                       <td colSpan={10} className="py-10 text-center text-sm text-slate-400">
-                        Aucun mouvement trouvé{hasFilters ? ' — modifiez vos filtres' : ''}
+                        {t('stock.movements.noMovements')}
                       </td>
                     </tr>
                   )}

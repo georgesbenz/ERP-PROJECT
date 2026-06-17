@@ -71,6 +71,12 @@ export default function LoginPage() {
             <p className="rounded-lg bg-red-50 px-4 py-2 text-sm text-red-700">{serverError}</p>
           )}
 
+          <div className="flex justify-end">
+            <Link href="/forgot-password" className="text-xs text-indigo-600 hover:underline">
+              Forgot password?
+            </Link>
+          </div>
+
           <Button type="submit" loading={isSubmitting} className="w-full">
             Sign in
           </Button>

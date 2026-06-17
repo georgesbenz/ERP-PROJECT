@@ -1,9 +1,11 @@
 import {
   Body, Controller, Delete, Get, HttpCode, HttpStatus,
-  Param, Patch, Post, Query,
+  Param, Patch, Post, Query, Res,
 } from '@nestjs/common';
+import { Response } from 'express';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { PurchasesService } from './purchases.service';
+import { PdfService } from '../pdf/pdf.service';
 import { CreatePurchaseDto } from './dto/create-purchase.dto';
 import { CreateSupplierDto } from './dto/create-supplier.dto';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
@@ -15,7 +17,7 @@ import { PaginationDto } from '../../common/dto/pagination.dto';
 @ApiBearerAuth()
 @Controller('purchases')
 export class PurchasesController {
-  constructor(private svc: PurchasesService) {}
+  constructor(private svc: PurchasesService, private pdf: PdfService) {}
 
   @Get('suppliers')
   @RequirePermissions('purchases:READ')
@@ -85,5 +87,12 @@ export class PurchasesController {
   @ApiOperation({ summary: 'Mark purchase order as received' })
   receivePurchase(@Param('id') id: string, @CurrentUser() u: AuthenticatedUser) {
     return this.svc.receivePurchase(id, u.tenantId);
+  }
+
+  @Get(':id/pdf')
+  @RequirePermissions('purchases:READ')
+  @ApiOperation({ summary: 'Download purchase order as PDF' })
+  downloadPdf(@Param('id') id: string, @CurrentUser() u: AuthenticatedUser, @Res() res: Response) {
+    return this.pdf.purchaseOrder(u.tenantId, id, res);
   }
 }

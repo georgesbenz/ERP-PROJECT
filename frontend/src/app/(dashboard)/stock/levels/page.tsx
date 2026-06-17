@@ -2,12 +2,14 @@
 
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Search, RotateCcw } from 'lucide-react';
+import { Printer, Search, RotateCcw } from 'lucide-react';
 import { Header } from '@/components/layout/Header';
 import { PageLoader } from '@/components/ui/Spinner';
 import { Table, Thead, Tbody, Th, Td, Tr } from '@/components/ui/Table';
 import { stockService } from '@/services/stock.service';
 import { inventoryService } from '@/services/inventory.service';
+import { printTable } from '@/lib/print-utils';
+import { useT } from '@/hooks/useT';
 
 // ── Status badge ──────────────────────────────────────────────────────────────
 function StockStatusBadge({ isOut, isLow }: { isOut: boolean; isLow: boolean }) {
@@ -32,6 +34,7 @@ function StockStatusBadge({ isOut, isLow }: { isOut: boolean; isLow: boolean }) 
 
 // ── Page ──────────────────────────────────────────────────────────────────────
 export default function StockLevelsPage() {
+  const { t } = useT();
   const [search, setSearch] = useState('');
   const [warehouseId, setWarehouseId] = useState('');
   const [lowStockOnly, setLowStockOnly] = useState(false);
@@ -61,11 +64,11 @@ export default function StockLevelsPage() {
 
   return (
     <>
-      <Header title="Niveaux de Stock" />
+      <Header title={t('stock.levels.title')} />
       <div className="p-6 space-y-4">
 
         {/* Filters */}
-        <div className="rounded-xl border border-stone-200 bg-white p-4 shadow-sm">
+        <div className="no-print rounded-xl border border-stone-200 bg-white p-4 shadow-sm">
           <div className="flex flex-wrap items-end gap-3">
             {/* Search */}
             <div className="relative min-w-[220px]">
@@ -115,12 +118,34 @@ export default function StockLevelsPage() {
           </div>
         </div>
 
-        {/* Summary */}
+        {/* Summary + print */}
         {!isLoading && (
-          <p className="text-xs text-slate-500">
-            {(levels as any[]).length} entrée{(levels as any[]).length !== 1 ? 's' : ''} trouvée{(levels as any[]).length !== 1 ? 's' : ''}
-            {hasFilters ? ' (filtré)' : ''}
-          </p>
+          <div className="flex items-center justify-between">
+            <p className="text-xs text-slate-500">
+              {(levels as any[]).length} entrée{(levels as any[]).length !== 1 ? 's' : ''} trouvée{(levels as any[]).length !== 1 ? 's' : ''}
+              {hasFilters ? ' (filtré)' : ''}
+            </p>
+            <button
+              onClick={() => printTable({
+                  title: 'Niveaux de Stock',
+                  rows: levels as any[],
+                  columns: [
+                    { header: 'Produit', value: (i: any) => i.product?.name ?? '—' },
+                    { header: 'SKU', value: (i: any) => i.product?.sku ?? '—' },
+                    { header: 'Entrepôt', value: (i: any) => i.warehouse?.name ?? '—' },
+                    { header: 'Disponible', value: (i: any) => Number(i.available).toLocaleString() },
+                    { header: 'Réservé', value: (i: any) => Number(i.reserved).toLocaleString() },
+                    { header: 'Endommagé', value: (i: any) => Number(i.damaged).toLocaleString() },
+                    { header: 'En transit', value: (i: any) => Number(i.inTransit).toLocaleString() },
+                    { header: 'Stock min', value: (i: any) => i.minStock ?? '—' },
+                    { header: 'Statut', value: (i: any) => i.isOutOfStock ? 'Rupture' : i.isLowStock ? 'Stock faible' : 'Normal' },
+                  ],
+              })}
+              className="flex items-center gap-1.5 rounded-lg border border-stone-200 px-3 py-1.5 text-sm text-slate-500 hover:bg-stone-50 transition-colors"
+            >
+              <Printer size={13} /> Imprimer
+            </button>
+          </div>
         )}
 
         {/* Table */}
@@ -131,23 +156,23 @@ export default function StockLevelsPage() {
             <Table>
               <Thead>
                 <tr>
-                  <Th>Produit</Th>
-                  <Th>SKU</Th>
-                  <Th>Entrepôt</Th>
-                  <Th className="text-right">Disponible</Th>
-                  <Th className="text-right">Réservé</Th>
-                  <Th className="text-right">Endommagé</Th>
-                  <Th className="text-right">En transit</Th>
-                  <Th className="text-right">Total physique</Th>
-                  <Th className="text-right">Stock min</Th>
-                  <Th>Statut</Th>
+                  <Th>{t('stock.levels.product')}</Th>
+                  <Th>{t('stock.levels.sku')}</Th>
+                  <Th>{t('stock.levels.warehouse')}</Th>
+                  <Th className="text-right">{t('stock.levels.available')}</Th>
+                  <Th className="text-right">{t('stock.levels.reserved')}</Th>
+                  <Th className="text-right">{t('stock.levels.damaged')}</Th>
+                  <Th className="text-right">{t('stock.levels.inTransit')}</Th>
+                  <Th className="text-right">{t('stock.levels.totalPhysical')}</Th>
+                  <Th className="text-right">{t('stock.levels.minStock')}</Th>
+                  <Th>{t('common.status')}</Th>
                 </tr>
               </Thead>
               <Tbody>
                 {(levels as any[]).length === 0 && (
                   <tr>
                     <td colSpan={10} className="py-10 text-center text-sm text-slate-400">
-                      Aucun stock trouvé
+                      {t('stock.levels.noStock')}
                     </td>
                   </tr>
                 )}

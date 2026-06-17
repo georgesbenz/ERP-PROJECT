@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/Button';
 import { Modal } from '@/components/ui/Modal';
 import { stockService } from '@/services/stock.service';
 import { inventoryService } from '@/services/inventory.service';
+import { useT } from '@/hooks/useT';
 
 // ── Status config ─────────────────────────────────────────────────────────────
 const STATUS_CONFIG: Record<string, { label: string; color: string }> = {
@@ -337,6 +338,7 @@ function ReceiveModal({
 
 // ── Page ──────────────────────────────────────────────────────────────────────
 export default function TransfersPage() {
+  const { t } = useT();
   const qc = useQueryClient();
   const [activeTab, setActiveTab] = useState<'list' | 'new'>('list');
   const [statusFilter, setStatusFilter] = useState('');
@@ -362,7 +364,7 @@ export default function TransfersPage() {
 
   return (
     <>
-      <Header title="Transferts d'Entrepôt" />
+      <Header title={t('stock.transfers.title')} />
       <div className="p-6 space-y-4">
 
         {/* Tabs */}

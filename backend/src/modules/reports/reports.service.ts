@@ -239,6 +239,170 @@ export class ReportsService {
     return result;
   }
 
+  // ─── Employee Sales Report ────────────────────────────────────────────────
+
+  async employeeReport(tenantId: string, start?: Date, end?: Date) {
+    const where = {
+      tenantId,
+      deletedAt: null as null,
+      status: 'CONFIRMED' as const,
+      ...(start && end ? { saleDate: { gte: start, lte: end } } : {}),
+    };
+
+    const sales = await this.prisma.sale.findMany({
+      where,
+      select: { total: true, createdBy: true, creator: { select: { firstName: true, lastName: true, email: true } } },
+    });
+
+    const byUser: Record<string, { name: string; email: string; saleCount: number; revenue: number }> = {};
+    for (const s of sales) {
+      const id = s.createdBy ?? 'unknown';
+      if (!byUser[id]) {
+        byUser[id] = {
+          name: s.creator ? `${s.creator.firstName} ${s.creator.lastName}` : 'Unknown',
+          email: s.creator?.email ?? '',
+          saleCount: 0,
+          revenue: 0,
+        };
+      }
+      byUser[id].saleCount++;
+      byUser[id].revenue += Number(s.total);
+    }
+
+    const rows = Object.values(byUser).sort((a, b) => b.revenue - a.revenue);
+    return { rows, totals: { saleCount: rows.reduce((s, r) => s + r.saleCount, 0), revenue: rows.reduce((s, r) => s + r.revenue, 0) } };
+  }
+
+  // ─── Branch Sales Report ──────────────────────────────────────────────────
+
+  async branchReport(tenantId: string, start?: Date, end?: Date) {
+    const where = {
+      tenantId,
+      deletedAt: null as null,
+      status: 'CONFIRMED' as const,
+      ...(start && end ? { saleDate: { gte: start, lte: end } } : {}),
+    };
+
+    const sales = await this.prisma.sale.findMany({
+      where,
+      select: { total: true, taxAmount: true, branchId: true, branch: { select: { name: true, code: true } } },
+    });
+
+    const byBranch: Record<string, { name: string; code: string; saleCount: number; revenue: number; tax: number }> = {};
+    for (const s of sales) {
+      const id = s.branchId ?? 'no-branch';
+      if (!byBranch[id]) {
+        byBranch[id] = { name: s.branch?.name ?? 'No Branch', code: s.branch?.code ?? '—', saleCount: 0, revenue: 0, tax: 0 };
+      }
+      byBranch[id].saleCount++;
+      byBranch[id].revenue += Number(s.total);
+      byBranch[id].tax += Number(s.taxAmount);
+    }
+
+    const rows = Object.values(byBranch).sort((a, b) => b.revenue - a.revenue);
+    return { rows, totals: { saleCount: rows.reduce((s, r) => s + r.saleCount, 0), revenue: rows.reduce((s, r) => s + r.revenue, 0) } };
+  }
+
+  // ─── Tax / VAT Report ─────────────────────────────────────────────────────
+
+  async taxReport(tenantId: string, start?: Date, end?: Date) {
+    const where = {
+      tenantId,
+      deletedAt: null as null,
+      status: 'CONFIRMED' as const,
+      ...(start && end ? { saleDate: { gte: start, lte: end } } : {}),
+    };
+
+    const sales = await this.prisma.sale.findMany({
+      where,
+      select: { taxAmount: true, total: true, saleDate: true, lines: { select: { taxRate: true, total: true } } },
+    });
+
+    const byRate: Record<string, { rate: number; taxableAmount: number; taxCollected: number; saleCount: number }> = {};
+
+    for (const s of sales) {
+      for (const line of s.lines) {
+        const rate = Number(line.taxRate);
+        const key = String(rate);
+        if (!byRate[key]) byRate[key] = { rate, taxableAmount: 0, taxCollected: 0, saleCount: 0 };
+        const lineTotal = Number(line.total);
+        const taxable = lineTotal / (1 + rate / 100);
+        byRate[key].taxableAmount += taxable;
+        byRate[key].taxCollected += lineTotal - taxable;
+        byRate[key].saleCount++;
+      }
+    }
+
+    const rows = Object.values(byRate).sort((a, b) => b.rate - a.rate);
+    const totalTax = rows.reduce((s, r) => s + r.taxCollected, 0);
+    const totalRevenue = sales.reduce((s, sale) => s + Number(sale.total), 0);
+
+    return { rows, totals: { totalRevenue, totalTax, netRevenue: totalRevenue - totalTax } };
+  }
+
+  // ─── Gross Margin Report ─────────────────────────────────────────────────
+
+  async marginReport(tenantId: string, start?: Date, end?: Date) {
+    const where = {
+      tenantId,
+      deletedAt: null as null,
+      status: 'CONFIRMED' as const,
+      ...(start && end ? { saleDate: { gte: start, lte: end } } : {}),
+    };
+
+    const sales = await this.prisma.sale.findMany({
+      where,
+      select: {
+        lines: {
+          select: {
+            quantity: true,
+            unitPrice: true,
+            discount: true,
+            total: true,
+            product: { select: { name: true, sku: true, costPrice: true } },
+          },
+        },
+      },
+    });
+
+    const byProduct: Record<string, { name: string; sku: string; unitsSold: number; revenue: number; cogs: number; margin: number }> = {};
+
+    for (const sale of sales) {
+      for (const line of sale.lines) {
+        const sku = line.product.sku;
+        if (!byProduct[sku]) {
+          byProduct[sku] = { name: line.product.name, sku, unitsSold: 0, revenue: 0, cogs: 0, margin: 0 };
+        }
+        const qty = Number(line.quantity);
+        const revenue = Number(line.total);
+        const cost = qty * Number(line.product.costPrice ?? 0);
+        byProduct[sku].unitsSold += qty;
+        byProduct[sku].revenue += revenue;
+        byProduct[sku].cogs += cost;
+      }
+    }
+
+    const rows = Object.values(byProduct).map((r) => ({
+      ...r,
+      grossProfit: r.revenue - r.cogs,
+      margin: r.revenue > 0 ? ((r.revenue - r.cogs) / r.revenue) * 100 : 0,
+    })).sort((a, b) => b.grossProfit - a.grossProfit);
+
+    const totalRevenue = rows.reduce((s, r) => s + r.revenue, 0);
+    const totalCogs = rows.reduce((s, r) => s + r.cogs, 0);
+    const totalProfit = totalRevenue - totalCogs;
+
+    return {
+      rows,
+      totals: {
+        revenue: totalRevenue,
+        cogs: totalCogs,
+        grossProfit: totalProfit,
+        grossMargin: totalRevenue > 0 ? (totalProfit / totalRevenue) * 100 : 0,
+      },
+    };
+  }
+
   private defaultStart(): Date {
     const d = new Date();
     d.setFullYear(d.getFullYear() - 1);

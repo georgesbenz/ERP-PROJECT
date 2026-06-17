@@ -12,6 +12,7 @@ import { PageLoader } from '@/components/ui/Spinner';
 import { Table, Thead, Tbody, Th, Td, Tr } from '@/components/ui/Table';
 import { stockService } from '@/services/stock.service';
 import { formatCurrency } from '@/lib/utils';
+import { useT } from '@/hooks/useT';
 import Link from 'next/link';
 
 // ── Movement type display ─────────────────────────────────────────────────────
@@ -73,6 +74,7 @@ function KpiCard({
 
 // ── Page ──────────────────────────────────────────────────────────────────────
 export default function StockDashboardPage() {
+  const { t } = useT();
   const { data: summary, isLoading } = useQuery({
     queryKey: ['stock-summary'],
     queryFn: stockService.getStockSummary,
@@ -90,8 +92,8 @@ export default function StockDashboardPage() {
 
   return (
     <>
-      <Header title="Stock — Vue d'ensemble" />
-      <div className="p-6 space-y-6">
+      <Header title={t('stock.overview')} />
+      <div className="p-4 space-y-4 md:p-6 md:space-y-6">
 
         {/* KPI Cards */}
         <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">

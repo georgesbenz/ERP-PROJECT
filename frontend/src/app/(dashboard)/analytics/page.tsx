@@ -10,6 +10,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { PageLoader } from '@/components/ui/Spinner';
 import { analyticsService } from '@/services/analytics.service';
 import { formatCurrency } from '@/lib/utils';
+import { useT } from '@/hooks/useT';
 import { TrendingUp, TrendingDown, Target, AlertTriangle, Package, DollarSign, Users, Briefcase } from 'lucide-react';
 
 // ── helpers ──────────────────────────────────────────────────────────────────
@@ -70,6 +71,7 @@ function EmptyChart({ label }: { label: string }) {
 
 // ─────────────────────────────────────────────────────────────────────────────
 export default function AnalyticsPage() {
+  const { t } = useT();
   const { data: salesSummary, isLoading: ls } = useQuery({
     queryKey: ['analytics-sales'],
     queryFn: analyticsService.getSalesSummary,
@@ -103,7 +105,7 @@ export default function AnalyticsPage() {
     queryFn: analyticsService.getBudgetAnalytics,
   });
 
-  if (ls) return <><Header title="Analytics" /><PageLoader /></>;
+  if (ls) return <><Header title={t('analytics.title')} /><PageLoader /></>;
 
   // ── Derived stats ──────────────────────────────────────────────────────────
   const totalRevenue   = Number(salesSummary?.totalRevenue ?? 0);
@@ -128,8 +130,8 @@ export default function AnalyticsPage() {
 
   return (
     <>
-      <Header title="Analytics" />
-      <div className="p-6 space-y-6">
+      <Header title={t('analytics.title')} />
+      <div className="p-4 space-y-4 md:p-6 md:space-y-6">
 
         {/* ── KPI Row ──────────────────────────────────────────────────────── */}
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">

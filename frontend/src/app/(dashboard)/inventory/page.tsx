@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus, Search, Download, RefreshCw, Pencil, X, ChevronDown, ChevronUp } from 'lucide-react';
+import { Plus, Printer, Search, Download, RefreshCw, Pencil, X, ChevronDown, ChevronUp } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -17,6 +17,8 @@ import { PageLoader } from '@/components/ui/Spinner';
 import { inventoryService } from '@/services/inventory.service';
 import { settingsService } from '@/services/settings.service';
 import { formatCurrency } from '@/lib/utils';
+import { printTable } from '@/lib/print-utils';
+import { useT } from '@/hooks/useT';
 import { cn } from '@/lib/utils';
 import type { PaginationMeta } from '@/lib/api';
 import type { Product, StockLevel, StockMovement } from '@/types/models';
@@ -215,6 +217,7 @@ function PriceCategoryModal({ open, onClose, onCreated }: {
 
 // ── Main page ─────────────────────────────────────────────────────────────────
 export default function InventoryPage() {
+  const { t } = useT();
   const qc = useQueryClient();
   const [page, setPage]             = useState(1);
   const [search, setSearch]         = useState('');
@@ -346,27 +349,42 @@ export default function InventoryPage() {
 
   return (
     <>
-      <Header title="Produits / Inventaire" />
+      <Header title={t('inventory.title')} />
       <div className="p-6 space-y-4">
 
         {/* Toolbar */}
-        <div className="flex items-center justify-between gap-4 flex-wrap">
+        <div className="no-print flex items-center justify-between gap-4 flex-wrap">
           <div className="relative w-72">
             <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
             <input
               value={search}
               onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-              placeholder="Rechercher un produit…"
+              placeholder={t('inventory.searchPlaceholder')}
               className="w-full rounded-lg border border-stone-200 bg-white text-slate-800 py-2 pl-9 pr-3 text-sm focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-300"
             />
           </div>
           <div className="flex gap-2">
             <Button variant="outline" size="sm" onClick={handleExport} loading={exporting}>
               {exporting ? <RefreshCw size={13} className="animate-spin" /> : <Download size={13} />}
-              Export
+              {t('common.export')}
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => printTable({
+              title: t('inventory.title'),
+              rows: data?.data ?? [],
+              columns: [
+                { header: t('inventory.sku'), value: (p) => p.sku ?? '—' },
+                { header: t('common.name'), value: (p) => p.name },
+                { header: t('inventory.family'), value: (p: any) => p.family?.name ?? '—' },
+                { header: t('inventory.category'), value: (p: any) => p.category?.name ?? '—' },
+                { header: t('inventory.salePrice'), value: (p) => formatCurrency(Number(p.salePrice)) },
+                { header: t('common.type'), value: (p) => p.isService ? t('inventory.service') : t('inventory.physical') },
+                { header: t('common.status'), value: (p) => p.isActive ? t('common.active') : t('common.inactive') },
+              ],
+            })}>
+              <Printer size={13} /> {t('common.print')}
             </Button>
             <Button onClick={() => handleOpen()}>
-              <Plus size={16} /> Nouveau Produit
+              <Plus size={16} /> {t('inventory.newProduct')}
             </Button>
           </div>
         </div>
@@ -377,20 +395,20 @@ export default function InventoryPage() {
             <Table>
               <Thead>
                 <tr>
-                  <Th>Code</Th>
-                  <Th>Désignation</Th>
-                  <Th>Famille</Th>
-                  <Th>Catégorie</Th>
-                  <Th>Prix Vente</Th>
-                  <Th>Taxe</Th>
-                  <Th>Type</Th>
-                  <Th>Statut</Th>
+                  <Th>{t('inventory.sku')}</Th>
+                  <Th>{t('common.name')}</Th>
+                  <Th>{t('inventory.family')}</Th>
+                  <Th>{t('inventory.category')}</Th>
+                  <Th>{t('inventory.salePrice')}</Th>
+                  <Th>{t('inventory.tax')}</Th>
+                  <Th>{t('common.type')}</Th>
+                  <Th>{t('common.status')}</Th>
                   <Th></Th>
                 </tr>
               </Thead>
               <Tbody>
                 {(!data?.data || data.data.length === 0) && (
-                  <tr><Td className="text-slate-400" colSpan={9}>Aucun produit</Td></tr>
+                  <tr><Td className="text-slate-400" colSpan={9}>{t('inventory.noProducts')}</Td></tr>
                 )}
                 {data?.data?.map((p: any) => (
                   <Tr key={p.id}>

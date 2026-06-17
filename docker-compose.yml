@@ -70,6 +70,7 @@ services:
       JWT_ACCESS_SECRET:  ${JWT_ACCESS_SECRET:-change_me_access_secret_32chars}
       JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-change_me_refresh_secret_32chars}
       CORS_ORIGIN:  ${CORS_ORIGIN:-http://localhost:3000}
+      PLATFORM_ADMIN_EMAILS: ${PLATFORM_ADMIN_EMAILS:-admin@example.com}
     ports:
       - "${BACKEND_PORT:-4000}:4000"
     volumes:

@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus, Search, CheckCircle, XCircle, Trash2, FileText, BarChart3 } from 'lucide-react';
+import { Plus, Printer, Search, CheckCircle, XCircle, Trash2, FileText, BarChart3 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -16,6 +16,8 @@ import { Pagination } from '@/components/ui/Pagination';
 import { PageLoader } from '@/components/ui/Spinner';
 import { expensesService, type ExpenseEntry } from '@/services/expenses.service';
 import { formatCurrency } from '@/lib/utils';
+import { printTable } from '@/lib/print-utils';
+import { useT } from '@/hooks/useT';
 import type { PaginationMeta } from '@/lib/api';
 
 // ── Enums ─────────────────────────────────────────────────────────────────────
@@ -55,6 +57,7 @@ const TABS = ['Dépenses', 'Catégories', 'Rapport'] as const;
 type Tab = (typeof TABS)[number];
 
 export default function ExpensesPage() {
+  const { t } = useT();
   const qc = useQueryClient();
   const [tab, setTab] = useState<Tab>('Dépenses');
 
@@ -109,7 +112,7 @@ export default function ExpensesPage() {
 
   return (
     <div className="flex flex-col min-h-screen bg-slate-50">
-      <Header title="Gestion des Dépenses / Expense Management" />
+      <Header title={t('expenses.title')} />
 
       <div className="flex-1 p-6">
         {/* Tabs */}
@@ -133,13 +136,13 @@ export default function ExpensesPage() {
         {/* ── Tab: Dépenses ─────────────────────────────────────────────────── */}
         {tab === 'Dépenses' && (
           <>
-            <div className="flex flex-wrap gap-3 mb-4 items-center justify-between">
+            <div className="no-print flex flex-wrap gap-3 mb-4 items-center justify-between">
               <div className="flex gap-3 flex-wrap">
                 <div className="relative">
                   <Search className="absolute left-3 top-2.5 w-4 h-4 text-slate-400" />
                   <input
                     className="pl-9 pr-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-                    placeholder="Rechercher…"
+                    placeholder={t('expenses.searchPlaceholder')}
                     value={search}
                     onChange={(e) => { setSearch(e.target.value); setPage(1); }}
                   />
@@ -161,9 +164,25 @@ export default function ExpensesPage() {
                   {EXPENSE_STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
                 </select>
               </div>
-              <Button onClick={() => setShowExpenseModal(true)} size="sm">
-                <Plus className="w-4 h-4 mr-1" /> Nouvelle dépense
-              </Button>
+              <div className="flex gap-2">
+                <Button variant="outline" size="sm" onClick={() => printTable({
+                  title: t('expenses.title'),
+                  rows: expenses,
+                  columns: [
+                    { header: t('common.reference'), value: (e) => e.reference },
+                    { header: t('common.description'), value: (e) => e.description },
+                    { header: t('expenses.category'), value: (e) => e.category?.name ?? '—' },
+                    { header: t('common.date'), value: (e) => new Date(e.expenseDate).toLocaleDateString('fr-FR') },
+                    { header: t('common.amount'), value: (e) => formatCurrency(Number(e.totalAmount)) },
+                    { header: t('common.status'), value: (e) => e.status },
+                  ],
+                })}>
+                  <Printer size={13} /> {t('common.print')}
+                </Button>
+                <Button onClick={() => setShowExpenseModal(true)} size="sm">
+                  <Plus className="w-4 h-4 mr-1" /> {t('expenses.newExpense')}
+                </Button>
+              </div>
             </div>
 
             {expLoading ? <PageLoader /> : (
@@ -172,8 +191,8 @@ export default function ExpensesPage() {
                   <Table>
                     <Thead>
                       <Tr>
-                        <Th>Référence</Th><Th>Description</Th><Th>Catégorie</Th>
-                        <Th>Date</Th><Th>Montant</Th><Th>Statut</Th><Th>Actions</Th>
+                        <Th>{t('common.reference')}</Th><Th>{t('common.description')}</Th><Th>{t('expenses.category')}</Th>
+                        <Th>{t('common.date')}</Th><Th>{t('common.amount')}</Th><Th>{t('common.status')}</Th><Th>{t('common.actions')}</Th>
                       </Tr>
                     </Thead>
                     <Tbody>

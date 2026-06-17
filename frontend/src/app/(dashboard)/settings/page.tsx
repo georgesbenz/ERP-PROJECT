@@ -27,6 +27,8 @@ import {
 } from '@/services/settings.service';
 import { useAuthStore, type AuthUser } from '@/store/auth.store';
 import { formatDate } from '@/lib/utils';
+import { useT } from '@/hooks/useT';
+import { type Lang } from '@/store/language.store';
 
 type Tab =
   | 'profile' | 'general' | 'legal' | 'tax' | 'address' | 'contact'
@@ -113,13 +115,14 @@ function SelectField({
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
 export default function SettingsPage() {
+  const { t } = useT();
   const [tab, setTab] = useState<Tab>('profile');
   const { user } = useAuthStore();
   const isAdmin = (user?.roles?.includes('Admin') || user?.roles?.includes('Super Admin')) ?? false;
 
   return (
     <>
-      <Header title="Paramètres / Settings" />
+      <Header title={t('settings.title')} />
       <div className="flex min-h-[calc(100vh-3.5rem)]">
         {/* ── Sidebar nav ── */}
         <nav className="w-56 shrink-0 border-r border-stone-200 bg-white p-3 space-y-0.5 overflow-y-auto">
@@ -1098,6 +1101,7 @@ function ErpSettingsTab() {
     mutationFn: (d: any) => settingsService.updateCompany(d),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['company'] }); setForm({}); },
   });
+  const { lang, setLang, t } = useT();
 
   if (isLoading) return <PageLoader />;
   const c = { ...company, ...form } as CompanyInfo;
@@ -1105,6 +1109,31 @@ function ErpSettingsTab() {
 
   return (
     <div className="max-w-xl space-y-6">
+      {/* ── UI Language ── */}
+      <Card>
+        <CardHeader>
+          <CardTitle>{t('settings.languageLabel')}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-slate-500 mb-4">{t('settings.languageDesc')}</p>
+          <div className="flex gap-3">
+            {(['fr', 'en'] as Lang[]).map((l) => (
+              <button
+                key={l}
+                onClick={() => setLang(l)}
+                className={`flex-1 rounded-xl border-2 py-3 text-sm font-semibold transition-all ${
+                  lang === l
+                    ? 'border-indigo-600 bg-indigo-50 text-indigo-700'
+                    : 'border-stone-200 text-slate-600 hover:border-indigo-300'
+                }`}
+              >
+                {l === 'fr' ? `🇫🇷  ${t('settings.french')}` : `🇬🇧  ${t('settings.english')}`}
+              </button>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
       <Card>
         <CardHeader><CardTitle>Paramètres Généraux ERP</CardTitle></CardHeader>
         <CardContent className="space-y-4">

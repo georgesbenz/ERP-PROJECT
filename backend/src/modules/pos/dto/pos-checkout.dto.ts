@@ -1,5 +1,5 @@
 import {
-  IsArray, IsEnum, IsNumber, IsOptional, IsString, IsUUID, Min, ValidateNested,
+  IsArray, IsNumber, IsOptional, IsEnum, IsString, IsUUID, Min, ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { PaymentMethod } from '@prisma/client';
@@ -14,6 +14,17 @@ export class PosItemDto {
   @ApiPropertyOptional() @IsOptional() @IsString() description?: string;
 }
 
+export class PosPaymentDto {
+  @ApiProperty({ enum: PaymentMethod })
+  @IsEnum(PaymentMethod)
+  method: PaymentMethod;
+
+  @ApiProperty()
+  @IsNumber()
+  @Min(0)
+  amount: number;
+}
+
 export class PosCheckoutDto {
   @ApiProperty({ type: [PosItemDto] })
   @IsArray()
@@ -21,14 +32,17 @@ export class PosCheckoutDto {
   @Type(() => PosItemDto)
   items: PosItemDto[];
 
-  @ApiProperty({ enum: PaymentMethod })
-  @IsEnum(PaymentMethod)
-  paymentMethod: PaymentMethod;
-
-  @ApiProperty() @IsNumber() @Min(0) paymentAmount: number;
+  @ApiProperty({ type: [PosPaymentDto], description: 'One or more payment splits (cash + mobile money etc.)' })
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => PosPaymentDto)
+  payments: PosPaymentDto[];
 
   @ApiPropertyOptional() @IsOptional() @IsUUID() customerId?: string;
   @ApiPropertyOptional() @IsOptional() @IsUUID() branchId?: string;
   @ApiPropertyOptional() @IsOptional() @IsUUID() warehouseId?: string;
   @ApiPropertyOptional() @IsOptional() @IsString() notes?: string;
+
+  /** Loyalty points to redeem — 1 point = 1 FCFA discount */
+  @ApiPropertyOptional() @IsOptional() @IsNumber() @Min(0) loyaltyPointsRedeem?: number;
 }

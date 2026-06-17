@@ -1,0 +1,25 @@
+# Production overrides — use with:
+#   docker compose -f docker-compose.yml -f docker-compose.prod.yml up --build -d
+#
+# Differences from dev:
+#  - Frontend uses production build (next build + next start) — no hot reload
+#  - Backend uses compiled dist (node dist/main.js) — no ts-node
+#  - No source volume mounts — code is baked into the image
+#  - NODE_ENV=production enforced
+
+services:
+
+  backend:
+    build:
+      target: production
+    environment:
+      NODE_ENV: production
+    volumes: []  # no source mount in prod
+
+  frontend:
+    build:
+      target: production
+    environment:
+      NODE_ENV: production
+      NEXT_TELEMETRY_DISABLED: "1"
+    volumes: []  # no source mount in prod; standalone output served by node server.js

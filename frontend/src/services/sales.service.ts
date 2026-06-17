@@ -45,4 +45,37 @@ export const salesService = {
       sales: (Sale & { lines: { product: { name: string; sku: string } }[] })[];
     };
   },
+  downloadInvoicePdf(id: string) {
+    const token = typeof window !== 'undefined' ? localStorage.getItem('erp_auth') : null;
+    const auth = token ? JSON.parse(token) : null;
+    const base = process.env.NEXT_PUBLIC_API_URL ?? '/api/v1';
+    const url = `${base}/sales/${id}/invoice.pdf`;
+    const a = document.createElement('a');
+    a.href = url;
+    a.setAttribute('download', `FACTURE-${id}.pdf`);
+    // Pass token via URL not ideal; use fetch+blob for auth headers
+    fetch(url, { headers: { Authorization: `Bearer ${auth?.state?.accessToken ?? ''}` } })
+      .then((r) => r.blob())
+      .then((blob) => {
+        a.href = URL.createObjectURL(blob);
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      });
+  },
+  downloadReceiptPdf(id: string) {
+    const token = typeof window !== 'undefined' ? localStorage.getItem('erp_auth') : null;
+    const auth = token ? JSON.parse(token) : null;
+    const base = process.env.NEXT_PUBLIC_API_URL ?? '/api/v1';
+    fetch(`${base}/sales/${id}/receipt.pdf`, { headers: { Authorization: `Bearer ${auth?.state?.accessToken ?? ''}` } })
+      .then((r) => r.blob())
+      .then((blob) => {
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `RECU-${id}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      });
+  },
 };

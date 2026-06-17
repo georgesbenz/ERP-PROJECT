@@ -9,9 +9,12 @@ import {
   Patch,
   Post,
   Query,
+  Res,
 } from '@nestjs/common';
+import { Response } from 'express';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { SalesService } from './sales.service';
+import { PdfService } from '../pdf/pdf.service';
 import { CreateSaleDto } from './dto/create-sale.dto';
 import { CreateCustomerDto } from './dto/create-customer.dto';
 import { CurrentUser } from '../../common/decorators/current-user.decorator';
@@ -23,7 +26,7 @@ import { PaginationDto } from '../../common/dto/pagination.dto';
 @ApiBearerAuth()
 @Controller('sales')
 export class SalesController {
-  constructor(private salesService: SalesService) {}
+  constructor(private salesService: SalesService, private pdf: PdfService) {}
 
   // Customers
   @Get('customers')
@@ -107,5 +110,19 @@ export class SalesController {
   @ApiOperation({ summary: 'Cancel a sale' })
   cancelSale(@Param('id') id: string, @CurrentUser() u: AuthenticatedUser) {
     return this.salesService.cancelSale(id, u.tenantId);
+  }
+
+  @Get(':id/invoice.pdf')
+  @RequirePermissions('sales:READ')
+  @ApiOperation({ summary: 'Download sale invoice as PDF' })
+  downloadInvoice(@Param('id') id: string, @CurrentUser() u: AuthenticatedUser, @Res() res: Response) {
+    return this.pdf.salesInvoice(u.tenantId, id, res);
+  }
+
+  @Get(':id/receipt.pdf')
+  @RequirePermissions('sales:READ')
+  @ApiOperation({ summary: 'Download POS receipt as PDF (narrow format)' })
+  downloadReceipt(@Param('id') id: string, @CurrentUser() u: AuthenticatedUser, @Res() res: Response) {
+    return this.pdf.posReceipt(u.tenantId, id, res);
   }
 }

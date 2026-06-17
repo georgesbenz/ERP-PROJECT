@@ -3,10 +3,43 @@ import { NestFactory } from '@nestjs/core';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import helmet from 'helmet';
+import { WinstonModule } from 'nest-winston';
+import * as winston from 'winston';
 import { AppModule } from './app.module';
 
+const isProduction = process.env.NODE_ENV === 'production';
+
+const winstonLogger = WinstonModule.createLogger({
+  transports: [
+    new winston.transports.Console({
+      format: isProduction
+        ? winston.format.combine(winston.format.timestamp(), winston.format.json())
+        : winston.format.combine(
+            winston.format.timestamp({ format: 'HH:mm:ss' }),
+            winston.format.colorize(),
+            winston.format.printf(({ timestamp, level, message, context }) =>
+              `${timestamp} [${context ?? 'App'}] ${level}: ${message}`,
+            ),
+          ),
+    }),
+    ...(isProduction
+      ? [
+          new winston.transports.File({
+            filename: '/var/log/erp/error.log',
+            level: 'error',
+            format: winston.format.combine(winston.format.timestamp(), winston.format.json()),
+          }),
+          new winston.transports.File({
+            filename: '/var/log/erp/combined.log',
+            format: winston.format.combine(winston.format.timestamp(), winston.format.json()),
+          }),
+        ]
+      : []),
+  ],
+});
+
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, { cors: false });
+  const app = await NestFactory.create(AppModule, { cors: false, logger: winstonLogger });
 
   // Security headers / En-têtes de sécurité.
   app.use(helmet());

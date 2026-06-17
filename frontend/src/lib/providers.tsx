@@ -9,8 +9,10 @@ export function Providers({ children }: { children: ReactNode }) {
       new QueryClient({
         defaultOptions: {
           queries: {
-            staleTime: 30_000,
+            staleTime: 60_000,   // 1 min — data considered fresh; no background refetch
+            gcTime: 300_000,     // 5 min — keep unused data in memory before evicting
             retry: 1,
+            refetchOnWindowFocus: false, // avoid refetch every time user alt-tabs back
           },
         },
       }),

@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus, CheckCircle, Clock, XCircle, BarChart2, ListChecks, FileText, Trash2 } from 'lucide-react';
+import { Plus, Printer, CheckCircle, Clock, XCircle, BarChart2, ListChecks, FileText, Trash2 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -17,6 +17,8 @@ import { PageLoader } from '@/components/ui/Spinner';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/Card';
 import { budgetingService } from '@/services/budgeting.service';
 import { formatCurrency, formatDate, cn } from '@/lib/utils';
+import { printTable } from '@/lib/print-utils';
+import { useT } from '@/hooks/useT';
 import type { PaginationMeta } from '@/lib/api';
 
 // ── Tabs ──────────────────────────────────────────────────────────────────────
@@ -65,6 +67,7 @@ function UtilBar({ pct, label }: { pct: number; label: string }) {
 // ─────────────────────────────────────────────────────────────────────────────
 
 export default function BudgetingPage() {
+  const { t } = useT();
   const qc = useQueryClient();
   const [tab, setTab] = useState<TabId>('plans');
   const [page, setPage] = useState(1);
@@ -124,7 +127,7 @@ export default function BudgetingPage() {
 
   return (
     <>
-      <Header title="Budgétisation" />
+      <Header title={t('budgeting.title')} />
       <div className="p-6 space-y-4">
 
         {/* Tab bar */}
@@ -345,7 +348,7 @@ export default function BudgetingPage() {
         {/* ── ALLOCATIONS ───────────────────────────────────────────────── */}
         {tab === 'allocations' && (
           <>
-            <div className="flex items-center justify-between gap-3">
+            <div className="no-print flex items-center justify-between gap-3">
               <div className="flex items-center gap-3">
                 <label className="text-sm font-medium text-slate-600">Plan :</label>
                 <select
@@ -357,9 +360,30 @@ export default function BudgetingPage() {
                   {plans.map((p: any) => <option key={p.id} value={p.id}>{p.name} ({p.fiscalYear})</option>)}
                 </select>
               </div>
-              {selectedPlanId && (
-                <Button onClick={() => setShowAddAlloc(true)}><Plus size={15} /> Ajouter allocation</Button>
-              )}
+              <div className="flex gap-2">
+                {selectedPlanId && allocQ.data && (
+                  <button
+                    onClick={() => printTable({
+                      title: 'Budget — Allocations',
+                      subtitle: plans.find((p: any) => p.id === selectedPlanId)?.name,
+                      rows: allocQ.data ?? [],
+                      columns: [
+                        { header: 'Catégorie', value: (a) => a.category?.name ?? '—' },
+                        { header: 'Période', value: (a) => a.period },
+                        { header: 'Alloué', value: (a) => formatCurrency(Number(a.allocated)) },
+                        { header: 'Réel', value: (a) => formatCurrency(Number(a.actual)) },
+                        { header: 'Notes', value: (a) => a.notes ?? '—' },
+                      ],
+                    })}
+                    className="flex items-center gap-1.5 rounded-lg border border-stone-200 px-3 py-1.5 text-sm text-slate-500 hover:bg-stone-50 transition-colors"
+                  >
+                    <Printer size={13} /> Imprimer
+                  </button>
+                )}
+                {selectedPlanId && (
+                  <Button onClick={() => setShowAddAlloc(true)}><Plus size={15} /> Ajouter allocation</Button>
+                )}
+              </div>
             </div>
 
             {!selectedPlanId && <p className="text-sm text-slate-400 text-center py-12">Sélectionnez un plan pour gérer ses allocations.</p>}

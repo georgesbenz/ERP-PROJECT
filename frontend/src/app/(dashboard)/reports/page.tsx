@@ -5,6 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import {
   Download, Upload, FileSpreadsheet, Package, ShoppingCart,
   Truck, BarChart3, RefreshCw, CheckCircle, AlertCircle, ChevronDown,
+  Users, Building2, Receipt, TrendingUp,
 } from 'lucide-react';
 import { Header } from '@/components/layout/Header';
 import { Button } from '@/components/ui/Button';
@@ -12,6 +13,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { inventoryService } from '@/services/inventory.service';
 import { salesService } from '@/services/sales.service';
 import { purchasesService } from '@/services/purchases.service';
+import { reportsService } from '@/services/reports.service';
 import {
   exportInventoryToExcel,
   exportSalesToExcel,
@@ -19,8 +21,10 @@ import {
   exportFullERP,
   downloadImportTemplate,
 } from '@/lib/excel-export';
+import { formatCurrency } from '@/lib/utils';
 import type { Product, StockLevel, StockMovement, Sale, Purchase } from '@/types/models';
 import type { PaginationMeta } from '@/lib/api';
+import { useT } from '@/hooks/useT';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -154,7 +158,7 @@ function ImportPanel() {
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="flex items-center justify-between gap-4">
+        <div className="no-print flex items-center justify-between gap-4">
           <p className="text-sm text-slate-600">
             Upload a filled-in template to bulk-create products.
           </p>
@@ -226,9 +230,260 @@ function ImportPanel() {
   );
 }
 
+// ─── Analytics Report Tabs ────────────────────────────────────────────────────
+
+type AnalyticsTab = 'employees' | 'branches' | 'tax' | 'margin';
+
+function AnalyticsSection() {
+  const [tab, setTab] = useState<AnalyticsTab>('employees');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+
+  const params = { startDate: startDate || undefined, endDate: endDate || undefined };
+
+  const { data: empData, isLoading: empLoading } = useQuery({
+    queryKey: ['report-employees', startDate, endDate],
+    queryFn: () => reportsService.employeeReport(params.startDate, params.endDate),
+    enabled: tab === 'employees',
+  });
+  const { data: branchData, isLoading: branchLoading } = useQuery({
+    queryKey: ['report-branches', startDate, endDate],
+    queryFn: () => reportsService.branchReport(params.startDate, params.endDate),
+    enabled: tab === 'branches',
+  });
+  const { data: taxData, isLoading: taxLoading } = useQuery({
+    queryKey: ['report-tax', startDate, endDate],
+    queryFn: () => reportsService.taxReport(params.startDate, params.endDate),
+    enabled: tab === 'tax',
+  });
+  const { data: marginData, isLoading: marginLoading } = useQuery({
+    queryKey: ['report-margin', startDate, endDate],
+    queryFn: () => reportsService.marginReport(params.startDate, params.endDate),
+    enabled: tab === 'margin',
+  });
+
+  const tabs: { key: AnalyticsTab; label: string; icon: React.ElementType }[] = [
+    { key: 'employees', label: 'Employee Sales', icon: Users },
+    { key: 'branches',  label: 'Branch Sales',   icon: Building2 },
+    { key: 'tax',       label: 'Tax / VAT',       icon: Receipt },
+    { key: 'margin',    label: 'Gross Margin',     icon: TrendingUp },
+  ];
+
+  const isLoading = tab === 'employees' ? empLoading
+    : tab === 'branches' ? branchLoading
+    : tab === 'tax' ? taxLoading
+    : marginLoading;
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <BarChart3 size={18} className="text-indigo-600" />
+          Analytics Reports
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {/* Date filter */}
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="flex items-center gap-2">
+            <label className="text-xs font-medium text-slate-500">From</label>
+            <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)}
+              className="rounded-lg border border-stone-200 px-2 py-1 text-xs focus:border-indigo-300 focus:outline-none" />
+          </div>
+          <div className="flex items-center gap-2">
+            <label className="text-xs font-medium text-slate-500">To</label>
+            <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)}
+              className="rounded-lg border border-stone-200 px-2 py-1 text-xs focus:border-indigo-300 focus:outline-none" />
+          </div>
+          {(startDate || endDate) && (
+            <button onClick={() => { setStartDate(''); setEndDate(''); }}
+              className="text-xs text-slate-400 hover:text-slate-700">Clear</button>
+          )}
+        </div>
+
+        {/* Tabs */}
+        <div className="flex border-b border-stone-200">
+          {tabs.map(({ key, label, icon: Icon }) => (
+            <button
+              key={key}
+              onClick={() => setTab(key)}
+              className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
+                tab === key
+                  ? 'border-indigo-600 text-indigo-700'
+                  : 'border-transparent text-slate-500 hover:text-slate-700'
+              }`}
+            >
+              <Icon size={14} /> {label}
+            </button>
+          ))}
+        </div>
+
+        {isLoading ? (
+          <div className="flex items-center justify-center py-12 text-slate-400">
+            <RefreshCw size={18} className="animate-spin mr-2" /> Loading…
+          </div>
+        ) : tab === 'employees' ? (
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead><tr className="border-b border-stone-100">
+                <th className="py-2 text-left font-semibold text-slate-600">Employee</th>
+                <th className="py-2 text-right font-semibold text-slate-600">Sales</th>
+                <th className="py-2 text-right font-semibold text-slate-600">Revenue</th>
+                <th className="py-2 text-right font-semibold text-slate-600">Avg / Sale</th>
+              </tr></thead>
+              <tbody>
+                {(empData ?? []).map((r) => (
+                  <tr key={r.userId} className="border-b border-stone-50 hover:bg-stone-50">
+                    <td className="py-2 font-medium text-slate-800">{r.name}</td>
+                    <td className="py-2 text-right text-slate-600">{r.salesCount}</td>
+                    <td className="py-2 text-right font-semibold text-indigo-700">{formatCurrency(r.revenue)}</td>
+                    <td className="py-2 text-right text-slate-500">
+                      {r.salesCount > 0 ? formatCurrency(r.revenue / r.salesCount) : '—'}
+                    </td>
+                  </tr>
+                ))}
+                {(empData ?? []).length === 0 && (
+                  <tr><td colSpan={4} className="py-8 text-center text-slate-400">No data for this period</td></tr>
+                )}
+              </tbody>
+              {(empData ?? []).length > 0 && (
+                <tfoot><tr className="border-t-2 border-stone-200">
+                  <td className="py-2 font-bold text-slate-800">Total</td>
+                  <td className="py-2 text-right font-bold">{(empData ?? []).reduce((s, r) => s + r.salesCount, 0)}</td>
+                  <td className="py-2 text-right font-bold text-indigo-700">{formatCurrency((empData ?? []).reduce((s, r) => s + r.revenue, 0))}</td>
+                  <td />
+                </tr></tfoot>
+              )}
+            </table>
+          </div>
+        ) : tab === 'branches' ? (
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead><tr className="border-b border-stone-100">
+                <th className="py-2 text-left font-semibold text-slate-600">Branch</th>
+                <th className="py-2 text-right font-semibold text-slate-600">Sales</th>
+                <th className="py-2 text-right font-semibold text-slate-600">Revenue</th>
+                <th className="py-2 text-right font-semibold text-slate-600">Share</th>
+              </tr></thead>
+              <tbody>
+                {(() => {
+                  const grandTotal = (branchData ?? []).reduce((s, r) => s + r.revenue, 0);
+                  return (branchData ?? []).map((r) => (
+                    <tr key={r.branchId ?? 'no-branch'} className="border-b border-stone-50 hover:bg-stone-50">
+                      <td className="py-2 font-medium text-slate-800">{r.name || 'No Branch'}</td>
+                      <td className="py-2 text-right text-slate-600">{r.salesCount}</td>
+                      <td className="py-2 text-right font-semibold text-indigo-700">{formatCurrency(r.revenue)}</td>
+                      <td className="py-2 text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          <div className="h-1.5 w-16 rounded-full bg-stone-200 overflow-hidden">
+                            <div className="h-full rounded-full bg-indigo-500" style={{ width: `${grandTotal > 0 ? (r.revenue / grandTotal) * 100 : 0}%` }} />
+                          </div>
+                          <span className="text-xs text-slate-500 w-8">
+                            {grandTotal > 0 ? `${((r.revenue / grandTotal) * 100).toFixed(0)}%` : '—'}
+                          </span>
+                        </div>
+                      </td>
+                    </tr>
+                  ));
+                })()}
+                {(branchData ?? []).length === 0 && (
+                  <tr><td colSpan={4} className="py-8 text-center text-slate-400">No data for this period</td></tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        ) : tab === 'tax' ? (
+          <div className="space-y-3">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead><tr className="border-b border-stone-100">
+                  <th className="py-2 text-left font-semibold text-slate-600">Taux TVA</th>
+                  <th className="py-2 text-right font-semibold text-slate-600">Factures</th>
+                  <th className="py-2 text-right font-semibold text-slate-600">HT</th>
+                  <th className="py-2 text-right font-semibold text-slate-600">TVA collectée</th>
+                </tr></thead>
+                <tbody>
+                  {(taxData ?? []).map((r) => (
+                    <tr key={r.taxRate} className="border-b border-stone-50 hover:bg-stone-50">
+                      <td className="py-2 font-medium text-slate-800">{r.taxRate}%</td>
+                      <td className="py-2 text-right text-slate-600">{r.invoiceCount}</td>
+                      <td className="py-2 text-right text-slate-700">{formatCurrency(r.taxableAmount)}</td>
+                      <td className="py-2 text-right font-semibold text-emerald-700">{formatCurrency(r.taxAmount)}</td>
+                    </tr>
+                  ))}
+                  {(taxData ?? []).length === 0 && (
+                    <tr><td colSpan={4} className="py-8 text-center text-slate-400">No data for this period</td></tr>
+                  )}
+                </tbody>
+                {(taxData ?? []).length > 0 && (
+                  <tfoot><tr className="border-t-2 border-stone-200">
+                    <td className="py-2 font-bold">Total</td>
+                    <td className="py-2 text-right font-bold">{(taxData ?? []).reduce((s, r) => s + r.invoiceCount, 0)}</td>
+                    <td className="py-2 text-right font-bold">{formatCurrency((taxData ?? []).reduce((s, r) => s + r.taxableAmount, 0))}</td>
+                    <td className="py-2 text-right font-bold text-emerald-700">{formatCurrency((taxData ?? []).reduce((s, r) => s + r.taxAmount, 0))}</td>
+                  </tr></tfoot>
+                )}
+              </table>
+            </div>
+          </div>
+        ) : (
+          /* Gross Margin */
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead><tr className="border-b border-stone-100">
+                <th className="py-2 text-left font-semibold text-slate-600">Product</th>
+                <th className="py-2 text-right font-semibold text-slate-600">Revenue</th>
+                <th className="py-2 text-right font-semibold text-slate-600">Cost</th>
+                <th className="py-2 text-right font-semibold text-slate-600">Gross</th>
+                <th className="py-2 text-right font-semibold text-slate-600">Margin %</th>
+              </tr></thead>
+              <tbody>
+                {(marginData ?? []).map((r) => (
+                  <tr key={r.productId} className="border-b border-stone-50 hover:bg-stone-50">
+                    <td className="py-2 font-medium text-slate-800">{r.name}</td>
+                    <td className="py-2 text-right text-slate-700">{formatCurrency(r.revenue)}</td>
+                    <td className="py-2 text-right text-slate-500">{formatCurrency(r.cost)}</td>
+                    <td className={`py-2 text-right font-semibold ${r.gross >= 0 ? 'text-emerald-700' : 'text-red-600'}`}>
+                      {formatCurrency(r.gross)}
+                    </td>
+                    <td className="py-2 text-right">
+                      <span className={`rounded-full px-2 py-0.5 text-xs font-semibold ${
+                        r.marginPct >= 30 ? 'bg-emerald-100 text-emerald-700'
+                        : r.marginPct >= 10 ? 'bg-amber-100 text-amber-700'
+                        : 'bg-red-100 text-red-700'
+                      }`}>
+                        {r.marginPct.toFixed(1)}%
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+                {(marginData ?? []).length === 0 && (
+                  <tr><td colSpan={5} className="py-8 text-center text-slate-400">No data for this period</td></tr>
+                )}
+              </tbody>
+              {(marginData ?? []).length > 0 && (
+                <tfoot><tr className="border-t-2 border-stone-200">
+                  <td className="py-2 font-bold">Total</td>
+                  <td className="py-2 text-right font-bold">{formatCurrency((marginData ?? []).reduce((s, r) => s + r.revenue, 0))}</td>
+                  <td className="py-2 text-right font-bold">{formatCurrency((marginData ?? []).reduce((s, r) => s + r.cost, 0))}</td>
+                  <td className={`py-2 text-right font-bold ${(marginData ?? []).reduce((s, r) => s + r.gross, 0) >= 0 ? 'text-emerald-700' : 'text-red-600'}`}>
+                    {formatCurrency((marginData ?? []).reduce((s, r) => s + r.gross, 0))}
+                  </td>
+                  <td />
+                </tr></tfoot>
+              )}
+            </table>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
+
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
 export default function ReportsPage() {
+  const { t } = useT();
   const [states, setStates] = useState<Record<string, ModuleExportState>>({
     inventory: { status: 'idle' },
     sales:     { status: 'idle' },
@@ -344,8 +599,11 @@ export default function ReportsPage() {
 
   return (
     <>
-      <Header title="Reports & Export / Rapports" />
-      <div className="p-6 space-y-6">
+      <Header title={t('reports.title')} />
+      <div className="p-4 space-y-4 md:p-6 md:space-y-6">
+
+        {/* Analytics tabs */}
+        <AnalyticsSection />
 
         {/* Full ERP hero banner */}
         <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-indigo-600 via-indigo-700 to-violet-800 p-8 text-white shadow-xl">
@@ -425,6 +683,24 @@ export default function ReportsPage() {
               );
             })}
           </div>
+        </div>
+
+        {/* CSV Server-side Export */}
+        <div>
+          <h2 className="mb-4 text-base font-semibold text-slate-800">Export CSV (Server-side)</h2>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+            {(['sales', 'purchases', 'inventory', 'customers', 'expenses'] as const).map((type) => (
+              <button
+                key={type}
+                onClick={() => reportsService.downloadCsv(type)}
+                className="flex items-center justify-center gap-2 rounded-xl border border-stone-200 bg-white px-4 py-3 text-sm font-medium text-slate-700 shadow-sm hover:border-indigo-300 hover:bg-indigo-50 hover:text-indigo-700 transition-colors"
+              >
+                <Download size={14} />
+                {type.charAt(0).toUpperCase() + type.slice(1)}
+              </button>
+            ))}
+          </div>
+          <p className="mt-2 text-xs text-slate-500">CSV files open directly in Excel — UTF-8 with BOM, semicolon separator, all records (no pagination limit)</p>
         </div>
 
         {/* Import panel */}

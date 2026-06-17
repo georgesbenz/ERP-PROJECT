@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { PosService } from './pos.service';
 import { PosCheckoutDto } from './dto/pos-checkout.dto';
@@ -12,6 +12,13 @@ import { RequirePermissions as Permissions } from '../../common/decorators/permi
 @Controller('pos')
 export class PosController {
   constructor(private pos: PosService) {}
+
+  @Get('products')
+  @Permissions('pos:READ')
+  @ApiOperation({ summary: 'List sellable products for the POS terminal' })
+  getProducts(@CurrentUser() user: AuthenticatedUser, @Query('search') search?: string) {
+    return this.pos.getProductsForPos(user.tenantId, search);
+  }
 
   @Post('checkout')
   @Permissions('pos:CREATE')

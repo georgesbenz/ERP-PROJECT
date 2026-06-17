@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus, RotateCcw, Filter } from 'lucide-react';
+import { Plus, Printer, RotateCcw, Filter } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -15,6 +15,8 @@ import { Pagination } from '@/components/ui/Pagination';
 import { PageLoader } from '@/components/ui/Spinner';
 import { inventoryService } from '@/services/inventory.service';
 import { formatDate } from '@/lib/utils';
+import { printTable } from '@/lib/print-utils';
+import { useT } from '@/hooks/useT';
 import type { PaginationMeta } from '@/lib/api';
 import type { MovementType } from '@/types/models';
 
@@ -46,6 +48,7 @@ type MovementForm = z.infer<typeof movementSchema>;
 // ── Page ───────────────────────────────────────────────────────────────────────
 
 export default function StockMovementsPage() {
+  const { t } = useT();
   const qc = useQueryClient();
 
   // Filters
@@ -91,11 +94,11 @@ export default function StockMovementsPage() {
 
   return (
     <>
-      <Header title="Stock Movements / Mouvements de Stock" />
+      <Header title={t('inventory.movements')} />
       <div className="p-6 space-y-4">
 
         {/* ── Filters bar ── */}
-        <div className="rounded-xl border border-stone-200 bg-white p-4 shadow-sm">
+        <div className="no-print rounded-xl border border-stone-200 bg-white p-4 shadow-sm">
           <div className="flex flex-wrap items-end gap-3">
             {/* Product filter */}
             <div className="min-w-[180px]">
@@ -193,10 +196,31 @@ export default function StockMovementsPage() {
 
         {/* ── Results summary ── */}
         {!isLoading && data?.meta && (
-          <p className="text-xs text-slate-500">
-            {data.meta.total} movement{data.meta.total !== 1 ? 's' : ''} found
-            {hasFilters ? ' (filtered)' : ''}
-          </p>
+          <div className="flex items-center justify-between">
+            <p className="text-xs text-slate-500">
+              {data.meta.total} movement{data.meta.total !== 1 ? 's' : ''} found
+              {hasFilters ? ' (filtered)' : ''}
+            </p>
+            <button
+              onClick={() => printTable({
+                title: 'Stock Movements / Mouvements de Stock',
+                rows: data?.data ?? [],
+                columns: [
+                  { header: 'Date', value: (m) => new Date(m.createdAt).toLocaleString('fr-FR') },
+                  { header: 'Product', value: (m) => m.product?.name ?? '—' },
+                  { header: 'SKU', value: (m) => m.product?.sku ?? '—' },
+                  { header: 'Warehouse', value: (m) => m.warehouse?.name ?? '—' },
+                  { header: 'Type', value: (m) => m.type },
+                  { header: 'Quantity', value: (m) => Number(m.quantity).toLocaleString() },
+                  { header: 'Unit Cost', value: (m) => m.unitCost ? Number(m.unitCost).toLocaleString() : '—' },
+                  { header: 'Reference', value: (m) => m.reference ?? '—' },
+                ],
+              })}
+              className="flex items-center gap-1.5 rounded-lg border border-stone-200 px-3 py-1.5 text-sm text-slate-500 hover:bg-stone-50 transition-colors"
+            >
+              <Printer size={13} /> Print
+            </button>
+          </div>
         )}
 
         {/* ── Table ── */}
@@ -326,7 +350,7 @@ function RecordMovementModal({
         {/* Type selector — big buttons */}
         <div>
           <label className="mb-2 block text-sm font-medium text-slate-700">Movement Type</label>
-          <div className="grid grid-cols-5 gap-2">
+          <div className="grid grid-cols-3 gap-2 sm:grid-cols-5">
             {MOVEMENT_TYPES.map((t) => {
               const c = TYPE_CONFIG[t];
               const isSelected = selectedType === t;
@@ -351,7 +375,7 @@ function RecordMovementModal({
           <p className="mt-1 text-xs text-slate-400">{cfg.label}</p>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           {/* Product */}
           <div>
             <label className="mb-1 block text-sm font-medium text-slate-700">Product <span className="text-red-500">*</span></label>
@@ -383,7 +407,7 @@ function RecordMovementModal({
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <Input
             label="Quantity *"
             type="number"
@@ -402,7 +426,7 @@ function RecordMovementModal({
           />
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <Input label="Reference" placeholder="e.g. PO-000001" {...register('reference')} />
           <Input label="Notes" placeholder="Optional note…" {...register('notes')} />
         </div>

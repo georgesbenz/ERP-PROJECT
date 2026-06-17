@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   Param,
+  Patch,
   Post,
   Query,
 } from '@nestjs/common';
@@ -246,5 +247,56 @@ export class StockController {
     @Query('state') state?: string,
   ) {
     return this.stockService.getSerials(u.tenantId, productId, state);
+  }
+
+  // ── Cycle Counts ────────────────────────────────────────────────────────────
+
+  @Get('counts')
+  @RequirePermissions('inventory:READ')
+  @ApiOperation({ summary: 'List cycle counts' })
+  listCycleCounts(@CurrentUser() u: AuthenticatedUser) {
+    return this.stockService.listCycleCounts(u.tenantId);
+  }
+
+  @Post('counts')
+  @RequirePermissions('inventory:CREATE')
+  @ApiOperation({ summary: 'Create a new cycle count for a warehouse' })
+  createCycleCount(@CurrentUser() u: AuthenticatedUser, @Query('warehouseId') warehouseId: string) {
+    return this.stockService.createCycleCount(u.tenantId, warehouseId, u.userId);
+  }
+
+  @Get('counts/:id')
+  @RequirePermissions('inventory:READ')
+  @ApiOperation({ summary: 'Get cycle count with all lines' })
+  getCycleCount(@CurrentUser() u: AuthenticatedUser, @Param('id') id: string) {
+    return this.stockService.getCycleCount(u.tenantId, id);
+  }
+
+  @Patch('counts/:id/lines/:lineId')
+  @RequirePermissions('inventory:UPDATE')
+  @ApiOperation({ summary: 'Update counted quantity for a line' })
+  updateLine(
+    @CurrentUser() u: AuthenticatedUser,
+    @Param('id') id: string,
+    @Param('lineId') lineId: string,
+    @Body('countedQty') countedQty: number,
+  ) {
+    return this.stockService.updateCycleCountLine(u.tenantId, id, lineId, countedQty);
+  }
+
+  @Patch('counts/:id/complete')
+  @RequirePermissions('inventory:UPDATE')
+  @ApiOperation({ summary: 'Complete a cycle count' })
+  completeCycleCount(@CurrentUser() u: AuthenticatedUser, @Param('id') id: string) {
+    return this.stockService.completeCycleCount(u.tenantId, id, u.userId);
+  }
+
+  // ── Reorder Suggestions ─────────────────────────────────────────────────────
+
+  @Get('reorder-suggestions')
+  @RequirePermissions('inventory:READ')
+  @ApiOperation({ summary: 'Smart reorder suggestions for low-stock products' })
+  getReorderSuggestions(@CurrentUser() u: AuthenticatedUser) {
+    return this.stockService.getReorderSuggestions(u.tenantId);
   }
 }

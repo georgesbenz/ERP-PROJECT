@@ -801,4 +801,127 @@ export class StockService {
       orderBy: { createdAt: 'desc' },
     });
   }
+
+  // ── Cycle Counts ────────────────────────────────────────────────────────────
+
+  async listCycleCounts(tenantId: string) {
+    return this.prisma.cycleCount.findMany({
+      where: { tenantId },
+      include: {
+        warehouse: { select: { id: true, name: true, code: true } },
+        _count: { select: { lines: true } },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
+  async createCycleCount(tenantId: string, warehouseId: string, userId: string) {
+    const ref = `CC-${Date.now()}`;
+    const inventory = await this.prisma.inventory.findMany({
+      where: { tenantId, warehouseId },
+      include: { product: { select: { id: true, name: true, sku: true } } },
+    });
+
+    return this.prisma.cycleCount.create({
+      data: {
+        tenantId,
+        warehouseId,
+        reference: ref,
+        createdBy: userId,
+        lines: {
+          create: inventory.map((inv) => ({
+            productId: inv.productId,
+            systemQty: inv.quantity,
+          })),
+        },
+      },
+      include: { lines: { include: { product: { select: { name: true, sku: true } } } }, warehouse: { select: { name: true } } },
+    });
+  }
+
+  async getCycleCount(tenantId: string, id: string) {
+    const count = await this.prisma.cycleCount.findFirst({
+      where: { id, tenantId },
+      include: {
+        warehouse: { select: { id: true, name: true, code: true } },
+        lines: { include: { product: { select: { id: true, name: true, sku: true, unitOfMeasure: true } } } },
+      },
+    });
+    if (!count) throw new NotFoundException('Cycle count not found');
+    return count;
+  }
+
+  async updateCycleCountLine(tenantId: string, countId: string, lineId: string, countedQty: number) {
+    const count = await this.prisma.cycleCount.findFirst({ where: { id: countId, tenantId } });
+    if (!count) throw new NotFoundException('Cycle count not found');
+    if (count.status === 'COMPLETED') throw new BadRequestException('Count already completed');
+
+    return this.prisma.cycleCountLine.update({
+      where: { id: lineId },
+      data: {
+        countedQty,
+        variance: countedQty - Number((await this.prisma.cycleCountLine.findUniqueOrThrow({ where: { id: lineId } })).systemQty),
+      },
+    });
+  }
+
+  async completeCycleCount(tenantId: string, id: string, userId: string) {
+    const count = await this.getCycleCount(tenantId, id);
+    if (count.status === 'COMPLETED') throw new BadRequestException('Already completed');
+
+    const uncounted = count.lines.filter((l) => l.countedQty === null).length;
+    if (uncounted > 0) throw new BadRequestException(`${uncounted} lines still not counted`);
+
+    return this.prisma.cycleCount.update({
+      where: { id },
+      data: { status: 'COMPLETED', completedAt: new Date(), approvedBy: userId },
+    });
+  }
+
+  // ── Reorder Suggestions ─────────────────────────────────────────────────────
+
+  async getReorderSuggestions(tenantId: string) {
+    const thirtyDaysAgo = new Date(Date.now() - 30 * 86_400_000);
+
+    const [inventory, recentMovements] = await Promise.all([
+      this.prisma.inventory.findMany({
+        where: { tenantId, product: { minStock: { gt: 0 } } },
+        include: {
+          product: { select: { id: true, name: true, sku: true, minStock: true, costPrice: true } },
+          warehouse: { select: { name: true, code: true } },
+        },
+      }),
+      this.prisma.inventoryMovement.findMany({
+        where: { tenantId, type: 'OUT', createdAt: { gte: thirtyDaysAgo } },
+        select: { productId: true, quantity: true },
+      }),
+    ]);
+
+    const velocityMap: Record<string, number> = {};
+    for (const m of recentMovements) {
+      velocityMap[m.productId] = (velocityMap[m.productId] ?? 0) + Number(m.quantity);
+    }
+
+    return inventory
+      .filter((inv) => Number(inv.quantity) <= Number(inv.product.minStock))
+      .map((inv) => {
+        const velocity30d = velocityMap[inv.productId] ?? 0;
+        const dailyVelocity = velocity30d / 30;
+        const suggestedQty = Math.ceil(Math.max(Number(inv.product.minStock) * 1.5 - Number(inv.quantity), dailyVelocity * 14));
+        return {
+          productId: inv.productId,
+          name: inv.product.name,
+          sku: inv.product.sku,
+          warehouse: inv.warehouse.name,
+          currentStock: Number(inv.quantity),
+          minStock: Number(inv.product.minStock),
+          velocity30d,
+          dailyVelocity: Math.round(dailyVelocity * 10) / 10,
+          suggestedOrderQty: suggestedQty,
+          estimatedCost: suggestedQty * Number(inv.product.costPrice ?? 0),
+          urgency: Number(inv.quantity) === 0 ? 'CRITICAL' : Number(inv.quantity) < Number(inv.product.minStock) / 2 ? 'HIGH' : 'MEDIUM',
+        };
+      })
+      .sort((a, b) => (a.urgency === 'CRITICAL' ? -1 : b.urgency === 'CRITICAL' ? 1 : b.currentStock - a.currentStock));
+  }
 }
